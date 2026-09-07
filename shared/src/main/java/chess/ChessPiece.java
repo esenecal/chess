@@ -10,7 +10,12 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
+    private ChessGame.TeamColor pieceColor;     // Determines the piece's color according to the TeamColor enum
+    private ChessPiece.PieceType type;          // Determines the piece's type according to the PieceType enum
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.pieceColor = pieceColor;       // Add constructor parameter to field.
+        this.type = type;                   // Add constructor parameter to field.
     }
 
     /**
