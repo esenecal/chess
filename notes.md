@@ -2,6 +2,24 @@
 
 Project notes for CS 240
 
+## Chess Project Structure
+
+`ChessPosition`: this class represents a position on a chess board, from 1-8. It is used for all representations on the
+chess board--for instance, when a piece moves, its movement will be represented by a change in positions, from one to
+another.
+
+`ChessMove`: this class represents the movement of pieces on the chessboard. Each object consists of two ChessPositions,
+one which signifies the start position, and another the end. It also contains any promotional pieces involved in the
+movement.
+
+`ChessPiece`: this class represents a single piece, which has a team color (black/white) and a type (bishop, king, etc.
+represented by an enum). It also contains code for calculating what eligible moves for a piece are. Note that a piece
+does NOT track its own position. Moves and positions are handled separately.
+
+`ChessBoard`: This contains the board. It has a 2 dimensional array that represents the board, with 8 indices for rows
+and columns. This has method to add pieces at specific ChessPositions, get the piece at a specific ChessPosition, and
+reset the board.
+
 ## OOP Principles
 
 **Encapsulation**: placing fields and methods in classes. Restricting access to some components using `private`, with
