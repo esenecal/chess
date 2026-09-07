@@ -43,4 +43,9 @@ public class ChessMove {
     public ChessPiece.PieceType getPromotionPiece() {
         return promotionPiece;  // https://www.youtube.com/watch?v=mTtK8iRXsZo
     }
+
+    @Override
+    public String toString() {      // return chess move as a string.
+        return String.format("ChessMove[%s, %s]", startPosition, endPosition);
+    }
 }
