@@ -53,6 +53,12 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        // https://www.youtube.com/watch?v=mTtK8iRXsZo
+        ChessPiece piece = board.getPiece(myPosition);      // get the piece at the given position.
+        if (piece.getPieceType() == PieceType.BISHOP) {
+            // to do
+        }
+
         return List.of();
     }
 }
