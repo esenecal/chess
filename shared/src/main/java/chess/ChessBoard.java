@@ -8,6 +8,8 @@ package chess;
  */
 public class ChessBoard {
 
+    private ChessPiece[][] board = new ChessPiece[8][8];    // Create an 8 by 8 chess board. https://www.youtube.com/watch?v=mTtK8iRXsZo
+
     public ChessBoard() {
         
     }
@@ -19,7 +21,8 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        // Off by one is due to position row/columns being from 1-8, not 0-7.
+        board[position.getRow()-1][position.getColumn()-1] = piece;     // Add a chesspiece at a specific position. https://www.youtube.com/watch?v=mTtK8iRXsZo
     }
 
     /**
@@ -30,7 +33,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return board[position.getRow()-1][position.getColumn()-1];      // Returns the piece at this board position.
     }
 
     /**
