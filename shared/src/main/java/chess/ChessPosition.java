@@ -8,8 +8,8 @@ package chess;
  */
 public class ChessPosition {
 
-    private int row;
-    private int col;
+    private final int row;  // video
+    private final int col;
 
     public ChessPosition(int row, int col) {
         this.row = row;
@@ -34,6 +34,6 @@ public class ChessPosition {
 
     @Override
     public String toString() {      // returns a ChessPosition as a string
-        return String.format("ChessPosition[%d,%d]", row, col);        // https://www.youtube.com/watch?v=mTtK8iRXsZo
+        return String.format("[%d,%d]", row, col);        // https://www.youtube.com/watch?v=mTtK8iRXsZo
     }
 }

@@ -1,7 +1,9 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -54,11 +56,52 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         // https://www.youtube.com/watch?v=mTtK8iRXsZo
-        ChessPiece piece = board.getPiece(myPosition);      // get the piece at the given position.
+        ChessPiece piece = board.getPiece(myPosition);      // get the piece at the given position. We are checking this piece.
+        ArrayList<ChessMove> validMoves = new ArrayList<>();    // empty ArrayList for all valid moves.
+
         if (piece.getPieceType() == PieceType.BISHOP) {
-            // to do
+            // myPosition is the start position.
+            // first, find all the valid end points. check if there is a piece there or out of bounds.
+            int position_x = myPosition.getRow();
+            int position_y = myPosition.getColumn();
+            // Check upper right
+            for (int x = myPosition.getRow()+1, y = myPosition.getColumn()+1; x < 9 && y < 9; x++, y++) {        // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
+                validMoves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+            }
+            // check lower right
+            for (int x = myPosition.getRow()+1, y = myPosition.getColumn()-1; x < 9 && y > 0; x++, y--) {        // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
+                validMoves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+            }
+            // check lower left
+            for (int x = myPosition.getRow()-1, y = myPosition.getColumn()-1; x > 0 && y > 0; x--, y--) {        // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
+                validMoves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+            }
+            // check upper left
+            for (int x = myPosition.getRow()-1, y = myPosition.getColumn()+1; x > 0 && y < 9; x--, y++) {        // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
+                validMoves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+            }
+
+            // bishops moves diagonally until it reaches the edge of the board or another piece. it captures pieces
+            // of the opposite color and stops before pieces of the same.
+
+
         }
 
-        return List.of();
+        return validMoves;
+    }
+
+    // created with intelliJ as per assignment directions
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ChessPiece piece)) {
+            return false;
+        }
+        return pieceColor == piece.pieceColor && type == piece.type;
+    }
+
+    // Created by intelliJ as per assignment directions.
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
     }
 }

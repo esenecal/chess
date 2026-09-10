@@ -22,15 +22,17 @@ reset the board.
 
 ## OOP Principles
 
+In OOP, we want to solve a problem and abstract things. This is so that we hide any uneeded details and make our code open to modification and addition.
+
 **Encapsulation**: placing fields and methods in classes. Restricting access to some components using `private`, with
-getter/setter methods to manipulate fields.
+getter/setter methods to manipulate fields. You hide details that don't matter.
 
 **Abstraction**: hiding complex internal details from the user, showing them essential functionality that they need. A 
-focus on what something does instead of how. 
+focus on what something does instead of how. For car, for instance, you do not need to know how the calipers or brakes work. You just need to know how to use the gas, break, and wheel. This is providing the right details that matter.
 
 **Inheritance**: allowing a class to adopt properties of another, creating a hierarchical, superclass to subclass 
 relationship. Subclasses gain non-private fields/methods from superclasses, and can expand with more features or 
-override features from its superclass.
+override features from its superclass. This allows you to add code.
 
 **Polymorphism**: allowing "objects of different types to be treated as objects of a common superclass." A uniform interface allows for consistent interactions with these objects.
 - Static Polymorphism (Method Overloading): multiple methods in the same class having the same name, but are defined with different parameters
