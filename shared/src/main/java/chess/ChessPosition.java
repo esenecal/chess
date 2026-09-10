@@ -8,7 +8,7 @@ package chess;
  */
 public class ChessPosition {
 
-    private final int row;  // video
+    private final int row;  // video: https://www.youtube.com/watch?v=mTtK8iRXsZo
     private final int col;
 
     public ChessPosition(int row, int col) {
