@@ -64,6 +64,8 @@ public class ChessPiece {
         switch(piece.getPieceType()) {      // https://www.w3schools.com/java/java_switch.asp
             case PieceType.BISHOP:
                 return bishopMoves(board, myPosition, piece.getTeamColor());
+            case PieceType.KING:
+                return kingMoves(board, myPosition, piece.getTeamColor());
             case PieceType.KNIGHT:
                 return knightMoves(board, myPosition, piece.getTeamColor());
             case PieceType.PAWN:
@@ -164,7 +166,30 @@ public class ChessPiece {
     }
 
     private static Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
-        return null;
+        ArrayList<ChessMove>  validMoves = new ArrayList<>();
+
+        int myPositionY = myPosition.getRow();
+        int myPositionX = myPosition.getColumn();
+
+        ChessPosition[] possiblePositions = new ChessPosition[8];       // 8 possible moves. any direction, by 1.
+
+        possiblePositions[0] = new ChessPosition(myPositionY+1, myPositionX);            // up
+        possiblePositions[1] = new ChessPosition(myPositionY+1, myPositionX+1);     // up right
+        possiblePositions[2] = new ChessPosition(myPositionY, myPositionX+1);            // right
+        possiblePositions[3] = new ChessPosition(myPositionY-1, myPositionX+1);     // down right
+        possiblePositions[4] = new ChessPosition(myPositionY-1, myPositionX);           // down
+        possiblePositions[5] = new ChessPosition(myPositionY-1, myPositionX-1);     // down left
+        possiblePositions[6] = new ChessPosition(myPositionY, myPositionX-1);            // left
+        possiblePositions[7] = new ChessPosition(myPositionY+1, myPositionX-1);     // up left
+
+        for (ChessPosition position: possiblePositions) {
+            // if it has no piece present, OR a piece of the different color, then it is valid.
+            if (board.getPiece(position) != null) {
+
+            }
+        }
+
+        return validMoves;
     }
 
     private static Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
