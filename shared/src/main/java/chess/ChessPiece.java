@@ -75,7 +75,7 @@ public class ChessPiece {
         }
     }
 
-    // Check color
+    //
 
     // logic for bishop movement.
     // // board for checking if there are pieces at positions. myPosition for move start. pieceColor for comparing with existing piece colors. validMoves for valid moves.
@@ -86,8 +86,8 @@ public class ChessPiece {
         ArrayList<ChessMove> validMoves = new ArrayList<>();    // empty ArrayList for all valid moves.
 
         // Check upper right. These for loops continue if they are within the board, and have not encountered another piece.
-        for (int x = myPosition.getRow()+1, y = myPosition.getColumn()+1; x < 9 && y < 9; x++, y++) {        // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
-            currentPosition = new ChessPosition(x, y);  // set current position
+        for (int x = myPosition.getColumn()+1, y = myPosition.getRow()+1; x < 9 && y < 9; x++, y++) {        // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
+            currentPosition = new ChessPosition(y, x);  // set current position
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
                 // and both the piece we are checking and the piece in this position are of the same color...
@@ -104,8 +104,8 @@ public class ChessPiece {
             }
         }
         // check lower right
-        for (int x = myPosition.getRow()+1, y = myPosition.getColumn()-1; x < 9 && y > 0; x++, y--) {
-            currentPosition = new ChessPosition(x, y);  // set current position
+        for (int x = myPosition.getColumn()+1, y = myPosition.getRow()-1; x < 9 && y > 0; x++, y--) {
+            currentPosition = new ChessPosition(y, x);  // set current position
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
                 // and both the piece we are checking and the piece in this position are of the same color...
@@ -122,8 +122,8 @@ public class ChessPiece {
             }
         }
         // check lower left
-        for (int x = myPosition.getRow()-1, y = myPosition.getColumn()-1; x > 0 && y > 0; x--, y--) {
-            currentPosition = new ChessPosition(x, y);  // set current position
+        for (int x = myPosition.getColumn()-1, y = myPosition.getRow()-1; x > 0 && y > 0; x--, y--) {
+            currentPosition = new ChessPosition(y, x);  // set current position
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
                 // and both the piece we are checking and the piece in this position are of the same color...
@@ -140,8 +140,8 @@ public class ChessPiece {
             }
         }
         // check upper left
-        for (int x = myPosition.getRow()-1, y = myPosition.getColumn()+1; x > 0 && y < 9; x--, y++) {
-            currentPosition = new ChessPosition(x, y);  // set current position
+        for (int x = myPosition.getColumn()-1, y = myPosition.getRow()+1; x > 0 && y < 9; x--, y++) {
+            currentPosition = new ChessPosition(y, x);  // set current position
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
                 // and both the piece we are checking and the piece in this position are of the same color...
@@ -167,24 +167,24 @@ public class ChessPiece {
 
     private static Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
         ArrayList<ChessMove> validMoves = new ArrayList<>();
-        int x = myPosition.getRow();
-        int y = myPosition.getColumn();
+        int x = myPosition.getColumn();
+        int y = myPosition.getRow();
 
         // create an array of possible finial positions. A knight has 8 possible moves
         ChessPosition[] possibleMoves = new ChessPosition[8];
-        possibleMoves[0] = new ChessPosition(x-1, y+2);  // up2 left1
-        possibleMoves[1] = new ChessPosition(x+1, y+2);  // up2 right1
-        possibleMoves[2] = new ChessPosition(x+2, y+1);  // right2 up1
-        possibleMoves[3] = new ChessPosition(x+2, y-1);  // right2 down1
-        possibleMoves[4] = new ChessPosition(x-1, y-2);  // down2 left1
-        possibleMoves[5] = new ChessPosition(x+1, y-2);  // down2 right1
-        possibleMoves[6] = new ChessPosition(x-2, y+1);  // left2 up1
-        possibleMoves[7] = new ChessPosition(x-2, y-1);  // left2 down1
+        possibleMoves[0] = new ChessPosition(y+2, x-1);  // up2 left1
+        possibleMoves[1] = new ChessPosition(y+2, x+1);  // up2 right1
+        possibleMoves[2] = new ChessPosition(y+1, x+2);  // up1 right2
+        possibleMoves[3] = new ChessPosition(y-1, x+2);  // down1 right2
+        possibleMoves[4] = new ChessPosition(y-2, x-1);  // down2 left1
+        possibleMoves[5] = new ChessPosition(y-2, x+1);  // down2 right1
+        possibleMoves[6] = new ChessPosition(y+1, x-2);  // up1 left2
+        possibleMoves[7] = new ChessPosition(y-1, x-2);  // down1 left2
 
         // iterate through valid list to ensure that they meet criteria (within bounds, pieces there, etc.
         for (ChessPosition position : possibleMoves) {
             // check if out of bounds.
-            if (position.getRow() < 1 || position.getRow() > 8 || position.getColumn() < 1 || position.getColumn() > 8) {
+            if (position.getColumn() < 1 || position.getColumn() > 8 || position.getRow() < 1 || position.getRow() > 8) {
                 continue;       // move on to the next if out of bounds.
             }
 
@@ -208,8 +208,8 @@ public class ChessPiece {
 
     private static Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
         ArrayList<ChessMove> validMoves = new ArrayList<>();
-        int myPositionX = myPosition.getRow();
-        int myPositionY = myPosition.getColumn();
+        int myPositionX = myPosition.getColumn();
+        int myPositionY = myPosition.getRow();
 
         ChessPosition possiblePosition;
         ChessPiece.PieceType promotion;
@@ -264,8 +264,8 @@ public class ChessPiece {
         ArrayList<ChessMove> validMoves = new ArrayList<>();    // empty ArrayList for all valid moves.
 
         // Check up. These for loops continue if they are within the board, and have not encountered another piece.
-        for (int y = myPosition.getColumn()+1; y < 9; y++) {
-            currentPosition = new ChessPosition(myPosition.getRow(), y);  // set current position. Row stays constant.
+        for (int y = myPosition.getRow()+1; y < 9; y++) {
+            currentPosition = new ChessPosition(myPosition.getColumn(), y);  // set current position. Row stays constant.
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
                 // and both the piece we are checking and the piece in this position are of the same color...
@@ -282,8 +282,8 @@ public class ChessPiece {
             }
         }
         // check right
-        for (int x = myPosition.getRow()+1; x < 9; x++) {
-            currentPosition = new ChessPosition(x, myPosition.getColumn());  // set current position. Column stays constant.
+        for (int x = myPosition.getColumn()+1; x < 9; x++) {
+            currentPosition = new ChessPosition(x, myPosition.getRow());  // set current position. Column stays constant.
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
                 // and both the piece we are checking and the piece in this position are of the same color...
@@ -300,8 +300,8 @@ public class ChessPiece {
             }
         }
         // check down
-        for (int y = myPosition.getColumn()-1; y > 0; y--) {
-            currentPosition = new ChessPosition(myPosition.getRow(), y);  // set current position. Row stays constant.
+        for (int y = myPosition.getRow()-1; y > 0; y--) {
+            currentPosition = new ChessPosition(myPosition.getColumn(), y);  // set current position. Row stays constant.
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
                 // and both the piece we are checking and the piece in this position are of the same color...
@@ -318,8 +318,8 @@ public class ChessPiece {
             }
         }
         // check left
-        for (int x = myPosition.getRow()-1; x > 0; x--) {
-            currentPosition = new ChessPosition(x, myPosition.getColumn());  // set current position. column stays constant
+        for (int x = myPosition.getColumn()-1; x > 0; x--) {
+            currentPosition = new ChessPosition(x, myPosition.getRow());  // set current position. column stays constant
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
                 // and both the piece we are checking and the piece in this position are of the same color...

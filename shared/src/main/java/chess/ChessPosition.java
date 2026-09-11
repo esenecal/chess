@@ -10,6 +10,7 @@ import java.util.Objects;
  */
 public class ChessPosition {
 
+    // ROW IS Y, COLUMN IS X
     private final int row;  // video: https://www.youtube.com/watch?v=mTtK8iRXsZo
     private final int col;
 
