@@ -207,7 +207,40 @@ public class ChessPiece {
     }
 
     private static Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
-        return null;
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
+        int myPositionX = myPosition.getRow();
+        int myPositionY = myPosition.getColumn();
+
+        ChessPosition possiblePosition;
+        ChessPiece.PieceType promotion;
+
+        // The color of the piece determines the direction it can move in.
+        if (pieceColor == ChessGame.TeamColor.WHITE) {
+            // first move allows for moving forward two squares. For black pieces, this means if they are on row 7. For white, row 2.
+            // if we are in the starting position and two up is open
+            possiblePosition = new ChessPosition(myPositionX, myPositionY+2);       // up 2
+            if (myPositionY == 2 && board.getPiece(possiblePosition) != null) {
+                // Do not have to worry about promotions; a piece cannot be promoted off start.
+                validMoves.add(new ChessMove(myPosition, possiblePosition, null));
+            }
+            // now check 1 up, and diagonal by one. check if out of bounds, and if landing on edge, promotion. Fow now, hard code it as a queen.
+            possiblePosition = new ChessPosition(myPositionX, myPositionY+1);       // up 1
+            if (board.getPiece(possiblePosition) != null && myPositionY < 9) {
+                if (possiblePosition.getRow() == 8) {     // promotable if we land on
+                    promotion = PieceType.QUEEN;
+                } else {
+                    promotion = null;
+                }
+            }
+
+            // If there is a piece there, just move on.
+        } else {
+
+        }
+
+
+
+        return validMoves;
     }
 
     // logic for queen movement. As mentioned in class, functionally a combination of rook and bishop.
