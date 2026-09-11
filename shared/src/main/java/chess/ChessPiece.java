@@ -64,6 +64,8 @@ public class ChessPiece {
         switch(piece.getPieceType()) {      // https://www.w3schools.com/java/java_switch.asp
             case PieceType.BISHOP:
                 return bishopMoves(board, myPosition, piece.getTeamColor());
+            case PieceType.KNIGHT:
+                return knightMoves(board, myPosition, piece.getTeamColor());
             case PieceType.QUEEN:
                 return queenMoves(board, myPosition, piece.getTeamColor());
             case PieceType.ROOK:
@@ -180,7 +182,25 @@ public class ChessPiece {
         possibleMoves[7] = new ChessPosition(x-2, y-1);  // left2 down1
 
         // iterate through valid list to ensure that they meet criteria (within bounds, pieces there, etc.
-        for (ChessPosition move : possibleMoves) {
+        for (ChessPosition position : possibleMoves) {
+            // check if out of bounds.
+            if (position.getRow() < 1 || position.getRow() > 8 || position.getColumn() < 1 || position.getColumn() > 8) {
+                continue;       // move on to the next if out of bounds.
+            }
+
+            // check for existing pieces in location. Similar logic from bishop/rook methods
+            if (board.getPiece(position) != null) {     // If there is a piece here...
+                // and both the piece we are checking and the piece in this position are NOT of the same color...
+                if (board.getPiece(position).getTeamColor() != pieceColor) {
+                    // We can add a valid move here. Then we move on.
+                    validMoves.add(new ChessMove(myPosition, position, null));
+                }
+                // if they were the same color, this still automatically moves to the not position. At this point in
+                // The if statement, we move on automatically, so we do not need to check.
+            } else {
+                // there is NOT a piece at this position, add it to valid moves.
+                validMoves.add(new ChessMove(myPosition, position, null));
+            }
         }
 
         return validMoves;
