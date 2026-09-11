@@ -63,6 +63,8 @@ public class ChessPiece {
         switch(piece.getPieceType()) {      // https://www.w3schools.com/java/java_switch.asp
             case PieceType.BISHOP:
                 return bishopMoves(board, myPosition, piece.getTeamColor());
+            case PieceType.QUEEN:
+                return queenMoves(board, myPosition, piece.getTeamColor());
             case PieceType.ROOK:
                 return rookMoves(board, myPosition, piece.getTeamColor());
             default:
@@ -168,8 +170,18 @@ public class ChessPiece {
         return null;
     }
 
+    // logic for queen movement. As mentioned in class, functionally a combination of rook and bishop.
     private static Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
-        return null;
+        Collection<ChessMove> validMoves = new ArrayList<>();
+
+        Collection<ChessMove> rookMovement = rookMoves(board, myPosition, pieceColor);
+        Collection<ChessMove> bishopMovement = bishopMoves(board, myPosition, pieceColor);
+
+        validMoves = rookMovement;      // add all valid rook movement to valid moves.
+
+        validMoves.addAll(bishopMovement);  // add all valid bishop movement.
+
+        return validMoves;
     }
 
     // logic for rook movement. functionally similar to bishop moves, just row and column instead of diagonal.
