@@ -59,36 +59,119 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         // https://www.youtube.com/watch?v=mTtK8iRXsZo
         ChessPiece piece = board.getPiece(myPosition);      // get the piece at the given position. We are checking this piece.
-        ArrayList<ChessMove> validMoves = new ArrayList<>();    // empty ArrayList for all valid moves.
 
         switch(piece.getPieceType()) {      // https://www.w3schools.com/java/java_switch.asp
             case PieceType.BISHOP:
-                return bishopMoves(board, myPosition, validMoves);
+                return bishopMoves(board, myPosition, piece.getTeamColor());
             default:
                 return null;
         }
     }
 
+    // Check color
+
     // logic for bishop movement.
-    private static Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, ArrayList<ChessMove> validMoves) {     // https://codingtechroom.com/question/-java-make-methods-static-best-practice
+    // // board for checking if there are pieces at positions. myPosition for move start. pieceColor for comparing with existing piece colors. validMoves for valid moves.
+    private static Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {     // https://codingtechroom.com/question/-java-make-methods-static-best-practice
+
+        ChessPosition currentPosition;  // for tracking current positions
+
+        ArrayList<ChessMove> validMoves = new ArrayList<>();    // empty ArrayList for all valid moves.
+
         // Check upper right. These for loops continue if they are within the board, and have not encountered another piece.
         for (int x = myPosition.getRow()+1, y = myPosition.getColumn()+1; x < 9 && y < 9; x++, y++) {        // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
-            validMoves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+            currentPosition = new ChessPosition(x, y);  // set current position
+
+            if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
+                // and both the piece we are checking and the piece in this position are of the same color...
+                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
+                    break;      // stop here. We cannot add the current position to valid moves
+                } else {        // however, if they are different team colors...
+                    // We can add a valid move here. But, we must break, because this is also a capture.
+                    validMoves.add(new ChessMove(myPosition, currentPosition, null));
+                    break;
+                }
+            } else {
+                // there is NOT a piece at this position, add it to valid moves.
+                validMoves.add(new ChessMove(myPosition, currentPosition, null));
+            }
         }
         // check lower right
-        for (int x = myPosition.getRow()+1, y = myPosition.getColumn()-1; x < 9 && y > 0; x++, y--) {        // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
-            validMoves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+        for (int x = myPosition.getRow()+1, y = myPosition.getColumn()-1; x < 9 && y > 0; x++, y--) {
+            currentPosition = new ChessPosition(x, y);  // set current position
+
+            if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
+                // and both the piece we are checking and the piece in this position are of the same color...
+                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
+                    break;      // stop here. We cannot add the current position to valid moves
+                } else {        // however, if they are different team colors...
+                    // We can add a valid move here. But, we must break, because this is also a capture.
+                    validMoves.add(new ChessMove(myPosition, currentPosition, null));
+                    break;
+                }
+            } else {
+                // there is NOT a piece at this position, add it to valid moves.
+                validMoves.add(new ChessMove(myPosition, currentPosition, null));
+            }
         }
         // check lower left
-        for (int x = myPosition.getRow()-1, y = myPosition.getColumn()-1; x > 0 && y > 0; x--, y--) {        // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
-            validMoves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+        for (int x = myPosition.getRow()-1, y = myPosition.getColumn()-1; x > 0 && y > 0; x--, y--) {
+            currentPosition = new ChessPosition(x, y);  // set current position
+
+            if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
+                // and both the piece we are checking and the piece in this position are of the same color...
+                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
+                    break;      // stop here. We cannot add the current position to valid moves
+                } else {        // however, if they are different team colors...
+                    // We can add a valid move here. But, we must break, because this is also a capture.
+                    validMoves.add(new ChessMove(myPosition, currentPosition, null));
+                    break;
+                }
+            } else {
+                // there is NOT a piece at this position, add it to valid moves.
+                validMoves.add(new ChessMove(myPosition, currentPosition, null));
+            }
         }
         // check upper left
-        for (int x = myPosition.getRow()-1, y = myPosition.getColumn()+1; x > 0 && y < 9; x--, y++) {        // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
-            validMoves.add(new ChessMove(myPosition, new ChessPosition(x, y), null));
+        for (int x = myPosition.getRow()-1, y = myPosition.getColumn()+1; x > 0 && y < 9; x--, y++) {
+            currentPosition = new ChessPosition(x, y);  // set current position
+
+            if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
+                // and both the piece we are checking and the piece in this position are of the same color...
+                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
+                    break;      // stop here. We cannot add the current position to valid moves
+                } else {        // however, if they are different team colors...
+                    // We can add a valid move here. But, we must break, because this is also a capture.
+                    validMoves.add(new ChessMove(myPosition, currentPosition, null));
+                    break;
+                }
+            } else {
+                // there is NOT a piece at this position, add it to valid moves.
+                validMoves.add(new ChessMove(myPosition, currentPosition, null));
+            }
         }
 
         return validMoves;
+    }
+
+    private static Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
+        return null;
+    }
+
+    private static Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
+        return null;
+    }
+
+    private static Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
+        return null;
+    }
+
+    private static Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
+        return null;
+    }
+
+    private static Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
+        return null;
     }
 
     // created with intelliJ as per assignment directions
