@@ -160,30 +160,30 @@ public class ChessPiece {
     }
 
     private static Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
+        return null;
+    }
+
+    private static Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
         ArrayList<ChessMove> validMoves = new ArrayList<>();
         int x = myPosition.getRow();
         int y = myPosition.getColumn();
 
         // create an array of possible finial positions. A knight has 8 possible moves
         ChessPosition[] possibleMoves = new ChessPosition[8];
-//        possibleMoves[0] = new ChessPosition();  // up left
-//        possibleMoves[1] = new ChessPosition();  // up right
-//        possibleMoves[2] = new ChessPosition();  // right up
-//        possibleMoves[3] = new ChessPosition();  // right down
-//        possibleMoves[4] = new ChessPosition();  // down left
-//        possibleMoves[5] = new ChessPosition();  // down right
-//        possibleMoves[6] = new ChessPosition();  // left up
-//        possibleMoves[7] = new ChessPosition();  // left down
-
-
+        possibleMoves[0] = new ChessPosition(x-1, y+2);  // up2 left1
+        possibleMoves[1] = new ChessPosition(x+1, y+2);  // up2 right1
+        possibleMoves[2] = new ChessPosition(x+2, y+1);  // right2 up1
+        possibleMoves[3] = new ChessPosition(x+2, y-1);  // right2 down1
+        possibleMoves[4] = new ChessPosition(x-1, y-2);  // down2 left1
+        possibleMoves[5] = new ChessPosition(x+1, y-2);  // down2 right1
+        possibleMoves[6] = new ChessPosition(x-2, y+1);  // left2 up1
+        possibleMoves[7] = new ChessPosition(x-2, y-1);  // left2 down1
 
         // iterate through valid list to ensure that they meet criteria (within bounds, pieces there, etc.
+        for (ChessPosition move : possibleMoves) {
+        }
 
         return validMoves;
-    }
-
-    private static Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
-        return null;
     }
 
     private static Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
