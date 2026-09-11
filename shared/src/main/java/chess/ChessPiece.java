@@ -265,7 +265,7 @@ public class ChessPiece {
 
         // Check up. These for loops continue if they are within the board, and have not encountered another piece.
         for (int y = myPosition.getRow()+1; y < 9; y++) {
-            currentPosition = new ChessPosition(myPosition.getColumn(), y);  // set current position. Row stays constant.
+            currentPosition = new ChessPosition(y, myPosition.getColumn());  // set current position. Row stays constant.
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
                 // and both the piece we are checking and the piece in this position are of the same color...
@@ -283,7 +283,7 @@ public class ChessPiece {
         }
         // check right
         for (int x = myPosition.getColumn()+1; x < 9; x++) {
-            currentPosition = new ChessPosition(x, myPosition.getRow());  // set current position. Column stays constant.
+            currentPosition = new ChessPosition(myPosition.getRow(), x);  // set current position. Column stays constant.
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
                 // and both the piece we are checking and the piece in this position are of the same color...
@@ -301,7 +301,7 @@ public class ChessPiece {
         }
         // check down
         for (int y = myPosition.getRow()-1; y > 0; y--) {
-            currentPosition = new ChessPosition(myPosition.getColumn(), y);  // set current position. Row stays constant.
+            currentPosition = new ChessPosition(y, myPosition.getColumn());  // set current position. Row stays constant.
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
                 // and both the piece we are checking and the piece in this position are of the same color...
@@ -319,7 +319,7 @@ public class ChessPiece {
         }
         // check left
         for (int x = myPosition.getColumn()-1; x > 0; x--) {
-            currentPosition = new ChessPosition(x, myPosition.getRow());  // set current position. column stays constant
+            currentPosition = new ChessPosition(myPosition.getRow(), x);  // set current position. column stays constant
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
                 // and both the piece we are checking and the piece in this position are of the same color...
