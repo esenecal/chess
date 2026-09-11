@@ -1,5 +1,6 @@
 package chess;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -159,7 +160,26 @@ public class ChessPiece {
     }
 
     private static Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
-        return null;
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
+        int x = myPosition.getRow();
+        int y = myPosition.getColumn();
+
+        // create an array of possible finial positions. A knight has 8 possible moves
+        ChessPosition[] possibleMoves = new ChessPosition[8];
+//        possibleMoves[0] = new ChessPosition();  // up left
+//        possibleMoves[1] = new ChessPosition();  // up right
+//        possibleMoves[2] = new ChessPosition();  // right up
+//        possibleMoves[3] = new ChessPosition();  // right down
+//        possibleMoves[4] = new ChessPosition();  // down left
+//        possibleMoves[5] = new ChessPosition();  // down right
+//        possibleMoves[6] = new ChessPosition();  // left up
+//        possibleMoves[7] = new ChessPosition();  // left down
+
+
+
+        // iterate through valid list to ensure that they meet criteria (within bounds, pieces there, etc.
+
+        return validMoves;
     }
 
     private static Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
