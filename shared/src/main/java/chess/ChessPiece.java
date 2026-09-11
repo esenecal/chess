@@ -183,9 +183,17 @@ public class ChessPiece {
         possiblePositions[7] = new ChessPosition(myPositionY+1, myPositionX-1);     // up left
 
         for (ChessPosition position: possiblePositions) {
-            // if it has no piece present, OR a piece of the different color, then it is valid.
-            if (board.getPiece(position) != null) {
 
+            // Check if out of bounds. if it is, move on.
+            if (position.getColumn() < 9 && position.getColumn() > 0 && position.getRow() < 9 && position.getRow() > 0) {
+                // if it has no piece present, OR a piece of the different color, then it is valid.
+                if (board.getPiece(position) != null) {     // if there is a piece present
+                    if (board.getPiece(position).getTeamColor() != pieceColor) {        // and they are different teams, add them
+                        validMoves.add(new ChessMove(myPosition, position, null));
+                    }
+                } else {        // if there is no piece present, add it.
+                    validMoves.add(new ChessMove(myPosition, position, null));
+                }
             }
         }
 
@@ -208,7 +216,7 @@ public class ChessPiece {
         possibleMoves[6] = new ChessPosition(y+1, x-2);  // up1 left2
         possibleMoves[7] = new ChessPosition(y-1, x-2);  // down1 left2
 
-        // iterate through valid list to ensure that they meet criteria (within bounds, pieces there, etc.
+        // iterate through valid list to ensure that they meet criteria (within bounds, pieces there, etc.)
         for (ChessPosition position : possibleMoves) {
             // check if out of bounds.
             if (position.getColumn() < 1 || position.getColumn() > 8 || position.getRow() < 1 || position.getRow() > 8) {
