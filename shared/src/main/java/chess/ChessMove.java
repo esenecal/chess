@@ -48,7 +48,7 @@ public class ChessMove {
 
     @Override
     public String toString() {      // return chess move as a string.
-        return String.format("[%s, %s]", startPosition, endPosition);  // https://www.youtube.com/watch?v=mTtK8iRXsZo
+        return String.format("[%s, %s, %s]", startPosition, endPosition, promotionPiece);  // https://www.youtube.com/watch?v=mTtK8iRXsZo
     }
 
     // Created with IntelliJ as per assignment directions
