@@ -1,9 +1,7 @@
 package chess;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -14,8 +12,8 @@ import java.util.Objects;
  */
 public class ChessPiece {
 
-    private ChessGame.TeamColor pieceColor;     // Determines the piece's color according to the TeamColor enum
-    private ChessPiece.PieceType type;          // Determines the piece's type according to the PieceType enum
+    private final ChessGame.TeamColor pieceColor;     // Determines the piece's color according to the TeamColor enum
+    private final ChessPiece.PieceType type;          // Determines the piece's type according to the PieceType enum
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;       // Add constructor parameter to field.
@@ -61,6 +59,7 @@ public class ChessPiece {
         // https://www.youtube.com/watch?v=mTtK8iRXsZo
         ChessPiece piece = board.getPiece(myPosition);      // get the piece at the given position. We are checking this piece.
 
+        //noinspection EnhancedSwitchMigration
         switch(piece.getPieceType()) {      // https://www.w3schools.com/java/java_switch.asp
             case PieceType.BISHOP:
                 return bishopMoves(board, myPosition, piece.getTeamColor());
@@ -263,7 +262,6 @@ public class ChessPiece {
         int myPositionY = myPosition.getRow();
 
         ChessPosition possiblePosition;
-        ChessPiece.PieceType promotion;
 
         // The color of the piece determines the direction it can move in.
         if (pieceColor == ChessGame.TeamColor.WHITE) {
@@ -327,7 +325,7 @@ public class ChessPiece {
                 }
             }
             // 1down, 1right
-            possiblePosition = new ChessPosition(myPositionY + 1, myPositionX + 1);
+            possiblePosition = new ChessPosition(myPositionY - 1, myPositionX + 1);
             if (possiblePosition.getRow() > 0 && possiblePosition.getColumn() < 9 ) {    // if we are in bounds
                 // if this possible position is not empty and taken by an opposite color piece (black, here), it is valid.
                 if (board.getPiece(possiblePosition) != null && board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
@@ -358,7 +356,7 @@ public class ChessPiece {
 
     // logic for queen movement. As mentioned in class, functionally a combination of rook and bishop.
     private static Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
-        Collection<ChessMove> validMoves = new ArrayList<>();
+        Collection<ChessMove> validMoves;
 
         Collection<ChessMove> rookMovement = rookMoves(board, myPosition, pieceColor);
         Collection<ChessMove> bishopMovement = bishopMoves(board, myPosition, pieceColor);

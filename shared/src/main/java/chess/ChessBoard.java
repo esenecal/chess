@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
-    private ChessPiece[][] board = new ChessPiece[8][8];    // Create an 8 by 8 chess board. y, x (row, column) https://www.youtube.com/watch?v=mTtK8iRXsZo
+    private final ChessPiece[][] board = new ChessPiece[8][8];    // Create an 8 by 8 chess board. y, x (row, column) https://www.youtube.com/watch?v=mTtK8iRXsZo
 
     public ChessBoard() {
 
