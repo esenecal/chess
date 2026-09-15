@@ -327,7 +327,7 @@ public class ChessPiece {
                 }
             }
             // 1down, 1right
-            possiblePosition = new ChessPosition(myPositionY +-1, myPositionX + 1);
+            possiblePosition = new ChessPosition(myPositionY + 1, myPositionX + 1);
             if (possiblePosition.getRow() > 0 && possiblePosition.getColumn() < 9 ) {    // if we are in bounds
                 // if this possible position is not empty and taken by an opposite color piece (black, here), it is valid.
                 if (board.getPiece(possiblePosition) != null && board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
@@ -470,6 +470,6 @@ public class ChessPiece {
     // Created by intelliJ as per assignment directions, then edited.
     @Override
     public String toString() {
-        return "{" + pieceColor + "," + type + "}";
+        return String.format("{%s,%s}", pieceColor, type);
     }
 }

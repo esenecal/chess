@@ -35,6 +35,7 @@ public class ChessPosition {
         return col;
     }
 
+    // generated and edited, as per video directions (I think)
     @Override
     public String toString() {      // returns a ChessPosition as a string
         return String.format("[%d,%d]", row, col);        // https://www.youtube.com/watch?v=mTtK8iRXsZo

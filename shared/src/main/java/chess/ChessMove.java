@@ -46,6 +46,7 @@ public class ChessMove {
         return promotionPiece;  // https://www.youtube.com/watch?v=mTtK8iRXsZo
     }
 
+    // generated and edited as per video directions, I think.
     @Override
     public String toString() {      // return chess move as a string.
         return String.format("[%s, %s, %s]", startPosition, endPosition, promotionPiece);  // https://www.youtube.com/watch?v=mTtK8iRXsZo
