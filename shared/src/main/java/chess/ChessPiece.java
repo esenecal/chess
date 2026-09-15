@@ -466,4 +466,10 @@ public class ChessPiece {
     public int hashCode() {
         return Objects.hash(pieceColor, type);
     }
+
+    // Created by intelliJ as per assignment directions, then edited.
+    @Override
+    public String toString() {
+        return "{" + pieceColor + "," + type + "}";
+    }
 }
