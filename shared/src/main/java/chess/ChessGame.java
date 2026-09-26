@@ -1,6 +1,7 @@
 package chess;
 
-import java.util.Collection;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -51,7 +52,20 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+
+        // use of linked has set due to insertion order preservation.
+        LinkedHashSet<ChessMove> validMoves = new LinkedHashSet<>();        // https://www.geeksforgeeks.org/java/set-in-java/.
+
+        // get piece at position on board.
+        ChessPiece piece = gameBoard.getPiece(startPosition);
+
+        // if piece returns null, then return null--no piece at startPosition.
+        if (piece == null) {
+            return null;
+        }
+        
+        // return set of valid moves.
+        return validMoves;
     }
 
     /**
