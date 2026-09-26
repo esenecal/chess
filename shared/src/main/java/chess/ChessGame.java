@@ -53,8 +53,8 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
 
-        // use of linked has set due to insertion order preservation.
-        LinkedHashSet<ChessMove> validMoves = new LinkedHashSet<>();        // https://www.geeksforgeeks.org/java/set-in-java/.
+        // set as a collection--type determined by piece.pieceMoves.
+        Collection<ChessMove> validMoves;
 
         // get piece at position on board.
         ChessPiece piece = gameBoard.getPiece(startPosition);
@@ -63,7 +63,9 @@ public class ChessGame {
         if (piece == null) {
             return null;
         }
-        
+
+        validMoves = piece.pieceMoves(gameBoard, startPosition);
+
         // return set of valid moves.
         return validMoves;
     }
