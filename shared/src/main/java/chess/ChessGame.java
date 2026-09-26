@@ -15,6 +15,8 @@ public class ChessGame {
 
     public ChessGame() {
         this.currentPlayer = TeamColor.WHITE;       // set current player to white at game start.
+        this.gameBoard = new ChessBoard();
+        this.gameBoard.resetBoard();                // Place board in starting configuration.
     }
 
     /**
