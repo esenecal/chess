@@ -147,14 +147,66 @@ public class ChessGame {
 
         // ensure we are in check
         if (isInCheck(teamColor)) {
-            // king cannot move in any adjacent squares.
+            // **********************   king cannot move in any adjacent squares    *********************************
             Collection<ChessMove> validKingMoves = validMoves(currentKingPosition);
             // if the king can make any valid moves, return false.
             if (!validKingMoves.isEmpty()) {
                 return false;
             }
-            // no piece can move between the king and the attacker.
-            // this only really apl to
+
+            // **********************   no piece can move between the king and the attacker     *********************
+
+                // this only really applies to bishops, rooks, and queens. This is because if a king is being
+                // threatened by another king, a pawn, or a knight, no piece can move between them.
+            // We can use this to calculate all possible positions that a piece must move to.
+            // We start at the attacker position. we y up or down one, towards the king position. then x. we repeat until we reach it.
+            // we include the attacking piece. This means that we are checking if it can be captured, which nullifies checkmate.
+
+            ArrayList<ChessPosition> lineOfSight = new ArrayList<>();   // all position between attacking piece and king, including attacking position and excluding king's.
+            int row = currentAttackerPosition.getRow();       // get y, x of attacking piece.
+            int col = currentAttackerPosition.getColumn();
+
+            // repeat until we reach king position
+            while (row != currentKingPosition.getRow() && col != currentAttackerPosition.getColumn()) {
+                // add y, x to line of sight.
+                lineOfSight.add(new ChessPosition(row, col));
+                // update y, x.
+                if (row < currentAttackerPosition.getRow()) {
+                    // if y is less, then increase by one.
+                    row++;
+                } else if (row > currentAttackerPosition.getRow()) {
+                    // if y is greater than current attacker position, decrement. do nothing otherwise.
+                    row--;
+                }
+                if (col < currentAttackerPosition.getColumn()) {
+                    col++;
+                } else if (col > currentAttackerPosition.getColumn()) {
+                    col--;
+                }
+            }
+            // now we have all pieces. we iterate through all pieces, seeing if a piece lands on the line of sight.
+            // iterate through all pieces.
+            for (int y = 1; y < 9; y++) {
+                for (int x = 1; x < 9; x++) {
+                    // get piece at this position. check that it is not teamColor
+                    ChessPosition currentPosition = new ChessPosition(y, x);
+                    ChessPiece currentPiece = gameBoard.getPiece(currentPosition);
+                    // if the team colors are different, or there is no piece, move on to the next position.
+                    if (currentPiece == null || currentPiece.getTeamColor() != teamColor) {
+                        continue;
+                    }
+                    // else... get valid moves.
+                    Collection<ChessMove> validMoves = validMoves(currentPosition);
+                    // iterate over valid moves
+                    for (ChessMove move : validMoves) {
+                        // Check to see if the end position is in the line of sight. If it is, return false.
+                        ChessPosition endPosition = move.getEndPosition();
+                        if (lineOfSight.contains(endPosition)) {
+                            return false;
+                        }
+                    }
+                }
+            }
 
             return true;
         } else {
