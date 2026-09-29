@@ -69,6 +69,8 @@ public class ChessGame {
         validMoves = piece.pieceMoves(gameBoard, startPosition);
 
         // check to see if a valid move will put the king in check. if it does, well, it is not a valid move.
+        // save board position configuration just in case? then, make a move, then see if it worked?
+
 //        for (ChessMove move : validMoves) {
 //
 //        }
@@ -100,9 +102,17 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid Move");
         }
 
+
         // Now, we can actually make the move!
         gameBoard.addPiece(endPosition, piece);     // add piece to end piece.
         gameBoard.addPiece(startPosition, null);    // remove piece from old position.
+
+        // Change team turn
+        if (currentPlayer == TeamColor.WHITE) {
+            currentPlayer = TeamColor.BLACK;
+        } else {
+            currentPlayer = TeamColor.WHITE;
+        }
     }
 
     /**
