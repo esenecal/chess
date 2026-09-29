@@ -102,8 +102,16 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid Move");
         }
 
-
         // Now, we can actually make the move!
+        // SPECIAL CASE: pawns.
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            // if we are at the ends of the board, then we must promote.
+            if (endPosition.getRow() == 1 || endPosition.getRow() == 8) {
+                // get the promotion piece, which will be the new piece added.
+                piece = new ChessPiece(currentPlayer, move.getPromotionPiece());
+            }
+        }
+
         gameBoard.addPiece(endPosition, piece);     // add piece to end piece.
         gameBoard.addPiece(startPosition, null);    // remove piece from old position.
 
