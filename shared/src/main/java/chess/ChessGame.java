@@ -13,8 +13,6 @@ public class ChessGame {
 
     private TeamColor currentPlayer;
     private ChessBoard gameBoard;
-    private Collection<ChessMove> attackerMoves;    // used for checkmate calculations. all moves that can be made by the attacker.
-    private ChessMove threatMove;                   // used for checkmate calculations. startPosition is the attacking piece's position. end position is the threatened king's position.
     private ChessPosition currentKingPosition;      // used for checkmate calculations. Current king being checked.
     private ChessPosition currentAttackerPosition;  // used for checkmate calculations. Piece threatening king.
 
@@ -70,7 +68,10 @@ public class ChessGame {
 
         validMoves = piece.pieceMoves(gameBoard, startPosition);
 
-        // iterate over all valid moves. determine if any will put things in check.
+        // check to see if a valid move will put the king in check. if it does, well, it is not a valid move.
+//        for (ChessMove move : validMoves) {
+//
+//        }
 
         // return set of valid moves.
         return validMoves;
@@ -83,7 +84,12 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        // if it is not the piece's turn, throw error.
+        ChessPiece piece = gameBoard.getPiece(move.getStartPosition());
+        if (piece.getTeamColor() != currentPlayer) {
+            throw new InvalidMoveException("Out of Turn");
+        }
+
     }
 
     /**
@@ -116,8 +122,6 @@ public class ChessGame {
                     if (gameBoard.getPiece(endPosition) != null && gameBoard.getPiece(endPosition).getPieceType() == ChessPiece.PieceType.KING) {
                         currentAttackerPosition = move.getStartPosition();
                         currentKingPosition = endPosition;
-                        threatMove = move;
-                        attackerMoves = validMoves;
                         return true;
                     }
                 }
