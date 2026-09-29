@@ -69,11 +69,6 @@ public class ChessGame {
         validMoves = piece.pieceMoves(gameBoard, startPosition);
 
         // check to see if a valid move will put the king in check. if it does, well, it is not a valid move.
-        // save board position configuration just in case? then, make a move, then see if it worked?
-
-//        for (ChessMove move : validMoves) {
-//
-//        }
 
         // return set of valid moves.
         return validMoves;
@@ -90,6 +85,11 @@ public class ChessGame {
         ChessPosition endPosition = move.getEndPosition();
 
         ChessPiece piece = gameBoard.getPiece(startPosition);
+        if (piece == null) {
+            // if there is no piece to move, throw an exception.
+            throw new InvalidMoveException("No piece at position");
+        }
+
         if (piece.getTeamColor() != currentPlayer) {
             // if it is not the piece's turn, throw error.
             throw new InvalidMoveException("Out of Turn");
@@ -102,7 +102,6 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid Move");
         }
 
-        // Now, we can actually make the move!
         // SPECIAL CASE: pawns.
         if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
             // if we are at the ends of the board, then we must promote.
@@ -112,6 +111,7 @@ public class ChessGame {
             }
         }
 
+        // Now, we can actually make the move!
         gameBoard.addPiece(endPosition, piece);     // add piece to end piece.
         gameBoard.addPiece(startPosition, null);    // remove piece from old position.
 
@@ -144,6 +144,7 @@ public class ChessGame {
                 if (currentPiece == null || currentPiece.getTeamColor() == teamColor) {
                     continue;
                 }
+
                 // else... get valid moves.
                 Collection<ChessMove> validMoves = validMoves(currentPosition);
                 // iterate over valid moves and ensure that
