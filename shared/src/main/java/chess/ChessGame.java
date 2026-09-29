@@ -69,8 +69,23 @@ public class ChessGame {
         validMoves = piece.pieceMoves(gameBoard, startPosition);
 
         // check to see if a valid move will put the king in check. if it does, well, it is not a valid move.
-        // issue: we cannot call isincheck here because of a stack overflow error.
-        // we need to determine how to handle this, so that they don't call each other repeatedly.
+        for (ChessMove move : validMoves) {
+            // run a mock movement.
+            ChessPosition start = move.getStartPosition();
+            ChessPosition end = move.getEndPosition();
+            ChessPiece.PieceType promote = move.getPromotionPiece();
+            ChessPiece pieceAtEnd = gameBoard.getPiece(end);        // piece at the end position.
+
+            // move piece from start to end, promote if needed.
+            movePiece(start, end, promote, piece);
+            // now, run check. If we run in check, remove from validMoves.
+            if (isInCheck(piece.getTeamColor())) {
+                validMoves.remove(move);
+            }
+            // reset. Place old piece at end position, place piece at start.
+            gameBoard.addPiece(end, pieceAtEnd);
+            gameBoard.addPiece(start, piece);
+        }
 
         // return set of valid moves.
         return validMoves;
