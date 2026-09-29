@@ -85,6 +85,7 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPosition startPosition = move.getStartPosition();
         ChessPosition endPosition = move.getEndPosition();
+        ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
 
         ChessPiece piece = gameBoard.getPiece(startPosition);
         if (piece == null) {
@@ -104,18 +105,7 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid Move");
         }
 
-        // SPECIAL CASE: pawns.
-        if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
-            // if we are at the ends of the board, then we must promote.
-            if (endPosition.getRow() == 1 || endPosition.getRow() == 8) {
-                // get the promotion piece, which will be the new piece added.
-                piece = new ChessPiece(currentPlayer, move.getPromotionPiece());
-            }
-        }
-
-        // Now, we can actually make the move!
-        gameBoard.addPiece(endPosition, piece);     // add piece to end piece.
-        gameBoard.addPiece(startPosition, null);    // remove piece from old position.
+        movePiece(startPosition, endPosition, promotionPiece, piece);
 
         // Change team turn
         if (currentPlayer == TeamColor.WHITE) {
@@ -123,6 +113,25 @@ public class ChessGame {
         } else {
             currentPlayer = TeamColor.WHITE;
         }
+    }
+
+    /**
+     * Handles logic for moving a piece.
+     */
+    private void movePiece(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece, ChessPiece piece) {
+
+        if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            // if we are at the ends of the board, then we must promote.
+            if (endPosition.getRow() == 1 || endPosition.getRow() == 8) {
+                // get the promotion piece, which will be the new piece added.
+                piece = new ChessPiece(currentPlayer, promotionPiece);    //move.getPromotionPiece()
+            }
+        }
+
+        // Now, we can actually make the move!
+        gameBoard.addPiece(endPosition, piece);     // add piece to end piece.
+        gameBoard.addPiece(startPosition, null);    // remove piece from old position.
+
     }
 
     /**
