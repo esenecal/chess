@@ -17,7 +17,7 @@ public class ChessGame {
     public ChessGame() {
         this.currentPlayer = TeamColor.WHITE;       // set current player to white at game start.
         this.gameBoard = new ChessBoard();
-        this.gameBoard.resetBoard();                // Place board in starting configuration.
+//        this.gameBoard.resetBoard();                // Place board in starting configuration.
     }
 
     /**
@@ -64,7 +64,10 @@ public class ChessGame {
             return null;
         }
 
+        System.out.println(piece.getPieceType());
         validMoves = piece.pieceMoves(gameBoard, startPosition);
+
+        // iterate over all valid moves. determine if any will put things in check.
 
         // return set of valid moves.
         return validMoves;
@@ -87,7 +90,28 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        // if a piece is in check, then the king must be capturable by an opposing team.
+        // iterate through all pieces of the correct color. If they land on a piece that is the teamcolor king,
+        // then check is made.
+
+        // iterate through all pieces.
+        for (int y = 1; y < 9; y++) {
+            for (int x = 1; x < 9; x++) {
+                // get piece at this position. check that it is not teamColor
+                ChessPosition currentPosition = new ChessPosition(y, x);
+                ChessPiece currentPiece = gameBoard.getPiece(currentPosition);
+                // if the team colors are the same, move on to the next position.
+                if (currentPiece.getTeamColor() == teamColor) {
+                    continue;
+                }
+                // else... get valid moves.
+                Collection<ChessMove> validMoves = validMoves(currentPosition);
+
+            }
+        }
+
+
+        return false;
     }
 
     /**
@@ -128,4 +152,5 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return gameBoard;
     }
+
 }
