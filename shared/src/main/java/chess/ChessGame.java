@@ -69,6 +69,8 @@ public class ChessGame {
         validMoves = piece.pieceMoves(gameBoard, startPosition);
 
         // check to see if a valid move will put the king in check. if it does, well, it is not a valid move.
+        // issue: we cannot call isincheck here because of a stack overflow error.
+        // we need to determine how to handle this, so that they don't call each other repeatedly.
 
         // return set of valid moves.
         return validMoves;
@@ -145,10 +147,12 @@ public class ChessGame {
                     continue;
                 }
 
-                // else... get valid moves.
-                Collection<ChessMove> validMoves = validMoves(currentPosition);
+                // else... get all possible moves. we do not need to worry about "valid" moves,
+                // because a piece does not need to move away (thus potentially exposing themselves for check)
+                // to put a king in check. It can protect its king and put in check simultaneously.
+                Collection<ChessMove> possibleMoves = currentPiece.pieceMoves(gameBoard, currentPosition);
                 // iterate over valid moves and ensure that
-                for (ChessMove move : validMoves) {
+                for (ChessMove move : possibleMoves) {
                     // check to see if there is a piece here, and the piece is a king.
                     ChessPosition endPosition = move.getEndPosition();
                     if (gameBoard.getPiece(endPosition) != null && gameBoard.getPiece(endPosition).getPieceType() == ChessPiece.PieceType.KING) {
