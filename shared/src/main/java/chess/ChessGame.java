@@ -84,12 +84,25 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        // if it is not the piece's turn, throw error.
-        ChessPiece piece = gameBoard.getPiece(move.getStartPosition());
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+
+        ChessPiece piece = gameBoard.getPiece(startPosition);
         if (piece.getTeamColor() != currentPlayer) {
+            // if it is not the piece's turn, throw error.
             throw new InvalidMoveException("Out of Turn");
         }
 
+        // determine if something is a legal move.
+        Collection<ChessMove> validMoves = validMoves(startPosition);
+        if (!validMoves.contains(move)) {
+            // if it cannot make a proper move, then throw exception.
+            throw new InvalidMoveException("Invalid Move");
+        }
+
+        // Now, we can actually make the move!
+        gameBoard.addPiece(endPosition, piece);     // add piece to end piece.
+        gameBoard.addPiece(startPosition, null);    // remove piece from old position.
     }
 
     /**
