@@ -64,7 +64,6 @@ public class ChessGame {
             return null;
         }
 
-        System.out.println(piece.getPieceType());
         validMoves = piece.pieceMoves(gameBoard, startPosition);
 
         // iterate over all valid moves. determine if any will put things in check.
@@ -100,17 +99,25 @@ public class ChessGame {
                 // get piece at this position. check that it is not teamColor
                 ChessPosition currentPosition = new ChessPosition(y, x);
                 ChessPiece currentPiece = gameBoard.getPiece(currentPosition);
-                // if the team colors are the same, move on to the next position.
-                if (currentPiece.getTeamColor() == teamColor) {
+                // if the team colors are the same, or there is no piece, move on to the next position.
+                if (currentPiece == null || currentPiece.getTeamColor() == teamColor) {
                     continue;
                 }
                 // else... get valid moves.
                 Collection<ChessMove> validMoves = validMoves(currentPosition);
+                // iterate over valid moves and ensure that
+                for (ChessMove move : validMoves) {
+                    // check to see if there is a piece here, and the piece is a king.
+                    ChessPosition endPosition = move.getEndPosition();
+                    if (gameBoard.getPiece(endPosition) != null && gameBoard.getPiece(endPosition).getPieceType() == ChessPiece.PieceType.KING) {
+                        return true;
+                    }
+                }
 
             }
         }
 
-
+        // if we have not found a capture, then return false.
         return false;
     }
 
