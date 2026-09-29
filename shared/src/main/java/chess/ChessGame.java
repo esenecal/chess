@@ -13,6 +13,10 @@ public class ChessGame {
 
     private TeamColor currentPlayer;
     private ChessBoard gameBoard;
+    private Collection<ChessMove> attackerMoves;    // used for checkmate calculations. all moves that can be made by the attacker.
+    private ChessMove threatMove;                   // used for checkmate calculations. startPosition is the attacking piece's position. end position is the threatened king's position.
+    private ChessPosition currentKingPosition;      // used for checkmate calculations. Current king being checked.
+    private ChessPosition currentAttackerPosition;  // used for checkmate calculations. Piece threatening king.
 
     public ChessGame() {
         this.currentPlayer = TeamColor.WHITE;       // set current player to white at game start.
@@ -110,6 +114,10 @@ public class ChessGame {
                     // check to see if there is a piece here, and the piece is a king.
                     ChessPosition endPosition = move.getEndPosition();
                     if (gameBoard.getPiece(endPosition) != null && gameBoard.getPiece(endPosition).getPieceType() == ChessPiece.PieceType.KING) {
+                        currentAttackerPosition = move.getStartPosition();
+                        currentKingPosition = endPosition;
+                        threatMove = move;
+                        attackerMoves = validMoves;
                         return true;
                     }
                 }
@@ -128,7 +136,31 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+
+        // 3 conditions:
+        // king cannot move in any adjacent squares.
+        // no piece can move between the king and attacker.
+        // no piece can capture the attacking piece.
+
+        // currentKingPosition is the position of the king that is currently under scrutiny. Thus, it is the same
+        // team color as teamColor.
+
+        // ensure we are in check
+        if (isInCheck(teamColor)) {
+            // king cannot move in any adjacent squares.
+            Collection<ChessMove> validKingMoves = validMoves(currentKingPosition);
+            // if the king can make any valid moves, return false.
+            if (!validKingMoves.isEmpty()) {
+                return false;
+            }
+            // no piece can move between the king and the attacker.
+            // this only really apl to
+
+            return true;
+        } else {
+            // if we are not in check, we cannot be in checkmate.
+            return false;
+        }
     }
 
     /**
