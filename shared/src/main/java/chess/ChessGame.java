@@ -68,6 +68,9 @@ public class ChessGame {
 
         validMoves = piece.pieceMoves(gameBoard, startPosition);
 
+        // for all invalid moves (moves that result in check).
+        ArrayList<ChessMove> invalidMoves = new ArrayList<>();
+
         // check to see if a valid move will put the king in check. if it does, well, it is not a valid move.
         for (ChessMove move : validMoves) {
             // run a mock movement.
@@ -78,14 +81,17 @@ public class ChessGame {
 
             // move piece from start to end, promote if needed.
             movePiece(start, end, promote, piece);
-            // now, run check. If we run in check, remove from validMoves.
+            // now, run check. If we run in check, add to invalidMoves.
             if (isInCheck(piece.getTeamColor())) {
-                validMoves.remove(move);
+                invalidMoves.add(move);
             }
             // reset. Place old piece at end position, place piece at start.
             gameBoard.addPiece(end, pieceAtEnd);
             gameBoard.addPiece(start, piece);
         }
+
+        // remove all invalidMoves from validMoves.
+        validMoves.removeAll(invalidMoves);
 
         // return set of valid moves.
         return validMoves;
