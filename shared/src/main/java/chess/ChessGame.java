@@ -19,7 +19,7 @@ public class ChessGame {
     public ChessGame() {
         this.currentPlayer = TeamColor.WHITE;       // set current player to white at game start.
         this.gameBoard = new ChessBoard();
-//        this.gameBoard.resetBoard();                // Place board in starting configuration.
+        this.gameBoard.resetBoard();                // Place board in starting configuration.
     }
 
     /**
@@ -314,4 +314,18 @@ public class ChessGame {
         return gameBoard;
     }
 
+    // Created by IntelliJ
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof ChessGame chessGame)) {
+            return false;
+        }
+        return currentPlayer == chessGame.currentPlayer && Objects.equals(gameBoard, chessGame.gameBoard) && Objects.equals(currentKingPosition, chessGame.currentKingPosition) && Objects.equals(currentAttackerPosition, chessGame.currentAttackerPosition);
+    }
+
+    // Created by IntelliJ
+    @Override
+    public int hashCode() {
+        return Objects.hash(currentPlayer, gameBoard, currentKingPosition, currentAttackerPosition);
+    }
 }
