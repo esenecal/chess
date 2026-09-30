@@ -76,11 +76,10 @@ public class ChessGame {
             // run a mock movement.
             ChessPosition start = move.getStartPosition();
             ChessPosition end = move.getEndPosition();
-            ChessPiece.PieceType promote = move.getPromotionPiece();
             ChessPiece pieceAtEnd = gameBoard.getPiece(end);        // piece at the end position.
 
             // move piece from start to end, promote if needed.
-            movePiece(start, end, promote, piece);
+            movePiece(move);
             // now, run check. If we run in check, add to invalidMoves.
             if (isInCheck(piece.getTeamColor())) {
                 invalidMoves.add(move);
@@ -105,8 +104,6 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPosition startPosition = move.getStartPosition();
-        ChessPosition endPosition = move.getEndPosition();
-        ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
 
         ChessPiece piece = gameBoard.getPiece(startPosition);
         if (piece == null) {
@@ -126,7 +123,7 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid Move");
         }
 
-        movePiece(startPosition, endPosition, promotionPiece, piece);
+        movePiece(move);
 
         // Change team turn
         if (currentPlayer == TeamColor.WHITE) {
@@ -139,7 +136,12 @@ public class ChessGame {
     /**
      * Handles logic for moving a piece.
      */
-    private void movePiece(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece, ChessPiece piece) {
+    private void movePiece(ChessMove move) {
+        ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
+        ChessPiece.PieceType promotionPiece = move.getPromotionPiece();
+
+        ChessPiece piece = gameBoard.getPiece(startPosition);
 
         if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
             // if we are at the ends of the board, then we must promote.
@@ -177,11 +179,9 @@ public class ChessGame {
                     continue;
                 }
 
-                // else... get all possible moves. we do not need to worry about "valid" moves,
-                // because a piece does not need to move away (thus potentially exposing themselves for check)
-                // to put a king in check. It can protect its king and put in check simultaneously.
+                // else... get all possible moves. we do not need to worry about "valid" moves, because a piece does not need to move away (thus potentially exposing themselves for check) to put a king in check. It can protect its king and put in check simultaneously.
                 Collection<ChessMove> possibleMoves = currentPiece.pieceMoves(gameBoard, currentPosition);
-                // iterate over valid moves and ensure that
+                // iterate over all possible moves
                 for (ChessMove move : possibleMoves) {
                     // check to see if there is a piece here, and the piece is a king.
                     ChessPosition endPosition = move.getEndPosition();
@@ -215,14 +215,33 @@ public class ChessGame {
         // currentKingPosition is the position of the king that is currently under scrutiny. Thus, it is the same
         // team color as teamColor.
 
-        // ensure we are in check
+        // ensure we are in check. This also sets currentKingPosition and currentAttackerPosition.
         if (isInCheck(teamColor)) {
             // **********************   king cannot move in any adjacent squares    *********************************
             Collection<ChessMove> validKingMoves = validMoves(currentKingPosition);
-            // if the king can make any valid moves, return false.
+
+            // if the king can make valid moves, check those moves.
             if (!validKingMoves.isEmpty()) {
-                return false;
-            }
+                // check all moves the king can make. If none of them allow the king to be in check, then reset.
+                for (ChessMove move : validKingMoves) {
+                    // run a mock movement.
+                    ChessPosition start = move.getStartPosition();
+                    ChessPosition end = move.getEndPosition();
+                    ChessPiece.PieceType promote = move.getPromotionPiece();    // this will be null
+                    ChessPiece pieceAtEnd = gameBoard.getPiece(end);            // piece at the end position.
+
+                    // move piece from start to end, promote if needed.
+//                    movePiece(start, end, promote, piece);
+//                    // now, run check. If we run in check, add to invalidMoves.
+//                    if (isInCheck(piece.getTeamColor())) {
+//                        invalidMoves.add(move);
+//                    }
+//                    // reset. Place old piece at end position, place piece at start.
+//                    gameBoard.addPiece(end, pieceAtEnd);
+//                    gameBoard.addPiece(start, piece);
+                }
+            }   // otherwise, the king cannot make any valid moves, so that check works.
+
 
             // **********************   no piece can move between the king and the attacker     *********************
 
@@ -257,10 +276,13 @@ public class ChessGame {
             // now we have all pieces. we iterate through all pieces, seeing if a piece lands on the line of sight.
             // iterate through all pieces.
             for (int y = 1; y < 9; y++) {
+
                 for (int x = 1; x < 9; x++) {
+
                     // get piece at this position. check that it is not teamColor
                     ChessPosition currentPosition = new ChessPosition(y, x);
                     ChessPiece currentPiece = gameBoard.getPiece(currentPosition);
+
                     // if the team colors are different, or there is no piece, move on to the next position.
                     if (currentPiece == null || currentPiece.getTeamColor() != teamColor) {
                         continue;
