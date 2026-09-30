@@ -233,29 +233,7 @@ public class ChessGame {
 
         // if the king can make valid moves, check those moves.
         if (!validKingMoves.isEmpty()) {
-
-            // check all moves the king can make. If none of them allow the king to be in check, then reset.
-            for (ChessMove move : validKingMoves) {
-                // run a mock movement.
-                ChessPiece kingPiece = gameBoard.getPiece(move.getStartPosition());
-                ChessPiece pieceAtEnd = gameBoard.getPiece(move.getEndPosition());            // piece at the end position.
-
-                // move piece from start to end, promote if needed.
-                movePiece(move);
-
-                // if at any point we do not end up in check, then we are not in checkmate.
-                if (!isInCheck(kingPiece.getTeamColor())) {
-                    // reset. Place old piece at end position, place piece at start.
-                    gameBoard.addPiece(move.getEndPosition(), pieceAtEnd);
-                    gameBoard.addPiece(move.getStartPosition(), kingPiece);
-                    clearCheckMateValues(); // clear checkmate values.
-                    return false;
-                }
-
-                // reset. Place old piece at end position, place piece at start.
-                gameBoard.addPiece(move.getEndPosition(), pieceAtEnd);
-                gameBoard.addPiece(move.getStartPosition(), kingPiece);
-            }
+            return false;
         }   // otherwise, the king cannot make any valid moves, so that check works.
 
         // **********************  attacking piece cannot be captured.  ***********************************
