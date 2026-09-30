@@ -13,8 +13,6 @@ public class ChessGame {
 
     private TeamColor currentPlayer;
     private ChessBoard gameBoard;
-    private ChessPosition currentKingPosition;      // used for checkmate calculations. Current king being checked.
-    private ChessPosition currentAttackerPosition;  // used for checkmate calculations. Piece threatening king.
 
     public ChessGame() {
         this.currentPlayer = TeamColor.WHITE;       // set current player to white at game start.
@@ -186,8 +184,6 @@ public class ChessGame {
                     // check to see if there is a piece here, and the piece is a king.
                     ChessPosition endPosition = move.getEndPosition();
                     if (gameBoard.getPiece(endPosition) != null && gameBoard.getPiece(endPosition).getPieceType() == ChessPiece.PieceType.KING) {
-                        currentAttackerPosition = move.getStartPosition();
-                        currentKingPosition = endPosition;
                         return true;
                     }
                 }
@@ -206,10 +202,6 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        // currentKingPosition and currentAttackerPosition change frequently. This keeps track of the main
-        // king and attacker, the ones that are the subject of this check.
-        ChessPosition kingPosition;
-        ChessPosition attackerPosition;
 
         // 3 conditions:
         // king cannot move in any adjacent squares.
@@ -221,24 +213,18 @@ public class ChessGame {
 
         // ensure we are in check. This also sets kingPosition and attackerPosition.
         if (!isInCheck(teamColor)) {
-            clearCheckMateValues();
             return false;
         }
 
-        kingPosition = currentKingPosition;
-        attackerPosition = currentAttackerPosition;
+        // We do not need to check all 3 conditions directly. Instead, check all pieces. If the king cannot move, it
+        // has no validMoves (because there is no move that doesn't result in another check). If no piece can block
+        // the attacker or capture the attacker, there are no validMoves for any piece--because capturing or blocking
+        // the piece would bring it out of check.
 
-        // **********************   king cannot move in any adjacent squares    *********************************
-        Collection<ChessMove> validKingMoves = validMoves(currentKingPosition);
+        // Therefore, for there to be a checkmate, we must simply check that this team has no valid moves whatsoever--
+        // There is no move they can make and not still be in check.
 
-        // if the king can make valid moves it is not in checkmate.
-        if (!validKingMoves.isEmpty()) {
-            return false;
-        }   // otherwise, the king cannot make any valid moves, so that check works.
-
-        // **********************  attacking piece cannot be captured.  ***********************************
-
-        // iterate through all pieces and see if the attacking piece can be captured
+        // iterate through all pieces and see if there are any valid moves. if not, then we are in checkmate.
         for (int y = 1; y < 9; y++) {
             for (int x = 1; x < 9; x++) {
                 // get piece at this position.
@@ -251,31 +237,17 @@ public class ChessGame {
                 }
                 // else... get valid moves.
                 Collection<ChessMove> validMoves = validMoves(currentPosition);
-                // iterate over valid moves
-                for (ChessMove move : validMoves) {
-                    // Check to see if the end position is the attacker's position.
-                    // if it is, this piece can capture to break checkmate.
-                    ChessPosition endPosition = move.getEndPosition();
-                    if (endPosition.equals(attackerPosition)) {
-                        clearCheckMateValues();
-                        return false;
-                    }
+                // verify validMoves is empty. if it is not, then we can move out of check and are not in checkmate.
+                if (!validMoves.isEmpty()) {
+                    return false;
                 }
             }
         }
 
-        // All checks have passed. The king cannot move and the attacker cannot be captured.
+        // All checks have passed. The king cannot move and the attacker cannot be captured or blocked.
+        // We are in check and there are no valid moves that can be done.
         // Checkmate.
-        clearCheckMateValues();
         return true;
-    }
-
-    /**
-     * Clear the variables containing checkmate test values.
-     */
-    private void clearCheckMateValues() {
-        currentKingPosition = null;
-        currentAttackerPosition = null;
     }
 
     /**
@@ -287,7 +259,6 @@ public class ChessGame {
      */
     public boolean isInStalemate(TeamColor teamColor) {
         if (isInCheck(teamColor)) { // we are in check. we cannot be in stalemate.
-            clearCheckMateValues();
             return false;
         }
 
