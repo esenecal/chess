@@ -206,6 +206,10 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        // currentKingPosition and currentAttackerPosition change frequently. This keeps track of the main
+        // king and attacker, the ones that are the subject of this check.
+        ChessPosition kingPosition;
+        ChessPosition attackerPosition;
 
         // 3 conditions:
         // king cannot move in any adjacent squares.
@@ -215,30 +219,38 @@ public class ChessGame {
         // currentKingPosition is the position of the king that is currently under scrutiny. Thus, it is the same
         // team color as teamColor.
 
-        // ensure we are in check. This also sets currentKingPosition and currentAttackerPosition.
+        // ensure we are in check. This also sets kingPosition and attackerPosition
         if (isInCheck(teamColor)) {
+
+            kingPosition = currentKingPosition;
+            attackerPosition = currentAttackerPosition;
+
             // **********************   king cannot move in any adjacent squares    *********************************
             Collection<ChessMove> validKingMoves = validMoves(currentKingPosition);
 
             // if the king can make valid moves, check those moves.
             if (!validKingMoves.isEmpty()) {
+                
                 // check all moves the king can make. If none of them allow the king to be in check, then reset.
                 for (ChessMove move : validKingMoves) {
                     // run a mock movement.
-                    ChessPosition start = move.getStartPosition();
-                    ChessPosition end = move.getEndPosition();
-                    ChessPiece.PieceType promote = move.getPromotionPiece();    // this will be null
-                    ChessPiece pieceAtEnd = gameBoard.getPiece(end);            // piece at the end position.
+                    ChessPiece kingPiece = gameBoard.getPiece(move.getStartPosition());
+                    ChessPiece pieceAtEnd = gameBoard.getPiece(move.getEndPosition());            // piece at the end position.
 
                     // move piece from start to end, promote if needed.
-//                    movePiece(start, end, promote, piece);
-//                    // now, run check. If we run in check, add to invalidMoves.
-//                    if (isInCheck(piece.getTeamColor())) {
-//                        invalidMoves.add(move);
-//                    }
-//                    // reset. Place old piece at end position, place piece at start.
-//                    gameBoard.addPiece(end, pieceAtEnd);
-//                    gameBoard.addPiece(start, piece);
+                    movePiece(move);
+
+                    // if at any point we do not end up in check, then we are not in checkmate.
+                    if (!isInCheck(kingPiece.getTeamColor())) {
+                        // reset. Place old piece at end position, place piece at start.
+                        gameBoard.addPiece(move.getEndPosition(), pieceAtEnd);
+                        gameBoard.addPiece(move.getStartPosition(), kingPiece);
+                        return false;
+                    }
+
+                    // reset. Place old piece at end position, place piece at start.
+                    gameBoard.addPiece(move.getEndPosition(), pieceAtEnd);
+                    gameBoard.addPiece(move.getStartPosition(), kingPiece);
                 }
             }   // otherwise, the king cannot make any valid moves, so that check works.
 
@@ -305,6 +317,14 @@ public class ChessGame {
             // if we are not in check, we cannot be in checkmate.
             return false;
         }
+    }
+
+    /**
+     * Clear the variables containing checkmate test values.
+     */
+    private void clearCheckMateValues() {
+        currentKingPosition = null;
+        currentAttackerPosition = null;
     }
 
     /**
