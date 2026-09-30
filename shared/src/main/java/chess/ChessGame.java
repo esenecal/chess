@@ -258,41 +258,9 @@ public class ChessGame {
             }
         }   // otherwise, the king cannot make any valid moves, so that check works.
 
-        // **********************   no piece can move between the king and the attacker     *********************
-        // AND attacking piece cannot be captured.
+        // **********************  attacking piece cannot be captured.  ***********************************
 
-        // We start at the attacker position. move y up or down one, towards the king position. then x.
-        // we repeat until we reach the king's position.
-        // we include the attacking piece.
-        // This means that we are checking if it can be captured, which nullifies checkmate.
-
-        // all position between attacking piece and king, including attacking position and excluding king's.
-        ArrayList<ChessPosition> lineOfSight = new ArrayList<>();
-        int row = attackerPosition.getRow();       // get row, col of attacking piece.
-        int col = attackerPosition.getColumn();
-
-        // repeat until we reach king position
-        while (row != kingPosition.getRow() || col != kingPosition.getColumn()) {
-            // add y, x to line of sight.
-            lineOfSight.add(new ChessPosition(row, col));
-            // update y, x.
-            if (row < kingPosition.getRow()) {
-                // if y is less, then increase by one.
-                row++;
-            } else if (row > kingPosition.getRow()) {
-                // if y is greater than current attacker position, decrement. do nothing otherwise.
-                row--;
-            }
-            if (col < kingPosition.getColumn()) {
-                col++;
-            } else if (col > kingPosition.getColumn()) {
-                col--;
-            }
-        }
-
-        // now we have all pieces. we iterate through all pieces, seeing if a piece lands on the line of sight.
-        // This means a piece can BLOCK or CAPTURE the attacking piece.
-        // iterate through all pieces.
+        // iterate through all pieces and see if the attacking piece can be captured
         for (int y = 1; y < 9; y++) {
             for (int x = 1; x < 9; x++) {
                 // get piece at this position.
@@ -307,10 +275,10 @@ public class ChessGame {
                 Collection<ChessMove> validMoves = validMoves(currentPosition);
                 // iterate over valid moves
                 for (ChessMove move : validMoves) {
-                    // Check to see if the end position is in the line of sight.
-                    // if it is, this piece can block or capture to break checkmate. return false.
+                    // Check to see if the end position is the attacker's position.
+                    // if it is, this piece can capture to break checkmate.
                     ChessPosition endPosition = move.getEndPosition();
-                    if (lineOfSight.contains(endPosition)) {
+                    if (endPosition.equals(attackerPosition)) {
                         clearCheckMateValues();
                         return false;
                     }
@@ -318,8 +286,7 @@ public class ChessGame {
             }
         }
 
-        // All checks have passed. The king cannot move, the attacker cannot be blocked, and the attacker
-        // cannot be captured.
+        // All checks have passed. The king cannot move and the attacker cannot be captured.
         // Checkmate.
         clearCheckMateValues();
         return true;
