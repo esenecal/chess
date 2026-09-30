@@ -231,7 +231,7 @@ public class ChessGame {
         // **********************   king cannot move in any adjacent squares    *********************************
         Collection<ChessMove> validKingMoves = validMoves(currentKingPosition);
 
-        // if the king can make valid moves, check those moves.
+        // if the king can make valid moves it is not in checkmate.
         if (!validKingMoves.isEmpty()) {
             return false;
         }   // otherwise, the king cannot make any valid moves, so that check works.
