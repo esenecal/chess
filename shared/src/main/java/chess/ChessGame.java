@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -13,8 +12,6 @@ public class ChessGame {
 
     private TeamColor currentPlayer;
     private ChessBoard gameBoard;
-    private ChessPosition currentKingPosition;      // used for checkmate calculations. Current king being checked.
-    private ChessPosition currentAttackerPosition;  // used for checkmate calculations. Piece threatening king.
 
     public ChessGame() {
         this.currentPlayer = TeamColor.WHITE;       // set current player to white at game start.
@@ -80,6 +77,7 @@ public class ChessGame {
 
             // move piece from start to end, promote if needed.
             movePiece(move);
+
             // now, run check. If we run in check, add to invalidMoves.
             if (isInCheck(piece.getTeamColor())) {
                 invalidMoves.add(move);
@@ -123,6 +121,7 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid Move");
         }
 
+        // Actually move the piece.
         movePiece(move);
 
         // Change team turn
@@ -165,7 +164,7 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         // if a piece is in check, then the king must be capturable by an opposing team.
-        // iterate through all pieces of the correct color. If they land on a piece that is the teamcolor king,
+        // iterate through all pieces of the correct color. If they land on a piece that is the teamColor king,
         // then check is made.
 
         // iterate through all pieces.
@@ -179,19 +178,20 @@ public class ChessGame {
                     continue;
                 }
 
-                // else... get all possible moves. we do not need to worry about "valid" moves, because a piece does not need to move away (thus potentially exposing themselves for check) to put a king in check. It can protect its king and put in check simultaneously.
+                // else... get all possible moves. we do not need to worry about "valid" moves, because a piece does
+                // not need to actually move away (thus potentially exposing themselves for check) to put a king in
+                // check.
+                // so a piece may not be able to actually make a move, but if it COULD make the move (if the king is in its line of sight),
+                // then it's a check.
                 Collection<ChessMove> possibleMoves = currentPiece.pieceMoves(gameBoard, currentPosition);
                 // iterate over all possible moves
                 for (ChessMove move : possibleMoves) {
                     // check to see if there is a piece here, and the piece is a king.
                     ChessPosition endPosition = move.getEndPosition();
                     if (gameBoard.getPiece(endPosition) != null && gameBoard.getPiece(endPosition).getPieceType() == ChessPiece.PieceType.KING) {
-                        currentAttackerPosition = move.getStartPosition();
-                        currentKingPosition = endPosition;
                         return true;
                     }
                 }
-
             }
         }
 
@@ -206,10 +206,6 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        // currentKingPosition and currentAttackerPosition change frequently. This keeps track of the main
-        // king and attacker, the ones that are the subject of this check.
-        ChessPosition kingPosition;
-        ChessPosition attackerPosition;
 
         // 3 conditions:
         // king cannot move in any adjacent squares.
@@ -221,24 +217,18 @@ public class ChessGame {
 
         // ensure we are in check. This also sets kingPosition and attackerPosition.
         if (!isInCheck(teamColor)) {
-            clearCheckMateValues();
             return false;
         }
 
-        kingPosition = currentKingPosition;
-        attackerPosition = currentAttackerPosition;
+        // We do not need to check all 3 conditions directly. Instead, check all pieces. If the king cannot move, it
+        // has no validMoves (because there is no move that doesn't result in another check). If no piece can block
+        // the attacker or capture the attacker, there are no validMoves for any piece--because capturing or blocking
+        // the piece would bring it out of check.
 
-        // **********************   king cannot move in any adjacent squares    *********************************
-        Collection<ChessMove> validKingMoves = validMoves(currentKingPosition);
+        // Therefore, for there to be a checkmate, we must simply check that this team has no valid moves whatsoever--
+        // There is no move they can make and not still be in check.
 
-        // if the king can make valid moves it is not in checkmate.
-        if (!validKingMoves.isEmpty()) {
-            return false;
-        }   // otherwise, the king cannot make any valid moves, so that check works.
-
-        // **********************  attacking piece cannot be captured.  ***********************************
-
-        // iterate through all pieces and see if the attacking piece can be captured
+        // iterate through all pieces and see if there are any valid moves. if not, then we are in checkmate.
         for (int y = 1; y < 9; y++) {
             for (int x = 1; x < 9; x++) {
                 // get piece at this position.
@@ -251,31 +241,17 @@ public class ChessGame {
                 }
                 // else... get valid moves.
                 Collection<ChessMove> validMoves = validMoves(currentPosition);
-                // iterate over valid moves
-                for (ChessMove move : validMoves) {
-                    // Check to see if the end position is the attacker's position.
-                    // if it is, this piece can capture to break checkmate.
-                    ChessPosition endPosition = move.getEndPosition();
-                    if (endPosition.equals(attackerPosition)) {
-                        clearCheckMateValues();
-                        return false;
-                    }
+                // verify validMoves is empty. if it is not, then we can move out of check and are not in checkmate.
+                if (!validMoves.isEmpty()) {
+                    return false;
                 }
             }
         }
 
-        // All checks have passed. The king cannot move and the attacker cannot be captured.
+        // All checks have passed. The king cannot move and the attacker cannot be captured or blocked.
+        // We are in check and there are no valid moves that can be done.
         // Checkmate.
-        clearCheckMateValues();
         return true;
-    }
-
-    /**
-     * Clear the variables containing checkmate test values.
-     */
-    private void clearCheckMateValues() {
-        currentKingPosition = null;
-        currentAttackerPosition = null;
     }
 
     /**
@@ -286,8 +262,10 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+
+        // Only difference between this and checkmate is that we are not in check here.
+
         if (isInCheck(teamColor)) { // we are in check. we cannot be in stalemate.
-            clearCheckMateValues();
             return false;
         }
 
@@ -340,12 +318,12 @@ public class ChessGame {
         if (!(o instanceof ChessGame chessGame)) {
             return false;
         }
-        return currentPlayer == chessGame.currentPlayer && Objects.equals(gameBoard, chessGame.gameBoard) && Objects.equals(currentKingPosition, chessGame.currentKingPosition) && Objects.equals(currentAttackerPosition, chessGame.currentAttackerPosition);
+        return currentPlayer == chessGame.currentPlayer && Objects.equals(gameBoard, chessGame.gameBoard);
     }
 
     // Created by IntelliJ
     @Override
     public int hashCode() {
-        return Objects.hash(currentPlayer, gameBoard, currentKingPosition, currentAttackerPosition);
+        return Objects.hash(currentPlayer, gameBoard);
     }
 }

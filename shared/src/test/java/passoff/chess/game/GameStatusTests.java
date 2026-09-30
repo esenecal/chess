@@ -232,4 +232,26 @@ public class GameStatusTests {
         Assertions.assertFalse(game.isInStalemate(ChessGame.TeamColor.WHITE), INCORRECT_WHITE_STALEMATE);
         Assertions.assertFalse(game.isInStalemate(ChessGame.TeamColor.BLACK), INCORRECT_BLACK_STALEMATE);
     }
+
+
+    // custom test.
+    @Test
+    @DisplayName("Checkmate not done by blocking")
+    public void notCheckmateByBlock() {
+        var game = new ChessGame();
+        game.setBoard(TestUtilities.loadBoard("""
+                | |r| | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                | | | | | | | | |
+                |B| |q| | | | | |
+                | | | | | | | |r|
+                |K| | | | | | | |
+                """));
+        game.setTeamTurn(ChessGame.TeamColor.WHITE);
+
+        Assertions.assertFalse(game.isInCheckmate(ChessGame.TeamColor.WHITE), INCORRECT_WHITE_CHECKMATE);
+        Assertions.assertFalse(game.isInCheckmate(ChessGame.TeamColor.BLACK), INCORRECT_BLACK_CHECKMATE);
+    }
 }
