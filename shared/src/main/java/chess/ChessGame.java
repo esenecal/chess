@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -78,6 +77,7 @@ public class ChessGame {
 
             // move piece from start to end, promote if needed.
             movePiece(move);
+
             // now, run check. If we run in check, add to invalidMoves.
             if (isInCheck(piece.getTeamColor())) {
                 invalidMoves.add(move);
@@ -121,6 +121,7 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid Move");
         }
 
+        // Actually move the piece.
         movePiece(move);
 
         // Change team turn
@@ -163,7 +164,7 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         // if a piece is in check, then the king must be capturable by an opposing team.
-        // iterate through all pieces of the correct color. If they land on a piece that is the teamcolor king,
+        // iterate through all pieces of the correct color. If they land on a piece that is the teamColor king,
         // then check is made.
 
         // iterate through all pieces.
@@ -177,7 +178,11 @@ public class ChessGame {
                     continue;
                 }
 
-                // else... get all possible moves. we do not need to worry about "valid" moves, because a piece does not need to move away (thus potentially exposing themselves for check) to put a king in check. It can protect its king and put in check simultaneously.
+                // else... get all possible moves. we do not need to worry about "valid" moves, because a piece does
+                // not need to actually move away (thus potentially exposing themselves for check) to put a king in
+                // check.
+                // so a piece may not be able to actually make a move, but if it COULD make the move (if the king is in its line of sight),
+                // then it's a check.
                 Collection<ChessMove> possibleMoves = currentPiece.pieceMoves(gameBoard, currentPosition);
                 // iterate over all possible moves
                 for (ChessMove move : possibleMoves) {
@@ -187,7 +192,6 @@ public class ChessGame {
                         return true;
                     }
                 }
-
             }
         }
 
@@ -258,6 +262,9 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+
+        // Only difference between this and checkmate is that we are not in check here.
+
         if (isInCheck(teamColor)) { // we are in check. we cannot be in stalemate.
             return false;
         }
@@ -311,12 +318,12 @@ public class ChessGame {
         if (!(o instanceof ChessGame chessGame)) {
             return false;
         }
-        return currentPlayer == chessGame.currentPlayer && Objects.equals(gameBoard, chessGame.gameBoard) && Objects.equals(currentKingPosition, chessGame.currentKingPosition) && Objects.equals(currentAttackerPosition, chessGame.currentAttackerPosition);
+        return currentPlayer == chessGame.currentPlayer && Objects.equals(gameBoard, chessGame.gameBoard);
     }
 
     // Created by IntelliJ
     @Override
     public int hashCode() {
-        return Objects.hash(currentPlayer, gameBoard, currentKingPosition, currentAttackerPosition);
+        return Objects.hash(currentPlayer, gameBoard);
     }
 }
