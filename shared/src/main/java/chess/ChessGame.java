@@ -219,104 +219,110 @@ public class ChessGame {
         // currentKingPosition is the position of the king that is currently under scrutiny. Thus, it is the same
         // team color as teamColor.
 
-        // ensure we are in check. This also sets kingPosition and attackerPosition
-        if (isInCheck(teamColor)) {
+        // ensure we are in check. This also sets kingPosition and attackerPosition.
+        if (!isInCheck(teamColor)) {
+            clearCheckMateValues();
+            return false;
+        }
 
-            kingPosition = currentKingPosition;
-            attackerPosition = currentAttackerPosition;
+        kingPosition = currentKingPosition;
+        attackerPosition = currentAttackerPosition;
 
-            // **********************   king cannot move in any adjacent squares    *********************************
-            Collection<ChessMove> validKingMoves = validMoves(currentKingPosition);
+        // **********************   king cannot move in any adjacent squares    *********************************
+        Collection<ChessMove> validKingMoves = validMoves(currentKingPosition);
 
-            // if the king can make valid moves, check those moves.
-            if (!validKingMoves.isEmpty()) {
-                
-                // check all moves the king can make. If none of them allow the king to be in check, then reset.
-                for (ChessMove move : validKingMoves) {
-                    // run a mock movement.
-                    ChessPiece kingPiece = gameBoard.getPiece(move.getStartPosition());
-                    ChessPiece pieceAtEnd = gameBoard.getPiece(move.getEndPosition());            // piece at the end position.
+        // if the king can make valid moves, check those moves.
+        if (!validKingMoves.isEmpty()) {
 
-                    // move piece from start to end, promote if needed.
-                    movePiece(move);
+            // check all moves the king can make. If none of them allow the king to be in check, then reset.
+            for (ChessMove move : validKingMoves) {
+                // run a mock movement.
+                ChessPiece kingPiece = gameBoard.getPiece(move.getStartPosition());
+                ChessPiece pieceAtEnd = gameBoard.getPiece(move.getEndPosition());            // piece at the end position.
 
-                    // if at any point we do not end up in check, then we are not in checkmate.
-                    if (!isInCheck(kingPiece.getTeamColor())) {
-                        // reset. Place old piece at end position, place piece at start.
-                        gameBoard.addPiece(move.getEndPosition(), pieceAtEnd);
-                        gameBoard.addPiece(move.getStartPosition(), kingPiece);
-                        return false;
-                    }
+                // move piece from start to end, promote if needed.
+                movePiece(move);
 
+                // if at any point we do not end up in check, then we are not in checkmate.
+                if (!isInCheck(kingPiece.getTeamColor())) {
                     // reset. Place old piece at end position, place piece at start.
                     gameBoard.addPiece(move.getEndPosition(), pieceAtEnd);
                     gameBoard.addPiece(move.getStartPosition(), kingPiece);
+                    clearCheckMateValues(); // clear checkmate values.
+                    return false;
                 }
-            }   // otherwise, the king cannot make any valid moves, so that check works.
 
-
-            // **********************   no piece can move between the king and the attacker     *********************
-
-                // this only really applies to bishops, rooks, and queens. This is because if a king is being
-                // threatened by another king, a pawn, or a knight, no piece can move between them.
-            // We can use this to calculate all possible positions that a piece must move to.
-            // We start at the attacker position. we y up or down one, towards the king position. then x. we repeat until we reach it.
-            // we include the attacking piece. This means that we are checking if it can be captured, which nullifies checkmate.
-
-            ArrayList<ChessPosition> lineOfSight = new ArrayList<>();   // all position between attacking piece and king, including attacking position and excluding king's.
-            int row = currentAttackerPosition.getRow();       // get y, x of attacking piece.
-            int col = currentAttackerPosition.getColumn();
-
-            // repeat until we reach king position
-            while (row != currentKingPosition.getRow() && col != currentAttackerPosition.getColumn()) {
-                // add y, x to line of sight.
-                lineOfSight.add(new ChessPosition(row, col));
-                // update y, x.
-                if (row < currentAttackerPosition.getRow()) {
-                    // if y is less, then increase by one.
-                    row++;
-                } else if (row > currentAttackerPosition.getRow()) {
-                    // if y is greater than current attacker position, decrement. do nothing otherwise.
-                    row--;
-                }
-                if (col < currentAttackerPosition.getColumn()) {
-                    col++;
-                } else if (col > currentAttackerPosition.getColumn()) {
-                    col--;
-                }
+                // reset. Place old piece at end position, place piece at start.
+                gameBoard.addPiece(move.getEndPosition(), pieceAtEnd);
+                gameBoard.addPiece(move.getStartPosition(), kingPiece);
             }
-            // now we have all pieces. we iterate through all pieces, seeing if a piece lands on the line of sight.
-            // iterate through all pieces.
-            for (int y = 1; y < 9; y++) {
+        }   // otherwise, the king cannot make any valid moves, so that check works.
 
-                for (int x = 1; x < 9; x++) {
+        // **********************   no piece can move between the king and the attacker     *********************
+        // AND attacking piece cannot be captured.
 
-                    // get piece at this position. check that it is not teamColor
-                    ChessPosition currentPosition = new ChessPosition(y, x);
-                    ChessPiece currentPiece = gameBoard.getPiece(currentPosition);
+        // We start at the attacker position. move y up or down one, towards the king position. then x.
+        // we repeat until we reach the king's position.
+        // we include the attacking piece.
+        // This means that we are checking if it can be captured, which nullifies checkmate.
 
-                    // if the team colors are different, or there is no piece, move on to the next position.
-                    if (currentPiece == null || currentPiece.getTeamColor() != teamColor) {
-                        continue;
-                    }
-                    // else... get valid moves.
-                    Collection<ChessMove> validMoves = validMoves(currentPosition);
-                    // iterate over valid moves
-                    for (ChessMove move : validMoves) {
-                        // Check to see if the end position is in the line of sight. If it is, return false.
-                        ChessPosition endPosition = move.getEndPosition();
-                        if (lineOfSight.contains(endPosition)) {
-                            return false;
-                        }
-                    }
-                }
+        // all position between attacking piece and king, including attacking position and excluding king's.
+        ArrayList<ChessPosition> lineOfSight = new ArrayList<>();
+        int row = attackerPosition.getRow();       // get row, col of attacking piece.
+        int col = attackerPosition.getColumn();
+
+        // repeat until we reach king position
+        while (row != kingPosition.getRow() || col != kingPosition.getColumn()) {
+            // add y, x to line of sight.
+            lineOfSight.add(new ChessPosition(row, col));
+            // update y, x.
+            if (row < kingPosition.getRow()) {
+                // if y is less, then increase by one.
+                row++;
+            } else if (row > kingPosition.getRow()) {
+                // if y is greater than current attacker position, decrement. do nothing otherwise.
+                row--;
             }
-
-            return true;
-        } else {
-            // if we are not in check, we cannot be in checkmate.
-            return false;
+            if (col < kingPosition.getColumn()) {
+                col++;
+            } else if (col > kingPosition.getColumn()) {
+                col--;
+            }
         }
+
+        // now we have all pieces. we iterate through all pieces, seeing if a piece lands on the line of sight.
+        // This means a piece can BLOCK or CAPTURE the attacking piece.
+        // iterate through all pieces.
+        for (int y = 1; y < 9; y++) {
+            for (int x = 1; x < 9; x++) {
+                // get piece at this position.
+                ChessPosition currentPosition = new ChessPosition(y, x);
+                ChessPiece currentPiece = gameBoard.getPiece(currentPosition);
+
+                // if the team colors are different, or there is no piece, move on to the next position.
+                if (currentPiece == null || currentPiece.getTeamColor() != teamColor) {
+                    continue;
+                }
+                // else... get valid moves.
+                Collection<ChessMove> validMoves = validMoves(currentPosition);
+                // iterate over valid moves
+                for (ChessMove move : validMoves) {
+                    // Check to see if the end position is in the line of sight.
+                    // if it is, this piece can block or capture to break checkmate. return false.
+                    ChessPosition endPosition = move.getEndPosition();
+                    if (lineOfSight.contains(endPosition)) {
+                        clearCheckMateValues();
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // All checks have passed. The king cannot move, the attacker cannot be blocked, and the attacker
+        // cannot be captured.
+        // Checkmate.
+        clearCheckMateValues();
+        return true;
     }
 
     /**
