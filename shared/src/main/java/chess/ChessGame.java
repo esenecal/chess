@@ -366,7 +366,7 @@ public class ChessGame {
             }
         }
 
-        // we are not in check and we have no valid moves. stalemate.
+        // we are not in check, and we have no valid moves. stalemate.
         return true;
 
     }
