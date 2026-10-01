@@ -80,8 +80,6 @@ public class ChessPiece {
     }
 
     // logic for bishop movement.
-    // // board for checking if there are pieces at positions. myPosition for move start.
-    // pieceColor for comparing with existing piece colors. validMoves for valid moves.
     // https://codingtechroom.com/question/-java-make-methods-static-best-practice
     private static Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
 
