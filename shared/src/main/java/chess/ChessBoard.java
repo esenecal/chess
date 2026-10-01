@@ -11,7 +11,8 @@ import java.util.Objects;
  */
 public class ChessBoard {
 
-    private final ChessPiece[][] board = new ChessPiece[8][8];    // Create an 8 by 8 chess board. y, x (row, column) https://www.youtube.com/watch?v=mTtK8iRXsZo
+    // Create an 8 by 8 chess board. y, x (row, column) https://www.youtube.com/watch?v=mTtK8iRXsZo
+    private final ChessPiece[][] board = new ChessPiece[8][8];
 
     public ChessBoard() {
 
@@ -26,7 +27,8 @@ public class ChessBoard {
     // use null to remove a piece.
     public void addPiece(ChessPosition position, ChessPiece piece) {
         // Off by one is due to position row/columns being from 1-8, not 0-7.
-        board[position.getRow()-1][position.getColumn()-1] = piece;     // Add a chess piece at a specific position. https://www.youtube.com/watch?v=mTtK8iRXsZo
+        // Add a chess piece at a specific position. https://www.youtube.com/watch?v=mTtK8iRXsZo
+        board[position.getRow()-1][position.getColumn()-1] = piece;
     }
 
     /**
@@ -37,7 +39,8 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return board[position.getRow()-1][position.getColumn()-1];      // Returns the piece at this board position. I think we went over this in class?
+        // Returns the piece at this board position. I think we went over this in class?
+        return board[position.getRow()-1][position.getColumn()-1];
     }
 
     /**
