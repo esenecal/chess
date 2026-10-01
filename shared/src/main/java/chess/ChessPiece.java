@@ -57,7 +57,8 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         // https://www.youtube.com/watch?v=mTtK8iRXsZo
-        ChessPiece piece = board.getPiece(myPosition);      // get the piece at the given position. We are checking this piece.
+        // get the piece at the given position. We are checking this piece.
+        ChessPiece piece = board.getPiece(myPosition);
 
         //noinspection EnhancedSwitchMigration
         switch(piece.getPieceType()) {      // https://www.w3schools.com/java/java_switch.asp
@@ -81,15 +82,18 @@ public class ChessPiece {
     //
 
     // logic for bishop movement.
-    // // board for checking if there are pieces at positions. myPosition for move start. pieceColor for comparing with existing piece colors. validMoves for valid moves.
-    private static Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {     // https://codingtechroom.com/question/-java-make-methods-static-best-practice
+    // // board for checking if there are pieces at positions. myPosition for move start.
+    // pieceColor for comparing with existing piece colors. validMoves for valid moves.
+    // https://codingtechroom.com/question/-java-make-methods-static-best-practice
+    private static Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
 
         ChessPosition currentPosition;  // for tracking current positions
 
         ArrayList<ChessMove> validMoves = new ArrayList<>();    // empty ArrayList for all valid moves.
 
         // Check upper right. These for loops continue if they are within the board, and have not encountered another piece.
-        for (int x = myPosition.getColumn()+1, y = myPosition.getRow()+1; x < 9 && y < 9; x++, y++) {        // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
+        // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
+        for (int x = myPosition.getColumn()+1, y = myPosition.getRow()+1; x < 9 && y < 9; x++, y++) {
             currentPosition = new ChessPosition(y, x);  // set current position
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
@@ -186,8 +190,9 @@ public class ChessPiece {
             // Check if out of bounds. if it is, move on.
             if (position.getColumn() < 9 && position.getColumn() > 0 && position.getRow() < 9 && position.getRow() > 0) {
                 // if it has no piece present, OR a piece of the different color, then it is valid.
-                if (board.getPiece(position) != null) {     // if there is a piece present
-                    if (board.getPiece(position).getTeamColor() != pieceColor) {        // and they are different teams, add them
+                if (board.getPiece(position) != null) {     // if there is a piece present...
+                    // ...and they are different teams, add them.
+                    if (board.getPiece(position).getTeamColor() != pieceColor) {
                         validMoves.add(new ChessMove(myPosition, position, null));
                     }
                 } else {        // if there is no piece present, add it.
@@ -286,7 +291,8 @@ public class ChessPiece {
             possiblePosition = new ChessPosition(myPositionY + 1, myPositionX + 1);
             if (possiblePosition.getRow() < 9 && possiblePosition.getColumn() < 9 ) {    // if we are in bounds
                 // if this possible position is not empty and taken by an opposite color piece (black, here), it is valid.
-                if (board.getPiece(possiblePosition) != null && board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
+                if (board.getPiece(possiblePosition) != null &&
+                    board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
                     if (possiblePosition.getRow() == 8) {     // promotable if we land on the top row, promote
                         validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
                     } else {
@@ -298,7 +304,8 @@ public class ChessPiece {
             possiblePosition = new ChessPosition(myPositionY + 1, myPositionX - 1);
             if (possiblePosition.getRow() < 9 && possiblePosition.getColumn() > 0) {    // if we are in bounds
                 // if this possible position is not empty and taken by an opposite color piece (black, here), it is valid.
-                if (board.getPiece(possiblePosition) != null && board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
+                if (board.getPiece(possiblePosition) != null &&
+                    board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
                     if (possiblePosition.getRow() == 8) {     // promotable if we land on the top row, promote
                         validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
                     } else {
@@ -328,7 +335,9 @@ public class ChessPiece {
             possiblePosition = new ChessPosition(myPositionY - 1, myPositionX + 1);
             if (possiblePosition.getRow() > 0 && possiblePosition.getColumn() < 9 ) {    // if we are in bounds
                 // if this possible position is not empty and taken by an opposite color piece (black, here), it is valid.
-                if (board.getPiece(possiblePosition) != null && board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
+                if (board.getPiece(possiblePosition) != null &&
+                    board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
+
                     if (possiblePosition.getRow() == 1) {     // promotable if we land on the top row, promote
                         validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
                     } else {
@@ -339,8 +348,11 @@ public class ChessPiece {
             // 1down , 1left
             possiblePosition = new ChessPosition(myPositionY - 1, myPositionX - 1);
             if (possiblePosition.getRow() > 0 && possiblePosition.getColumn() > 0) {    // if we are in bounds
+
                 // if this possible position is not empty and taken by an opposite color piece (black, here), it is valid.
-                if (board.getPiece(possiblePosition) != null && board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
+                if (board.getPiece(possiblePosition) != null &&
+                    board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
+
                     if (possiblePosition.getRow() == 1) {     // promotable if we land on the top row, promote
                         validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
                     } else {
