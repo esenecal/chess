@@ -48,8 +48,10 @@ public class ChessMove {
 
     // generated and edited as per video directions, I think.
     @Override
-    public String toString() {      // return chess move as a string.
-        return String.format("[%s, %s, %s]", startPosition, endPosition, promotionPiece);  // https://www.youtube.com/watch?v=mTtK8iRXsZo
+    public String toString() {
+        // return chess move as a string.
+        // https://www.youtube.com/watch?v=mTtK8iRXsZo
+        return String.format("[%s, %s, %s]", startPosition, endPosition, promotionPiece);
     }
 
     // Created with IntelliJ as per assignment directions
@@ -58,7 +60,9 @@ public class ChessMove {
         if (!(o instanceof ChessMove chessMove)) {
             return false;
         }
-        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
+        return Objects.equals(startPosition, chessMove.startPosition) &&
+                Objects.equals(endPosition, chessMove.endPosition) &&
+                promotionPiece == chessMove.promotionPiece;
     }
 
     // Created with IntelliJ as per assignment directions
