@@ -181,14 +181,15 @@ public class ChessGame {
                 // else... get all possible moves. we do not need to worry about "valid" moves, because a piece does
                 // not need to actually move away (thus potentially exposing themselves for check) to put a king in
                 // check.
-                // so a piece may not be able to actually make a move, but if it COULD make the move (if the king is in its line of sight),
-                // then it's a check.
+                // so a piece may not be able to actually make a move, but if it COULD make the move
+                // (if the king is in its line of sight), then it's a check.
                 Collection<ChessMove> possibleMoves = currentPiece.pieceMoves(gameBoard, currentPosition);
                 // iterate over all possible moves
                 for (ChessMove move : possibleMoves) {
                     // check to see if there is a piece here, and the piece is a king.
                     ChessPosition endPosition = move.getEndPosition();
-                    if (gameBoard.getPiece(endPosition) != null && gameBoard.getPiece(endPosition).getPieceType() == ChessPiece.PieceType.KING) {
+                    if (gameBoard.getPiece(endPosition) != null &&
+                        gameBoard.getPiece(endPosition).getPieceType() == ChessPiece.PieceType.KING) {
                         return true;
                     }
                 }
