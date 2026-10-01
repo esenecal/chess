@@ -215,7 +215,7 @@ public class ChessGame {
         // currentKingPosition is the position of the king that is currently under scrutiny. Thus, it is the same
         // team color as teamColor.
 
-        // ensure we are in check. This also sets kingPosition and attackerPosition.
+        // ensure we are in check.
         if (!isInCheck(teamColor)) {
             return false;
         }
@@ -229,29 +229,14 @@ public class ChessGame {
         // There is no move they can make and not still be in check.
 
         // iterate through all pieces and see if there are any valid moves. if not, then we are in checkmate.
-        for (int y = 1; y < 9; y++) {
-            for (int x = 1; x < 9; x++) {
-                // get piece at this position.
-                ChessPosition currentPosition = new ChessPosition(y, x);
-                ChessPiece currentPiece = gameBoard.getPiece(currentPosition);
+        // If there ARE valid moves, then we could move out of check and are not in checkmate.
+        return checkAllForNoValidMoves(teamColor);
 
-                // if the team colors are different, or there is no piece, move on to the next position.
-                if (currentPiece == null || currentPiece.getTeamColor() != teamColor) {
-                    continue;
-                }
-                // else... get valid moves.
-                Collection<ChessMove> validMoves = validMoves(currentPosition);
-                // verify validMoves is empty. if it is not, then we can move out of check and are not in checkmate.
-                if (!validMoves.isEmpty()) {
-                    return false;
-                }
-            }
-        }
-
-        // All checks have passed. The king cannot move and the attacker cannot be captured or blocked.
+        // If returns true, all checks have passed.
+        // The king cannot move and the attacker cannot be captured or blocked.
         // We are in check and there are no valid moves that can be done.
         // Checkmate.
-        return true;
+
     }
 
     /**
@@ -270,6 +255,15 @@ public class ChessGame {
         }
 
         // check all pieces of this color. ensure that none have any valid moves.
+        return checkAllForNoValidMoves(teamColor);
+
+    }
+
+    /**
+     * Check all pieces of a color on the board and ensure they do not have valid moves.
+     * @return boolean: returns true if no piece of this color has a valid move.
+     */
+    private boolean checkAllForNoValidMoves(TeamColor teamColor) {
         for (int y = 1; y < 9; y++) {
             for (int x = 1; x < 9; x++) {
                 ChessPiece piece = gameBoard.getPiece(new ChessPosition(y, x));
@@ -281,7 +275,7 @@ public class ChessGame {
 
                 Collection<ChessMove> validMoves = validMoves(new ChessPosition(y, x));
 
-                // there is a valid move! Not a stalemate.
+                // there is a valid move!
                 if (!validMoves.isEmpty()) {
                     return false;
                 }
@@ -289,9 +283,8 @@ public class ChessGame {
             }
         }
 
-        // we are not in check, and we have no valid moves. stalemate.
+        // There are no valid moves.
         return true;
-
     }
 
     /**
