@@ -53,9 +53,11 @@ We want to avoid creating "fat entities". We do not want to couple a class's ide
 ## Components
 
 - Client: What the user uses to play the game of chess.
-- Server: receives network requests from client
+- Server: receives network requests from client. Also handles all unhandled exceptions, being closes to the client.
 - Handlers: gets information from server, deserializes information into objects. Calls service methods to send objects.
 - Services: processes logic. Receives data objects from Handlers, then executes proper logic to accomplish what is needed. calls DAOs
+    - these classes implement functionality for server. It is the logic associated with endpionts.
+    - simple implementation: separate service class for each group of related endpoints, such as UserService.
 - Data Access: called by Services to manipulate database data.
 - Database: persistent data storage.
 
@@ -177,6 +179,8 @@ Examples:
 - createAuth
 - getAuth
 - deleteAuth
+
+DataAccess Interface should be implemented (abstraction).
 
 ## Other terms
 
