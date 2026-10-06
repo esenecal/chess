@@ -108,15 +108,82 @@ public class ChessPiece {
 
         // Check upper right. These for loops continue if they are within the board, and have not encountered another piece.
         // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
-        // we repeat while y < 9, x < 9, and the chesspiece at chessPosition is empty.
+        // we repeat while y < 9, x < 9
         int y = myPosition.getRow()+1;
         int x = myPosition.getColumn()+1;
+
         while (y < 9 && x < 9) {
             currentPosition = new ChessPosition(y, x);
-
+            ChessMove move = findValidMove(board, myPosition, currentPosition, pieceColor);
+            // if we could actually move, add it to validMoves.
+            if (move != null) {
+                validMoves.add(move);
+            }
+            // if there was a piece at the position we just checked, break.
+            // if it was a capture, the valid move was added. If it wasn't, then we're just moving on.
+            if (board.getPiece(currentPosition) != null) {
+                break;
+            }
             // move up right to next position
             y++;
             x++;
+        }
+
+        // lower right
+        y = myPosition.getRow()-1;
+        x = myPosition.getColumn()+1;
+        while (y > 0 && x < 9) {
+            currentPosition = new ChessPosition(y, x);
+            ChessMove move = findValidMove(board, myPosition, currentPosition, pieceColor);
+            // if we could actually move, add it to validMoves.
+            if (move != null) {
+                validMoves.add(move);
+            }
+            // check the spot we just evaluated to see if we need to stop.
+            if (board.getPiece(currentPosition) != null) {
+                break;
+            }
+            // move up right to next position
+            y--;
+            x++;
+        }
+
+        // lower left
+        y = myPosition.getRow()-1;
+        x = myPosition.getColumn()-1;
+        while (y > 0 && x > 0) {
+            currentPosition = new ChessPosition(y, x);
+            ChessMove move = findValidMove(board, myPosition, currentPosition, pieceColor);
+            // if we could actually move, add it to validMoves.
+            if (move != null) {
+                validMoves.add(move);
+            }
+            // check the spot we just evaluated to see if we need to stop.
+            if (board.getPiece(currentPosition) != null) {
+                break;
+            }
+            // move up right to next position
+            y--;
+            x--;
+        }
+
+        // upper left
+        y = myPosition.getRow()+1;
+        x = myPosition.getColumn()-1;
+        while (y < 9 && x > 0) {
+            currentPosition = new ChessPosition(y, x);
+            ChessMove move = findValidMove(board, myPosition, currentPosition, pieceColor);
+            // if we could actually move, add it to validMoves.
+            if (move != null) {
+                validMoves.add(move);
+            }
+            // check the spot we just evaluated to see if we need to stop.
+            if (board.getPiece(currentPosition) != null) {
+                break;
+            }
+            // move up right to next position
+            y++;
+            x--;
         }
 
         return validMoves;
