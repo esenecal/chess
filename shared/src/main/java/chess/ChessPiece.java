@@ -210,14 +210,10 @@ public class ChessPiece {
 
             // Check if out of bounds. if it is, move on.
             if (position.getColumn() < 9 && position.getColumn() > 0 && position.getRow() < 9 && position.getRow() > 0) {
-                // if it has no piece present, OR a piece of the different color, then it is valid.
-                if (board.getPiece(position) != null) {     // if there is a piece present...
-                    // ...and they are different teams, add them.
-                    if (board.getPiece(position).getTeamColor() != pieceColor) {
-                        validMoves.add(new ChessMove(myPosition, position, null));
-                    }
-                } else {        // if there is no piece present, add it.
-                    validMoves.add(new ChessMove(myPosition, position, null));
+                // Check if this is a valid move. if so, add it to validMoves.
+                ChessMove move = checkIfValidMove(board, myPosition, position, pieceColor);
+                if (move != null) {
+                    validMoves.add(move);
                 }
             }
         }
