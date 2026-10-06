@@ -255,7 +255,9 @@ public class ChessPiece {
         return validMoves;
     }
 
-    private static Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
+    private static Collection<ChessMove> pawnMoves(ChessBoard board,
+                                                   ChessPosition myPosition,
+                                                   ChessGame.TeamColor pieceColor) {
         ArrayList<ChessMove> validMoves = new ArrayList<>();
         int myPositionX = myPosition.getColumn();
         int myPositionY = myPosition.getRow();
@@ -264,11 +266,13 @@ public class ChessPiece {
 
         // The color of the piece determines the direction it can move in.
         if (pieceColor == ChessGame.TeamColor.WHITE) {
-            // first move allows for moving forward two squares. For black pieces, this means if they are on row 7. For white, row 2.
+            // first move allows for moving forward two squares. For black pieces,
+            // this means if they are on row 7. For white, row 2.
 
             // 1up
             possiblePosition = new ChessPosition(myPositionY + 1, myPositionX);       // up 1
-            if (board.getPiece(possiblePosition) == null && possiblePosition.getRow() < 9) {    // we must land in a row below 9
+            // we must land in a row below 9
+            if (board.getPiece(possiblePosition) == null && possiblePosition.getRow() < 9) {
                 if (possiblePosition.getRow() == 8) {     // promotable if we land on the top row, promote
                     validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
                 } else {
