@@ -77,6 +77,28 @@ public class ChessPiece {
         }
     }
 
+    // Check a position. If a piece can make a move to this position, return true. else, return false.
+    private static boolean addValidPosition(ChessBoard board,
+                                            ChessPosition myPosition,
+                                            ChessPosition currentPosition,
+                                            ChessGame.TeamColor pieceColor,
+                                            Collection<ChessMove> validMoves) {
+
+        if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
+            // and both the piece we are checking and the piece in this position are not of the same color, capture. valid.
+            if (board.getPiece(currentPosition).getTeamColor() != pieceColor) {
+                validMoves.add(new ChessMove(myPosition, currentPosition, null));
+                return false;
+            } else {    // piece of same team is there. can't move.
+                return false;
+            }
+        } else {
+            // there is NOT a piece at this position, valid end position.
+            validMoves.add(new ChessMove(myPosition, currentPosition, null));
+            return true;
+        }
+    }
+
     // logic for bishop movement.
     // https://codingtechroom.com/question/-java-make-methods-static-best-practice
     private static Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
@@ -91,14 +113,14 @@ public class ChessPiece {
             currentPosition = new ChessPosition(y, x);  // set current position
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
-                // and both the piece we are checking and the piece in this position are of the same color...
-                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
-                    break;      // stop here. We cannot add the current position to valid moves
-                } else {        // however, if they are different team colors...
+                // different teams
+                if (board.getPiece(currentPosition).getTeamColor() != pieceColor) {
                     // We can add a valid move here. But, we must break, because this is also a capture.
                     validMoves.add(new ChessMove(myPosition, currentPosition, null));
-                    break;
                 }
+                // simplified if statement. Idea from IntelliJ context menu.
+                // stop here. We cannot add the current position to valid moves.
+                break;
             } else {
                 // there is NOT a piece at this position, add it to valid moves.
                 validMoves.add(new ChessMove(myPosition, currentPosition, null));
@@ -109,14 +131,14 @@ public class ChessPiece {
             currentPosition = new ChessPosition(y, x);  // set current position
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
-                // and both the piece we are checking and the piece in this position are of the same color...
-                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
-                    break;      // stop here. We cannot add the current position to valid moves
-                } else {        // however, if they are different team colors...
+                // different teams
+                if (board.getPiece(currentPosition).getTeamColor() != pieceColor) {
                     // We can add a valid move here. But, we must break, because this is also a capture.
                     validMoves.add(new ChessMove(myPosition, currentPosition, null));
-                    break;
                 }
+                // simplified if statement. Idea from IntelliJ context menu.
+                // stop here. We cannot add the current position to valid moves.
+                break;
             } else {
                 // there is NOT a piece at this position, add it to valid moves.
                 validMoves.add(new ChessMove(myPosition, currentPosition, null));
@@ -127,14 +149,14 @@ public class ChessPiece {
             currentPosition = new ChessPosition(y, x);  // set current position
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
-                // and both the piece we are checking and the piece in this position are of the same color...
-                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
-                    break;      // stop here. We cannot add the current position to valid moves
-                } else {        // however, if they are different team colors...
+                // different teams
+                if (board.getPiece(currentPosition).getTeamColor() != pieceColor) {
                     // We can add a valid move here. But, we must break, because this is also a capture.
                     validMoves.add(new ChessMove(myPosition, currentPosition, null));
-                    break;
                 }
+                // simplified if statement. Idea from IntelliJ context menu.
+                // stop here. We cannot add the current position to valid moves.
+                break;
             } else {
                 // there is NOT a piece at this position, add it to valid moves.
                 validMoves.add(new ChessMove(myPosition, currentPosition, null));
@@ -145,14 +167,14 @@ public class ChessPiece {
             currentPosition = new ChessPosition(y, x);  // set current position
 
             if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
-                // and both the piece we are checking and the piece in this position are of the same color...
-                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
-                    break;      // stop here. We cannot add the current position to valid moves
-                } else {        // however, if they are different team colors...
+                // different teams
+                if (board.getPiece(currentPosition).getTeamColor() != pieceColor) {
                     // We can add a valid move here. But, we must break, because this is also a capture.
                     validMoves.add(new ChessMove(myPosition, currentPosition, null));
-                    break;
                 }
+                // simplified if statement. Idea from IntelliJ context menu.
+                // stop here. We cannot add the current position to valid moves.
+                break;
             } else {
                 // there is NOT a piece at this position, add it to valid moves.
                 validMoves.add(new ChessMove(myPosition, currentPosition, null));
