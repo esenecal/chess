@@ -187,3 +187,40 @@ DataAccess Interface should be implemented (abstraction).
 - authToken: a randomized string of characters representing that a user has been authenticated with their username and password. 
     - register and login endpoints return authtoken in body of responses.
     - list games endpoint provides authtoken in http auth header.
+
+## Class Structure
+
+To facilitate the creation of the sequence diagram, this is a basic class structure, based on the provided diagram and example code in Phase 2/3
+
+- Client: endpoints for:
+    - Clear
+    - Register
+    - Login
+    - Logout
+    - List Games
+    - Create Game
+    - Join Game
+- Handlers class:
+    - convert request to objects/data
+        - convertClear
+        - convertRegister
+        - convertLogin
+- Service Classes:
+    - UserService: handles logic for user related requests
+        - RegisterResult register(RegisterRequest)
+            - RegisterRequest: record class that contains username, password, email fields.
+            - RegisterResult: record class contains username, authToken
+        - LoginResult login(LoginRequest)
+            - LoginRequest: record class contains username, password.
+            - LoginResult: record class contains username, authToken
+        - LogoutRequest logout(LogoutRequest)
+    - GameService: handles logic for game related requests
+        - listGames
+        - createGame
+        - joinGame
+    - StorageService: handles logic for storage related requests
+- DataAccess Classes
+    - UserDAO: handles data access for user related requests
+        - void createUser(UserData)
+    - GameDAO: handles data access for game related requests
+    - storage

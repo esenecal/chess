@@ -39,9 +39,35 @@ Server --> Client: 200\n{"username" : " ", "authToken" : " "}
 
 end
 
+// Logs in existing user, returns new authToken
 group#orange #FCEDCA Login
-Client -> Server: [POST] /session\n{username, password}
+
+// ************************************************
+// login request from client
+
+Client -> Server: [POST] /session\n{"username":" ", "password":" "}
+
+// 400 error
+break Bad request from client
+Server -> Client: 400\n{"message": "Error: bad request" }
 end
+
+// server to handler. send information in form of JSON
+Server -> Handler: {"username":" ", "password":" "}
+
+// handler: deserialize into objects. call service method to send objects
+Handler -> Service: login(LoginRequest)
+// service. call DAO regarding login.
+Service ->DataAccess:createAuth(authData)
+
+end
+
+// ************************************************
+
+
+
+
+
 
 group#green #lightgreen Logout
 Client -> Server: [DELETE] /session\nauthToken
