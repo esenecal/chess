@@ -238,18 +238,22 @@ Exceptions are not yet considered.
             - `LoginResult`: record class contains username, authToken
         - `LogoutResult logout(LogoutRequest)`: logout the user by clearing their authToken.
             - delete a user's authToken, thus logging them out.
-            - `LogoutRequest`: record class for a logout request, containing username.
-            - `LogoutResult`: record class for a logout request, 
+                - getAuth: get auth Data associated with authToken.
+                - deleteAuth: delete auth data.
+            - `LogoutRequest`: record class for a logout request, containing authToken.
+            - `LogoutResult`: record class for a logout request. largely empty, or void, or containing a boolean.
     - `GameService`: handles logic for game related requests
         - `listGames`
         - `createGame`
         - `joinGame`
     - `StorageService`: handles logic for storage related requests
-- DataAccess Classes: manipulates database. All methods throws DataAccessException or a child of.
+- DataAccess Classes: manipulates database. All methods throws DataAccessException or a child of. split auth/user?
     - `UserDAO`: handles data access for user related requests
         - `UserData getUser(username)`: get UserData object associated with the username.
         - `void createUser(UserData)`: create a user, add UserData to database.
         - `void createAuth(authData)`: add authData to database
+        - `AuthData getAuth(authToken)`: get associated AuthData from authToken.
+        - `void deleteAuth(AuthData)`: remove this authData from db.
     - `GameDAO`: handles data access for game related requests
     - `StorageDAO`: handles data access for storage management reasons.
         - `void removeUsers()`: remove all users.

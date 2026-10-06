@@ -95,15 +95,43 @@ Server-->Client: 200\n{"username:" ", "authToken":" "}
 end
 
 // ************************************************
-
-
-
-
-
+// Logout
 
 group#green #lightgreen Logout
 Client -> Server: [DELETE] /session\nauthToken
+
+// pass auth token to handler.
+Server->Handler: authToken
+
+// handler calls service method Logout.
+Handler->Service: logout(LogoutRequest)
+
+// get authData associated with token.
+Service->DataAccess: getAuth(authToken)
+DataAccess->db: Find AuthData by authToken
+
+// null means that this person was not authorized, and thus cannot log out.
+// we do not need to verify password, because the authtoken suggests that the user is logged in. Plus, we cannot deduce the authtoken from the username, anyway. 
+break No AuthData associated with authToken
+// break case: return null-no user of that name.
+DataAccess-->Service: null
+Service-->Server: NonExistentAuthException
+Server-->Client: 401\n{ "message": "Error: unauthorized"}
 end
+
+// service calls DAO to delete auth.
+Service->DataAccess: deleteAuth(authData)
+DataAccess->db: Remove AuthData
+
+// this may be void, or a boolean.
+Service-->Handler: LogoutResponse
+// nothing to return, so the handler just returns an empty json object.
+Handler-->Server: { }
+Server-->Client: 200\n{ }
+
+end
+
+// ************************************************
 
 group#red #pink List Games
 Client -> Server: [GET] /game\nauthToken
