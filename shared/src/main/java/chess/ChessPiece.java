@@ -244,18 +244,10 @@ public class ChessPiece {
                 continue;       // move on to the next if out of bounds.
             }
 
-            // check for existing pieces in location. Similar logic from bishop/rook methods
-            if (board.getPiece(position) != null) {     // If there is a piece here...
-                // and both the piece we are checking and the piece in this position are NOT of the same color...
-                if (board.getPiece(position).getTeamColor() != pieceColor) {
-                    // We can add a valid move here. Then we move on.
-                    validMoves.add(new ChessMove(myPosition, position, null));
-                }
-                // if they were the same color, this still automatically moves to the not position. At this point in
-                // The if statement, we move on automatically, so we do not need to check.
-            } else {
-                // there is NOT a piece at this position, add it to valid moves.
-                validMoves.add(new ChessMove(myPosition, position, null));
+            // Check if this is a valid move. if so, add it to validMoves.
+            ChessMove move = checkIfValidMove(board, myPosition, position, pieceColor);
+            if (move != null) {
+                validMoves.add(move);
             }
         }
 
