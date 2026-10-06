@@ -77,28 +77,24 @@ public class ChessPiece {
         }
     }
 
-    // Check a position. If a piece could move there, add it to validMoves. return false if you can continue to add
-    private static boolean addToValidMoves(ChessBoard board,
+    // Check a position. If a piece could move, return the move.
+    private static ChessMove findValidMove(ChessBoard board,
                                             ChessPosition myPosition,
                                             ChessPosition currentPosition,
-                                            ChessGame.TeamColor pieceColor,
-                                            Collection<ChessMove> validMoves) {
-        // uses the mutability of validmoves to edit it.
+                                            ChessGame.TeamColor pieceColor) {
 
         if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
             // different teams
             if (board.getPiece(currentPosition).getTeamColor() != pieceColor) {
                 // We can add a valid move here, a capture.
-                validMoves.add(new ChessMove(myPosition, currentPosition, null));
+                return new ChessMove(myPosition, currentPosition, null);
+            } else {
+                // we cannot make a valid move, as there is our team's piece in the way.
+                return null;
             }
-            // simplified if statement. Idea from IntelliJ context menu.
-            // stop here. We cannot move any further because there has been a capture,
-            // or we have encountered our own pieces
-            return true;
         } else {
             // there is NOT a piece at this position, add it to valid moves. We can keep going.
-            validMoves.add(new ChessMove(myPosition, currentPosition, null));
-            return false;
+            return new ChessMove(myPosition, currentPosition, null);
         }
     }
 
@@ -112,32 +108,15 @@ public class ChessPiece {
 
         // Check upper right. These for loops continue if they are within the board, and have not encountered another piece.
         // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
-        for (int x = myPosition.getColumn()+1, y = myPosition.getRow()+1; x < 9 && y < 9; x++, y++) {
-            currentPosition = new ChessPosition(y, x);  // set current position
-            if (!addToValidMoves(board, myPosition, currentPosition, pieceColor, validMoves)) {
-                break;
-            }
-        }
-        // check lower right
-        for (int x = myPosition.getColumn()+1, y = myPosition.getRow()-1; x < 9 && y > 0; x++, y--) {
-            currentPosition = new ChessPosition(y, x);  // set current position
-            if (!addToValidMoves(board, myPosition, currentPosition, pieceColor, validMoves)) {
-                break;
-            }
-        }
-        // check lower left
-        for (int x = myPosition.getColumn()-1, y = myPosition.getRow()-1; x > 0 && y > 0; x--, y--) {
-            currentPosition = new ChessPosition(y, x);  // set current position
-            if (!addToValidMoves(board, myPosition, currentPosition, pieceColor, validMoves)) {
-                break;
-            }
-        }
-        // check upper left
-        for (int x = myPosition.getColumn()-1, y = myPosition.getRow()+1; x > 0 && y < 9; x--, y++) {
-            currentPosition = new ChessPosition(y, x);  // set current position
-            if (!addToValidMoves(board, myPosition, currentPosition, pieceColor, validMoves)) {
-                break;
-            }
+        // we repeat while y < 9, x < 9, and the chesspiece at chessPosition is empty.
+        int y = myPosition.getRow()+1;
+        int x = myPosition.getColumn()+1;
+        while (y < 9 && x < 9) {
+            currentPosition = new ChessPosition(y, x);
+
+            // move up right to next position
+            y++;
+            x++;
         }
 
         return validMoves;
