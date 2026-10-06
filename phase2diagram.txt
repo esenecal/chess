@@ -57,8 +57,40 @@ Server -> Handler: {"username":" ", "password":" "}
 
 // handler: deserialize into objects. call service method to send objects
 Handler -> Service: login(LoginRequest)
-// service. call DAO regarding login.
-Service ->DataAccess:createAuth(authData)
+
+// service. call DAO methods for logging in.
+
+// Service calls DAO method for getting user data
+Service ->DataAccess: getUser(username)
+
+// DAO manipulates DB
+DataAccess->db: Find UserData by username
+
+
+break Nonexistent User
+// break case: return null-no user of that name.
+DataAccess-->Service: null
+Service-->Server: NonexistentUserException
+Server-->Client: 401\n{ "message": "Error: unauthorized"}
+end
+
+break Unauthorized Credentials
+// break case: return null-no user of that name.
+DataAccess-->Service: UserData
+Service-->Server: UnauthorizedCredentialsException
+Server-->Client: 401\n{ "message": "Error: unauthorized"}
+end
+
+// happy path. We get the user data, and it is all correct.
+DataAccess-->Service: UserData
+// service verifies it, creates an AuthToken, then pushes it via createAuth.
+Service->DataAccess: createAuth(authData)
+DataAccess->db: Add AuthData
+
+// Now that the new authData has been added, we return a LoginResponse, which contains a username and authToken. This is serialized by the handler and is pushed back to the client via a HTTP response.
+Service-->Handler: LoginResponse
+Handler-->Server: {"username:" ", "authToken":" "}
+Server-->Client: 200\n{"username:" ", "authToken":" "}
 
 end
 

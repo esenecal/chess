@@ -83,7 +83,7 @@ Da --> Db
 
 API endpoints are used to communicate from client to server.
 
-- Clear: clear database--all users, games, authtokens
+- Clear: clear database--all users, games, authTokens
     - URL: `/db`
     - HTTP Method: `DELETE`
     - Success response: `[200]{}`
@@ -96,7 +96,7 @@ API endpoints are used to communicate from client to server.
     - Failure Response: `[400]{ "message": "Error: bad request" }`
     - Failure Response: `[403]{ "message": "Error: already taken" }`
     - Failure Response: `[500]{ "message": "Error: (description of error)" }`
-- Login: login existing user (returns new authtoken)
+- Login: login existing user (returns new authToken)
     - URL: `/session`
     - HTTP Method: `POST`
     - Body: `{ "username":"", "password":"" }`
@@ -104,21 +104,21 @@ API endpoints are used to communicate from client to server.
     - Failure Response: `[400]{ "message": "Error: bad request" }`
     - Failure Response: `[401]{ "message": "Error: unauthorized" }`
     - Failure Response: `[500]{ "message": "Error: (description of error)" }`
-- Logout: log out user represented by provided authtoken
+- Logout: log out user represented by provided authToken
     - URL: `/session`
     - HTTP Method: `DELETE`
     - Headers: `authorization: <authToken>`
     - Success response: `[200]{}`
     - Failure Response: `[401]{ "message": "Error: unauthorized" }`
     - Failure Response: `[500]{ "message": "Error: (description of error)" }`
-- List Games: verifies provided authtoken, gives list of all games. Note: `whiteUsername` and `blackUsername` may be `null`.
+- List Games: verifies provided authToken, gives list of all games. Note: `whiteUsername` and `blackUsername` may be `null`.
     - URL: `/game`
     - HTTP Method: `GET`
     - Headers: `authorization: <authToken>`
     - Success response: `[200] { "games": [{"gameID": 1234, "whiteUsername":"", "blackUsername":"", "gameName:""} ]}`
     - Failure Response: `[401] { "message": "Error: unauthorized" }`
     - Failure Response: `[500]{ "message": "Error: (description of error)" }`
-- Create Game: verifies provided authtoken, creates new game
+- Create Game: verifies provided authToken, creates new game
     - URL: `/game`
     - HTTP Method: `POST`
     - Headers: `authorization: <authToken>`
@@ -127,7 +127,7 @@ API endpoints are used to communicate from client to server.
     - Failure response:	`[400] { "message": "Error: bad request" }`
     - Failure response:	`[401] { "message": "Error: unauthorized" }`
     - Failure Response: `[500]{ "message": "Error: (description of error)" }`
-- Join Game: verifies provided authtoken. Checks that the game exists, then add caller as requested color to the game.
+- Join Game: verifies provided authToken. Checks that the game exists, then add caller as requested color to the game.
     - URL: `/game`
     - HTTP Method: `PUT`
     - Headers: `authorization: <authToken>`
@@ -184,15 +184,31 @@ DataAccess Interface should be implemented (abstraction).
 
 ## Other terms
 
-- authToken: a randomized string of characters representing that a user has been authenticated with their username and password. 
-    - register and login endpoints return authtoken in body of responses.
-    - list games endpoint provides authtoken in http auth header.
+- authToken: a randomized string of characters representing that a user has been authenticated with their username and password. THIS JUST MEANS THAT A USER IS LOGGED IN. This is created when a user registers or logs in, and is stored in an AuthData object, associating username to token.
+    - register and login endpoints return authToken in body of responses.
+    - list games endpoint provides authToken in http auth header.
+
+## Endpoint logic
+
+The specific logic flow needed for each endpoint.
+
+- Clear: clear database. Remove all users, games, authTokens.
+- Register:
+- Login
+- Logout
+- List Games
+- Create Game
+- Join Game
+
 
 ## Class Structure
 
 To facilitate the creation of the sequence diagram, this is a basic class structure, based on the provided diagram and example code in Phase 2/3
 
-- Client: endpoints for:
+Exceptions are not yet considered.
+
+- Client: calls server endpoints. Receives HTTP responses from server.
+- Server: called by client. handles exceptions, passes information to the handler.
     - Clear
     - Register
     - Login
@@ -200,27 +216,56 @@ To facilitate the creation of the sequence diagram, this is a basic class struct
     - List Games
     - Create Game
     - Join Game
-- Handlers class:
+- Handlers class. Takes json data from server, converts to objects. calls service methods. Receives results from service.
     - convert request to objects/data
         - convertClear
         - convertRegister
         - convertLogin
-- Service Classes:
-    - UserService: handles logic for user related requests
-        - RegisterResult register(RegisterRequest)
-            - RegisterRequest: record class that contains username, password, email fields.
-            - RegisterResult: record class contains username, authToken
-        - LoginResult login(LoginRequest)
-            - LoginRequest: record class contains username, password.
-            - LoginResult: record class contains username, authToken
-        - LogoutRequest logout(LogoutRequest)
-    - GameService: handles logic for game related requests
-        - listGames
-        - createGame
-        - joinGame
-    - StorageService: handles logic for storage related requests
-- DataAccess Classes
-    - UserDAO: handles data access for user related requests
-        - void createUser(UserData)
-    - GameDAO: handles data access for game related requests
-    - storage
+- Service Classes: handles logic via calling DAO methods.
+    - `UserService`: handles logic for user related requests
+        - `RegisterResult register(RegisterRequest)`: register a user. 
+            - Determines if the user exists. If they do not, register them by placing their UserData in the database. It creates an authToken and then adds this to the database via an AuthData object. DAO calls:
+                - `getUser`
+                - `createUser`
+                - `createAuth`
+            - `RegisterRequest`: record class that contains username, password, email fields.
+            - `RegisterResult`: record class contains username, authToken
+        - `LoginResult login(LoginRequest)`: logs in a user.
+            - Determine if a user already exists. If they do, log them in by verifying their credentials and creating an authToken for them.
+                - `getUser`: get user data
+                - `createAuth`: create the auth data after authentication of UserData.
+            - `LoginRequest`: record class contains username, password.
+            - `LoginResult`: record class contains username, authToken
+        - `LogoutResult logout(LogoutRequest)`: logout the user by clearing their authToken.
+            - delete a user's authToken, thus logging them out.
+            - `LogoutRequest`: record class for a logout request, containing username.
+            - `LogoutResult`: record class for a logout request, 
+    - `GameService`: handles logic for game related requests
+        - `listGames`
+        - `createGame`
+        - `joinGame`
+    - `StorageService`: handles logic for storage related requests
+- DataAccess Classes: manipulates database. All methods throws DataAccessException or a child of.
+    - `UserDAO`: handles data access for user related requests
+        - `UserData getUser(username)`: get UserData object associated with the username.
+        - `void createUser(UserData)`: create a user, add UserData to database.
+        - `void createAuth(authData)`: add authData to database
+    - `GameDAO`: handles data access for game related requests
+    - `StorageDAO`: handles data access for storage management reasons.
+        - `void removeUsers()`: remove all users.
+        - `void removeGames()`: remove all games.
+        - `void removeAuthTokens()`: remove all authTokens
+- Data Classes:
+    - UserData: user is registered and authenticated as a player/observer in application.
+        - username (`String`)
+        - password (`String`)
+        - email (`String`)
+    - AuthData: association of username and auth token that represents that the user has previously been authorized to use the application.
+        - authToken (`String`)
+        - username (`String`)
+    - GameData: information about game state. Players, board, current state.
+        - gameID (`int`)
+        - whiteUsername (`String`)
+        - blackUsername (`String`)
+        - gameName (`String`)
+        - game (`ChessGame`)
