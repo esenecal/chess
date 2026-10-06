@@ -7,23 +7,27 @@ database db
 
 entryspacing 0.9
 group#43829c #lightblue Registration
+
 Client -> Server: [POST] /user\n{"username":" ", "password":" ", "email":" "}
 
-break User with username already exists
-DataAccess --> Service: UserData
-Service --> Server: AlreadyTakenException
-Server --> Client: 403\n{"message": "Error: username already taken"}
+// 400 error
+break Bad request from client
+Server -> Client: 400\n{"message": "Error: bad request" }
 end
 
 Server -> Handler: {"username":" ", "password":" ", "email":" "}
 Handler -> Service: register(RegisterRequest)
 Service -> DataAccess: getUser(username)
 DataAccess -> db:Find UserData by username
+
+// 403 error
 break User with username already exists
 DataAccess --> Service: UserData
 Service --> Server: AlreadyTakenException
 Server --> Client: 403\n{"message": "Error: username already taken"}
 end
+
+// happy path
 DataAccess --> Service: null
 Service -> DataAccess:createUser(userData)
 DataAccess -> db:Add UserData
@@ -32,6 +36,7 @@ DataAccess -> db:Add AuthData
 Service --> Handler: RegisterResult
 Handler --> Server: {"username" : " ", "authToken" : " "}
 Server --> Client: 200\n{"username" : " ", "authToken" : " "}
+
 end
 
 group#orange #FCEDCA Login
