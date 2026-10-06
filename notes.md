@@ -47,3 +47,139 @@ Single Responsibility Rule (SRP): each class has one responsibility, and only on
 ### Decoupling Rules from Entities
 
 We want to avoid creating "fat entities". We do not want to couple a class's identity with, say, our game rules. 
+
+# Phase 2 Notes
+
+## Components
+
+- Client: What the user uses to play the game of chess.
+- Server: receives network requests from client
+- Handlers: gets information from server, deserializes information into objects. Calls service methods to send objects.
+- Services: processes logic. Receives data objects from Handlers, then executes proper logic to accomplish what is needed. calls DAOs
+- Data Access: called by Services to manipulate database data.
+- Database: persistent data storage.
+
+```mermaid
+flowchart LR
+
+C[Client]
+Se[Server]
+Ha[Handlers]
+Sc[Services]
+Da[DataAccess]
+Db[Database]
+
+C --> Se
+subgraph Chess Server
+Se --> Ha --> Sc --> Da
+end
+
+Da --> Db
+```
+
+## API Endpoints
+
+API endpoints are used to communicate from client to server.
+
+- Clear: clear database--all users, games, authtokens
+    - URL: `/db`
+    - HTTP Method: `DELETE`
+    - Success response: `[200]{}`
+    - Failure Response: `[500]{ "message": "Error: (description of error)" }`
+- Register: register new user
+    - URL: `/user`
+    - HTTP Method: `POST`
+    - Body: `{ "username":"", "password":"", "email":"" }`
+    - Success response: `[200]{ "username":"", "authToken":"" }`
+    - Failure Response: `[400]{ "message": "Error: bad request" }`
+    - Failure Response: `[403]{ "message": "Error: already taken" }`
+    - Failure Response: `[500]{ "message": "Error: (description of error)" }`
+- Login: login existing user (returns new authtoken)
+    - URL: `/session`
+    - HTTP Method: `POST`
+    - Body: `{ "username":"", "password":"" }`
+    - Success response: `[200]{ "username":"", "authToken":"" }`
+    - Failure Response: `[400]{ "message": "Error: bad request" }`
+    - Failure Response: `[401]{ "message": "Error: unauthorized" }`
+    - Failure Response: `[500]{ "message": "Error: (description of error)" }`
+- Logout: log out user represented by provided authtoken
+    - URL: `/session`
+    - HTTP Method: `DELETE`
+    - Headers: `authorization: <authToken>`
+    - Success response: `[200]{}`
+    - Failure Response: `[401]{ "message": "Error: unauthorized" }`
+    - Failure Response: `[500]{ "message": "Error: (description of error)" }`
+- List Games: verifies provided authtoken, gives list of all games. Note: `whiteUsername` and `blackUsername` may be `null`.
+    - URL: `/game`
+    - HTTP Method: `GET`
+    - Headers: `authorization: <authToken>`
+    - Success response: `[200] { "games": [{"gameID": 1234, "whiteUsername":"", "blackUsername":"", "gameName:""} ]}`
+    - Failure Response: `[401] { "message": "Error: unauthorized" }`
+    - Failure Response: `[500]{ "message": "Error: (description of error)" }`
+- Create Game: verifies provided authtoken, creates new game
+    - URL: `/game`
+    - HTTP Method: `POST`
+    - Headers: `authorization: <authToken>`
+    - Body: `{ "gameName":"" }`
+    - Success response: `[200] { "gameID": 1234 }`
+    - Failure response:	`[400] { "message": "Error: bad request" }`
+    - Failure response:	`[401] { "message": "Error: unauthorized" }`
+    - Failure Response: `[500]{ "message": "Error: (description of error)" }`
+- Join Game: verifies provided authtoken. Checks that the game exists, then add caller as requested color to the game.
+    - URL: `/game`
+    - HTTP Method: `PUT`
+    - Headers: `authorization: <authToken>`
+    - Body: `{ "playerColor":"WHITE/BLACK", "gameID": 1234 }`
+    - Success response: `[200]{}`
+    - Failure response:	`[400] { "message": "Error: bad request" }`
+    - Failure response:	`[401] { "message": "Error: unauthorized" }`
+    - Failure response:	`[403] { "message": "Error: already taken" }`
+    - Failure Response: `[500]{ "message": "Error: (description of error)" }`
+
+## Data Model Classes
+
+Represents various types of data as Java Objects. Data sent via endpoints are converted to these objects by the handler.
+
+- UserData: user is registered and authenticated as a player/observer in application.
+    - username (`String`)
+    - password (`String`)
+    - email (`String`)
+- AuthData: association of username and auth token that represents that the user has previously been authorized to use the application.
+    - authToken (`String`)
+    - username (`String`)
+- GameData: information about game state. Players, board, current state.
+    - gameID (`int`)
+    - whiteUsername (`String`)
+    - blackUsername (`String`)
+    - gameName (`String`)
+    - game (`ChessGame`)
+
+## DataAccess Classes
+
+These access your database and are known as Data Access Objects (DAOs), within the DataAccess package. They are responsible for storing, retrieving server's data.
+
+DAO methods will be CRUD operations:
+- Create objects in data store
+- Read objects from data store
+- Update objects already in data store
+- Delete objects from data store.
+
+Often, parameters and return values of DAO methods will be model objects.
+
+Examples:
+- clear: deleting all data from database
+- createUser
+- getUser
+- createGame
+- getGame
+- listGames
+- updateGames
+- createAuth
+- getAuth
+- deleteAuth
+
+## Other terms
+
+- authToken: a randomized string of characters representing that a user has been authenticated with their username and password. 
+    - register and login endpoints return authtoken in body of responses.
+    - list games endpoint provides authtoken in http auth header.
