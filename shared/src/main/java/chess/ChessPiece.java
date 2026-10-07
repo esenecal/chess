@@ -274,106 +274,59 @@ public class ChessPiece {
                                                    ChessPosition myPosition,
                                                    ChessGame.TeamColor pieceColor) {
         ArrayList<ChessMove> validMoves = new ArrayList<>();
-        int myPositionX = myPosition.getColumn();
-        int myPositionY = myPosition.getRow();
+        int y = myPosition.getRow();
+        int x = myPosition.getColumn();
 
-        ChessPosition possiblePosition;
+        // positions for moving forward, moving forward 2, capturing right, and capturing left.
+        ChessPosition forwardPosition;
+        ChessPosition jumpForwardPosition;
 
-        // The color of the piece determines the direction it can move in.
-        if (pieceColor == ChessGame.TeamColor.WHITE) {
-            // first move allows for moving forward two squares. For black pieces,
-            // this means if they are on row 7. For white, row 2.
 
-            // 1up
-            possiblePosition = new ChessPosition(myPositionY + 1, myPositionX);       // up 1
-            // we must land in a row below 9
-            if (board.getPiece(possiblePosition) == null && possiblePosition.getRow() < 9) {
-                if (possiblePosition.getRow() == 8) {     // promotable if we land on the top row, promote
-                    validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
-                } else {
-                    validMoves.addAll(addAllPromotions(myPosition, possiblePosition, false));
-                }
-                // we can move up one, so check if we are at the starting row and can move up 2.
-                possiblePosition = new ChessPosition(myPositionY + 2, myPositionX);       // up 2
-                if (myPositionY == 2 && board.getPiece(possiblePosition) == null) {
-                    // Do not have to worry about promotions; a piece cannot be promoted off start.
-                    validMoves.add(new ChessMove(myPosition, possiblePosition, null));
-                }
+
+        forwardPosition = new ChessPosition(y + 1, x);       // up 1
+        jumpForwardPosition = new ChessPosition(y+2, x);    // up 2
+        // Positions for if a pawn captures.
+        ChessPosition[] capturePostions = {
+                new ChessPosition(y+1,x+1),
+                new ChessPosition(y+1,x-1)
+        };
+
+        // we can jump forward if we are starting at row 2, and the next two spaces are clear.
+        if (y == 2 && board.getPiece(forwardPosition) == null && board.getPiece(jumpForwardPosition) == null) {
+            validMoves.add(new ChessMove(myPosition, jumpForwardPosition, null));
+        }
+
+        // forward move. If there are no pieces there and we will remain in bounds, then:
+        if (forwardPosition.getRow() < 9 && board.getPiece(forwardPosition) == null) {
+            if (forwardPosition.getRow() == 8) {
+                // promotable.
+                validMoves.addAll(addAllPromotions(myPosition, forwardPosition, true));
+            } else {
+                validMoves.addAll(addAllPromotions(myPosition, forwardPosition, false));
             }
-            // 1up, 1right
-            possiblePosition = new ChessPosition(myPositionY + 1, myPositionX + 1);
-            if (possiblePosition.getRow() < 9 && possiblePosition.getColumn() < 9 ) {    // if we are in bounds
-                // if this possible position is not empty and taken by an opposite color piece (black, here), it is valid.
-                if (board.getPiece(possiblePosition) != null &&
-                    board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
-                    if (possiblePosition.getRow() == 8) {     // promotable if we land on the top row, promote
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
+        }
+
+        // Capture moves
+        for (ChessPosition endPosition : capturePostions) {
+            // if we are in bounds
+            if (endPosition.getRow() > 0 &&
+                    endPosition.getRow() < 9 &&
+                    endPosition.getColumn() > 0 &&
+                    endPosition.getColumn() < 9) {
+                // and only if there is a piece there of the opposite color
+                if (board.getPiece(endPosition) != null &&
+                        board.getPiece(endPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
+                    if (forwardPosition.getRow() == 8) {
+                        // promotable.
+                        validMoves.addAll(addAllPromotions(myPosition, forwardPosition, true));
                     } else {
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, false));
+                        validMoves.addAll(addAllPromotions(myPosition, forwardPosition, false));
                     }
-                }
-            }
-            // 1up, 1left
-            possiblePosition = new ChessPosition(myPositionY + 1, myPositionX - 1);
-            if (possiblePosition.getRow() < 9 && possiblePosition.getColumn() > 0) {    // if we are in bounds
-                // if this possible position is not empty and taken by an opposite color piece (black, here), it is valid.
-                if (board.getPiece(possiblePosition) != null &&
-                    board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
-                    if (possiblePosition.getRow() == 8) {     // promotable if we land on the top row, promote
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
-                    } else {
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, false));
-                    }
-                }
-            }
-        } else {        // if pawn is team color black, all things are flipped.
 
-            // down 1
-            possiblePosition = new ChessPosition(myPositionY - 1, myPositionX);       // up 1
-            if (board.getPiece(possiblePosition) == null && possiblePosition.getRow() > 0) {    // we must land in a row below 9
-                if (possiblePosition.getRow() == 1) {     // promotable if we land on the top row, promote
-                    validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
-                } else {
-                    validMoves.addAll(addAllPromotions(myPosition, possiblePosition, false));
-                }
-
-                // we can move down one, so check if we are at the starting row and can move down 2.
-                possiblePosition = new ChessPosition(myPositionY - 2, myPositionX);
-                if (myPositionY == 7 && board.getPiece(possiblePosition) == null) {
-                    // Do not have to worry about promotions; a piece cannot be promoted off start.
-                    validMoves.add(new ChessMove(myPosition, possiblePosition, null));
-                }
-            }
-            // 1down, 1right
-            possiblePosition = new ChessPosition(myPositionY - 1, myPositionX + 1);
-            if (possiblePosition.getRow() > 0 && possiblePosition.getColumn() < 9 ) {    // if we are in bounds
-                // if this possible position is not empty and taken by an opposite color piece (black, here), it is valid.
-                if (board.getPiece(possiblePosition) != null &&
-                    board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
-
-                    if (possiblePosition.getRow() == 1) {     // promotable if we land on the top row, promote
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
-                    } else {
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, false));
-                    }
-                }
-            }
-            // 1down , 1left
-            possiblePosition = new ChessPosition(myPositionY - 1, myPositionX - 1);
-            if (possiblePosition.getRow() > 0 && possiblePosition.getColumn() > 0) {    // if we are in bounds
-
-                // if this possible position is not empty and taken by an opposite color piece (black, here), it is valid.
-                if (board.getPiece(possiblePosition) != null &&
-                    board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
-
-                    if (possiblePosition.getRow() == 1) {     // promotable if we land on the top row, promote
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
-                    } else {
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, false));
-                    }
                 }
             }
         }
+
 
 
         return validMoves;
