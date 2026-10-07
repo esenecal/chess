@@ -280,25 +280,40 @@ public class ChessPiece {
         // positions for moving forward, moving forward 2, capturing right, and capturing left.
         ChessPosition forwardPosition;
         ChessPosition jumpForwardPosition;
+        ChessPosition[] capturePositions = new ChessPosition[2];
+        int homeRow;        // starting row for pawns
+        int promotionRow;   // row pawn must reach to promote.
 
+        // depending on piece color, set the direction we will be moving in, the home row, etc.
+        if (pieceColor == ChessGame.TeamColor.WHITE) {
+            forwardPosition = new ChessPosition(y + 1, x);       // up 1
+            jumpForwardPosition = new ChessPosition(y+2, x);    // up 2
+            // Positions for if a pawn captures.
+            capturePositions[0] = new ChessPosition(y+1,x+1);   // up 1 right 1
+            capturePositions[1] = new ChessPosition(y+1,x-1);   // up 1 left 1
 
+            homeRow = 2;
+            promotionRow = 8;
+        } else {
+            forwardPosition = new ChessPosition(y-1, x);       // down 1
+            jumpForwardPosition = new ChessPosition(y-2, x);    // down 2
+            capturePositions[0] = new ChessPosition(y-1,x+1);   // down 1 right 1
+            capturePositions[1] = new ChessPosition(y-1,x-1);   // down 1 left 1
 
-        forwardPosition = new ChessPosition(y + 1, x);       // up 1
-        jumpForwardPosition = new ChessPosition(y+2, x);    // up 2
-        // Positions for if a pawn captures.
-        ChessPosition[] capturePostions = {
-                new ChessPosition(y+1,x+1),
-                new ChessPosition(y+1,x-1)
-        };
+            homeRow = 7;
+            promotionRow = 1;
+        }
 
-        // we can jump forward if we are starting at row 2, and the next two spaces are clear.
-        if (y == 2 && board.getPiece(forwardPosition) == null && board.getPiece(jumpForwardPosition) == null) {
+        // we can jump forward if we are starting at home row, and the next two spaces are clear.
+        if (y == homeRow && board.getPiece(forwardPosition) == null && board.getPiece(jumpForwardPosition) == null) {
             validMoves.add(new ChessMove(myPosition, jumpForwardPosition, null));
         }
 
-        // forward move. If there are no pieces there and we will remain in bounds, then:
-        if (forwardPosition.getRow() < 9 && board.getPiece(forwardPosition) == null) {
-            if (forwardPosition.getRow() == 8) {
+        // forward move. If there are no pieces there, and we will remain in bounds, then:
+        if (forwardPosition.getRow() < 9 &&
+                forwardPosition.getRow() > 0 &&
+                board.getPiece(forwardPosition) == null) {
+            if (forwardPosition.getRow() == promotionRow) {
                 // promotable.
                 validMoves.addAll(addAllPromotions(myPosition, forwardPosition, true));
             } else {
@@ -307,7 +322,7 @@ public class ChessPiece {
         }
 
         // Capture moves
-        for (ChessPosition endPosition : capturePostions) {
+        for (ChessPosition endPosition : capturePositions) {
             // if we are in bounds
             if (endPosition.getRow() > 0 &&
                     endPosition.getRow() < 9 &&
@@ -315,19 +330,17 @@ public class ChessPiece {
                     endPosition.getColumn() < 9) {
                 // and only if there is a piece there of the opposite color
                 if (board.getPiece(endPosition) != null &&
-                        board.getPiece(endPosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
-                    if (forwardPosition.getRow() == 8) {
+                        board.getPiece(endPosition).getTeamColor() != pieceColor) {
+                    if (endPosition.getRow() == promotionRow) {
                         // promotable.
-                        validMoves.addAll(addAllPromotions(myPosition, forwardPosition, true));
+                        validMoves.addAll(addAllPromotions(myPosition, endPosition, true));
                     } else {
-                        validMoves.addAll(addAllPromotions(myPosition, forwardPosition, false));
+                        validMoves.addAll(addAllPromotions(myPosition, endPosition, false));
                     }
 
                 }
             }
         }
-
-
 
         return validMoves;
     }
