@@ -119,6 +119,9 @@ Service-->Server: NonExistentAuthException
 Server-->Client: 401\n{ "message": "Error: unauthorized"}
 end
 
+// we get the auth data
+DataAccess-->Service: authData
+
 // service calls DAO to delete auth.
 Service->DataAccess: deleteAuth(authData)
 DataAccess->db: Remove AuthData
@@ -135,7 +138,25 @@ end
 
 group#red #pink List Games
 Client -> Server: [GET] /game\nauthToken
+
+// Server passes authToken to handler.
+Server->Handler: authToken
+
+// handler makes listGames request, passing along the authToken.
+Handler->Service: listGames(ListGamesRequest)
+
+// AuthData is retrieved using the authtoken, thus validifying we are logged in.
+Service->DataAccess: getAuth(authToken)
+
+DataAccess->db: Find AuthData by authToken
+DataAccess-->Service: AuthData
+
+// if the AuthData is correct, then we can get the list of games.
+
+// we pass that data back up. The Service will handle extracting the proper information that will be passed back to the Handler, to the Server, and eventually to the client.
+
 end
+// ************************************************
 
 group#d790e0 #E3CCE6 Create Game 
 Client -> Server: [POST] /game\nauthToken\n{gameName}

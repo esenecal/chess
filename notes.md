@@ -220,9 +220,6 @@ Exceptions are not yet considered.
   - Join Game
 - Handlers class. Takes json data from server, converts to objects. calls service methods. Receives results from service.
   - convert request to objects/data
-    - convertClear
-    - convertRegister
-    - convertLogin
 - Service Classes: handles logic via calling DAO methods.
   - `UserService`: handles logic for user related requests
     - `RegisterResult register(RegisterRequest)`: register a user.
@@ -240,12 +237,13 @@ Exceptions are not yet considered.
       - `LoginResult`: record class contains username, authToken
     - `LogoutResult logout(LogoutRequest)`: logout the user by clearing their authToken.
       - delete a user's authToken, thus logging them out.
-        - getAuth: get auth Data associated with authToken.
-        - deleteAuth: delete auth data.
+        - `getAuth`: get auth Data associated with authToken.
+        - `deleteAuth`: delete auth data.
       - `LogoutRequest`: record class for a logout request, containing authToken.
       - `LogoutResult`: record class for a logout request. largely empty, or void, or containing a boolean.
   - `GameService`: handles logic for game related requests
-    - `listGames`
+    - `ListGamesResponse listGames(ListGamesRequest)`: get list of game data.
+      - Calls DAOs: `listGames`, `getAuth`.
     - `createGame`
     - `joinGame`
   - `StorageService`: handles logic for storage related requests
@@ -257,6 +255,7 @@ Exceptions are not yet considered.
     - `AuthData getAuth(authToken)`: get associated AuthData from authToken.
     - `void deleteAuth(AuthData)`: remove this authData from db.
   - `GameDAO`: handles data access for game related requests
+    - `Collection<ChessGame> listGames()`: list all games
   - `StorageDAO`: handles data access for storage management reasons.
     - `void removeUsers()`: remove all users.
     - `void removeGames()`: remove all games.
