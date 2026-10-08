@@ -188,8 +188,8 @@ DataAccess Interface should be implemented (abstraction).
 ## Other terms
 
 - authToken: a randomized string of characters representing that a user has been authenticated with their username and password. THIS JUST MEANS THAT A USER IS LOGGED IN. This is created when a user registers or logs in, and is stored in an AuthData object, associating username to token.
-    - register and login endpoints return authToken in body of responses.
-    - list games endpoint provides authToken in http auth header.
+  - register and login endpoints return authToken in body of responses.
+  - list games endpoint provides authToken in http auth header.
 
 ## Endpoint logic
 
@@ -203,7 +203,6 @@ The specific logic flow needed for each endpoint.
 - Create Game
 - Join Game
 
-
 ## Class Structure
 
 To facilitate the creation of the sequence diagram, this is a basic class structure, based on the provided diagram and example code in Phase 2/3
@@ -212,67 +211,67 @@ Exceptions are not yet considered.
 
 - Client: calls server endpoints. Receives HTTP responses from server.
 - Server: called by client. handles exceptions, passes information to the handler.
-    - Clear
-    - Register
-    - Login
-    - Logout
-    - List Games
-    - Create Game
-    - Join Game
+  - Clear
+  - Register
+  - Login
+  - Logout
+  - List Games
+  - Create Game
+  - Join Game
 - Handlers class. Takes json data from server, converts to objects. calls service methods. Receives results from service.
-    - convert request to objects/data
-        - convertClear
-        - convertRegister
-        - convertLogin
+  - convert request to objects/data
+    - convertClear
+    - convertRegister
+    - convertLogin
 - Service Classes: handles logic via calling DAO methods.
-    - `UserService`: handles logic for user related requests
-        - `RegisterResult register(RegisterRequest)`: register a user. 
-            - Determines if the user exists. If they do not, register them by placing their UserData in the database. It creates an authToken and then adds this to the database via an AuthData object. DAO calls:
-                - `getUser`
-                - `createUser`
-                - `createAuth`
-            - `RegisterRequest`: record class that contains username, password, email fields.
-            - `RegisterResult`: record class contains username, authToken
-        - `LoginResult login(LoginRequest)`: logs in a user.
-            - Determine if a user already exists. If they do, log them in by verifying their credentials and creating an authToken for them.
-                - `getUser`: get user data
-                - `createAuth`: create the auth data after authentication of UserData.
-            - `LoginRequest`: record class contains username, password.
-            - `LoginResult`: record class contains username, authToken
-        - `LogoutResult logout(LogoutRequest)`: logout the user by clearing their authToken.
-            - delete a user's authToken, thus logging them out.
-                - getAuth: get auth Data associated with authToken.
-                - deleteAuth: delete auth data.
-            - `LogoutRequest`: record class for a logout request, containing authToken.
-            - `LogoutResult`: record class for a logout request. largely empty, or void, or containing a boolean.
-    - `GameService`: handles logic for game related requests
-        - `listGames`
-        - `createGame`
-        - `joinGame`
-    - `StorageService`: handles logic for storage related requests
+  - `UserService`: handles logic for user related requests
+    - `RegisterResult register(RegisterRequest)`: register a user.
+      - Determines if the user exists. If they do not, register them by placing their UserData in the database. It creates an authToken and then adds this to the database via an AuthData object. DAO calls:
+        - `getUser`
+        - `createUser`
+        - `createAuth`
+      - `RegisterRequest`: record class that contains username, password, email fields.
+      - `RegisterResult`: record class contains username, authToken
+    - `LoginResult login(LoginRequest)`: logs in a user.
+      - Determine if a user already exists. If they do, log them in by verifying their credentials and creating an authToken for them.
+        - `getUser`: get user data
+        - `createAuth`: create the auth data after authentication of UserData.
+      - `LoginRequest`: record class contains username, password.
+      - `LoginResult`: record class contains username, authToken
+    - `LogoutResult logout(LogoutRequest)`: logout the user by clearing their authToken.
+      - delete a user's authToken, thus logging them out.
+        - getAuth: get auth Data associated with authToken.
+        - deleteAuth: delete auth data.
+      - `LogoutRequest`: record class for a logout request, containing authToken.
+      - `LogoutResult`: record class for a logout request. largely empty, or void, or containing a boolean.
+  - `GameService`: handles logic for game related requests
+    - `listGames`
+    - `createGame`
+    - `joinGame`
+  - `StorageService`: handles logic for storage related requests
 - DataAccess Classes: manipulates database. All methods throws DataAccessException or a child of. split auth/user?
-    - `UserDAO`: handles data access for user related requests
-        - `UserData getUser(username)`: get UserData object associated with the username.
-        - `void createUser(UserData)`: create a user, add UserData to database.
-        - `void createAuth(authData)`: add authData to database
-        - `AuthData getAuth(authToken)`: get associated AuthData from authToken.
-        - `void deleteAuth(AuthData)`: remove this authData from db.
-    - `GameDAO`: handles data access for game related requests
-    - `StorageDAO`: handles data access for storage management reasons.
-        - `void removeUsers()`: remove all users.
-        - `void removeGames()`: remove all games.
-        - `void removeAuthTokens()`: remove all authTokens
+  - `UserDAO`: handles data access for user related requests
+    - `UserData getUser(username)`: get UserData object associated with the username.
+    - `void createUser(UserData)`: create a user, add UserData to database.
+    - `void createAuth(authData)`: add authData to database
+    - `AuthData getAuth(authToken)`: get associated AuthData from authToken.
+    - `void deleteAuth(AuthData)`: remove this authData from db.
+  - `GameDAO`: handles data access for game related requests
+  - `StorageDAO`: handles data access for storage management reasons.
+    - `void removeUsers()`: remove all users.
+    - `void removeGames()`: remove all games.
+    - `void removeAuthTokens()`: remove all authTokens
 - Data Classes:
-    - UserData: user is registered and authenticated as a player/observer in application.
-        - username (`String`)
-        - password (`String`)
-        - email (`String`)
-    - AuthData: association of username and auth token that represents that the user has previously been authorized to use the application.
-        - authToken (`String`)
-        - username (`String`)
-    - GameData: information about game state. Players, board, current state.
-        - gameID (`int`)
-        - whiteUsername (`String`)
-        - blackUsername (`String`)
-        - gameName (`String`)
-        - game (`ChessGame`)
+  - UserData: user is registered and authenticated as a player/observer in application.
+    - username (`String`)
+    - password (`String`)
+    - email (`String`)
+  - AuthData: association of username and auth token that represents that the user has previously been authorized to use the application.
+    - authToken (`String`)
+    - username (`String`)
+  - GameData: information about game state. Players, board, current state.
+    - gameID (`int`)
+    - whiteUsername (`String`)
+    - blackUsername (`String`)
+    - gameName (`String`)
+    - game (`ChessGame`)
