@@ -276,4 +276,24 @@ end
 
 group#gray #lightgray Clear application 
 Client -> Server: [DELETE] /db
+
+Server->Handler:
+
+Handler->Service: clear(ClearDataRequest)
+
+// clear all data
+Service->DataAccess: removeUsers()
+DataAccess->db: Remove all UserData
+
+Service->DataAccess: removeGames()
+DataAccess->db: Remove all GameData
+
+Service->DataAccess: removeAllAuthData()
+DataAccess->db: Remove all AuthData
+
+// Return
+
+Service-->Handler: ClearDataResponse
+Handler-->Server: { }
+Server-->Client: [200]\n{ }
 end

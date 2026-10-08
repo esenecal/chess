@@ -249,6 +249,8 @@ Exceptions are not yet considered.
     - `JoinGameResponse joinGame(JoinGameRequest)`: verify a game exists, add caller as requested color to game, provided that spot has not already been taken.
       - Calls DAOs: `getGame`, `getAuth`, `updateGame`
   - `StorageService`: handles logic for storage related requests
+    - `ClearDataResponse clear(ClearDataRequest)`: remove all users, games, authTokens from database.
+      - calls DAOs: `removeUsers`, `removeGames`, `removeAllAuthData`
 - DataAccess Classes: manipulates database. All methods throws DataAccessException or a child of. split auth/user?
   - `UserDAO`: handles data access for user related requests
     - `UserData getUser(username)`: get UserData object associated with the username.
@@ -264,7 +266,7 @@ Exceptions are not yet considered.
   - `StorageDAO`: handles data access for storage management reasons.
     - `void removeUsers()`: remove all users.
     - `void removeGames()`: remove all games.
-    - `void removeAuthTokens()`: remove all authTokens
+    - `void removeAllAuthData()`: remove all authTokens
 - Data Classes:
   - UserData: user is registered and authenticated as a player/observer in application.
     - username (`String`)
