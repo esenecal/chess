@@ -74,7 +74,7 @@ Service-->Server: NonexistentUserException
 Server-->Client: 401\n{ "message": "Error: unauthorized"}
 end
 
-break Unauthorized Credentials
+break Unauthorized Credentials;\nUsername and password do not match
 // break case: return null-no user of that name.
 DataAccess-->Service: UserData
 Service-->Server: UnauthorizedCredentialsException
@@ -251,7 +251,7 @@ DataAccess->db: Find game by gameID
 break Requested game does not exist
 DataAccess-->Service: null
 Service-->Server: NonExistentGameException
-Server-->Client: [401]\n{"message": "Error: Bad Request"}
+Server-->Client: [400]\n{"message": "Error: bad request"}
 end
 
 DataAccess-->Service: GameData game
@@ -261,8 +261,8 @@ Service-->Server: GameTakenException
 Server-->Client: [403]\n{"message": "Error: already taken"}
 end
 
-// update game
-Service->DataAccess: updateGame(gameID, GameData)
+// update game. GameID is contained in GameData
+Service->DataAccess: updateGame(GameData)
 DataAccess->db: Update game by gameID
 
 // Return out
