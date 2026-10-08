@@ -244,7 +244,8 @@ Exceptions are not yet considered.
   - `GameService`: handles logic for game related requests
     - `ListGamesResponse listGames(ListGamesRequest)`: get list of game data.
       - Calls DAOs: `listGames`, `getAuth`.
-    - `createGame`
+    - `CreateGameResponse createGame(CreateGameRequest)`: create a game
+      - Calls DAOs: `getAuth`, `createGame`
     - `joinGame`
   - `StorageService`: handles logic for storage related requests
 - DataAccess Classes: manipulates database. All methods throws DataAccessException or a child of. split auth/user?
@@ -255,7 +256,8 @@ Exceptions are not yet considered.
     - `AuthData getAuth(authToken)`: get associated AuthData from authToken.
     - `void deleteAuth(AuthData)`: remove this authData from db.
   - `GameDAO`: handles data access for game related requests
-    - `Collection<ChessGame> listGames(authData)`: list all games associated with authData
+    - `Collection<GameData> listGames()`: list all games existing.
+    - `void createGame(authData, gameData)`: create a game and associate it wi
   - `StorageDAO`: handles data access for storage management reasons.
     - `void removeUsers()`: remove all users.
     - `void removeGames()`: remove all games.
@@ -274,3 +276,5 @@ Exceptions are not yet considered.
     - blackUsername (`String`)
     - gameName (`String`)
     - game (`ChessGame`)
+
+The things done in the sequence diagram are the steps taken by a Service method. For example, service method would call the DAOs referenced.

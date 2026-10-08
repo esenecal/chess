@@ -160,11 +160,11 @@ end
 
 DataAccess-->Service: AuthData
 // if the AuthData is correct, then we can get the list of games associated with that authData.
-Service->DataAccess: listGames(authData)
-DataAccess->db: Find games associated\nwith authData
+Service->DataAccess: listGames()
+DataAccess->db: Find all games
 
 // we pass that data back up. The Service will handle extracting the proper information that will be passed back to the Handler, to the Server, and eventually to the client.
-DataAccess-->Service: Collection<ChessGame> listGames
+DataAccess-->Service: Collection<GameData> gameList
 Service-->Handler: ListGamesResponse
 Handler-->Server: {"games": [\n{"gameID": 1234, "whiteUsername":" ",\n"blackUsername:" ", "gameName:" "}\n] }
 
@@ -175,7 +175,32 @@ end
 
 group#d790e0 #E3CCE6 Create Game 
 Client -> Server: [POST] /game\nauthToken\n{gameName}
+
+// pass token, body to Handler.
+Server->Handler: authToken\n{"gameName":" "}
+
+// createGame request containing authToken, gamename.
+
+Handler->Service: createGame(CreateGameRequest)
+
+// validate authorization by getting authData associated with authToken.
+Service->DataAccess: getAuth(authToken)
+DataAccess->db: Find AuthData by authToken
+
+DataAccess-->Service: authData
+
+// create the game. We pass in GameData so that DataAccess is not concerned with the logic associated.
+Service->DataAccess: createGame(GameData)
+DataAccess->db: Add GameData
+
+// return the game ID.
+Service-->Handler: CreateGameResponse
+Handler-->Server: {"gameID": 1234}
+Server-->Client: [200]\n{"gameID":1234}
+
 end
+
+// ************************************************
 
 group#yellow #lightyellow Join Game #black
 Client -> Server: [PUT] /game\nauthToken\n{playerColor, gameID}
