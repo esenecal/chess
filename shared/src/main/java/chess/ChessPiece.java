@@ -77,6 +77,27 @@ public class ChessPiece {
         }
     }
 
+    // Check a position. If a piece could move, return the move.
+    private static ChessMove checkIfValidMove(ChessBoard board,
+                                              ChessPosition myPosition,
+                                              ChessPosition currentPosition,
+                                              ChessGame.TeamColor pieceColor) {
+
+        if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
+            // different teams
+            if (board.getPiece(currentPosition).getTeamColor() != pieceColor) {
+                // We can add a valid move here, a capture.
+                return new ChessMove(myPosition, currentPosition, null);
+            } else {
+                // we cannot make a valid move, as there is our team's piece in the way.
+                return null;
+            }
+        } else {
+            // there is NOT a piece at this position, add it to valid moves. We can keep going.
+            return new ChessMove(myPosition, currentPosition, null);
+        }
+    }
+
     // logic for bishop movement.
     // https://codingtechroom.com/question/-java-make-methods-static-best-practice
     private static Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
@@ -87,76 +108,82 @@ public class ChessPiece {
 
         // Check upper right. These for loops continue if they are within the board, and have not encountered another piece.
         // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
-        for (int x = myPosition.getColumn()+1, y = myPosition.getRow()+1; x < 9 && y < 9; x++, y++) {
-            currentPosition = new ChessPosition(y, x);  // set current position
+        // we repeat while y < 9, x < 9
+        int y = myPosition.getRow()+1;
+        int x = myPosition.getColumn()+1;
 
-            if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
-                // and both the piece we are checking and the piece in this position are of the same color...
-                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
-                    break;      // stop here. We cannot add the current position to valid moves
-                } else {        // however, if they are different team colors...
-                    // We can add a valid move here. But, we must break, because this is also a capture.
-                    validMoves.add(new ChessMove(myPosition, currentPosition, null));
-                    break;
-                }
-            } else {
-                // there is NOT a piece at this position, add it to valid moves.
-                validMoves.add(new ChessMove(myPosition, currentPosition, null));
+        while (y < 9 && x < 9) {
+            currentPosition = new ChessPosition(y, x);
+            ChessMove move = checkIfValidMove(board, myPosition, currentPosition, pieceColor);
+            // if we could actually move, add it to validMoves.
+            if (move != null) {
+                validMoves.add(move);
             }
+            // if there was a piece at the position we just checked, break.
+            // if it was a capture, the valid move was added. If it wasn't, then we're just moving on.
+            if (board.getPiece(currentPosition) != null) {
+                break;
+            }
+            // move up right to next position
+            y++;
+            x++;
         }
-        // check lower right
-        for (int x = myPosition.getColumn()+1, y = myPosition.getRow()-1; x < 9 && y > 0; x++, y--) {
-            currentPosition = new ChessPosition(y, x);  // set current position
 
-            if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
-                // and both the piece we are checking and the piece in this position are of the same color...
-                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
-                    break;      // stop here. We cannot add the current position to valid moves
-                } else {        // however, if they are different team colors...
-                    // We can add a valid move here. But, we must break, because this is also a capture.
-                    validMoves.add(new ChessMove(myPosition, currentPosition, null));
-                    break;
-                }
-            } else {
-                // there is NOT a piece at this position, add it to valid moves.
-                validMoves.add(new ChessMove(myPosition, currentPosition, null));
+        // lower right
+        y = myPosition.getRow()-1;
+        x = myPosition.getColumn()+1;
+        while (y > 0 && x < 9) {
+            currentPosition = new ChessPosition(y, x);
+            ChessMove move = checkIfValidMove(board, myPosition, currentPosition, pieceColor);
+            // if we could actually move, add it to validMoves.
+            if (move != null) {
+                validMoves.add(move);
             }
+            // check the spot we just evaluated to see if we need to stop.
+            if (board.getPiece(currentPosition) != null) {
+                break;
+            }
+            // move up right to next position
+            y--;
+            x++;
         }
-        // check lower left
-        for (int x = myPosition.getColumn()-1, y = myPosition.getRow()-1; x > 0 && y > 0; x--, y--) {
-            currentPosition = new ChessPosition(y, x);  // set current position
 
-            if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
-                // and both the piece we are checking and the piece in this position are of the same color...
-                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
-                    break;      // stop here. We cannot add the current position to valid moves
-                } else {        // however, if they are different team colors...
-                    // We can add a valid move here. But, we must break, because this is also a capture.
-                    validMoves.add(new ChessMove(myPosition, currentPosition, null));
-                    break;
-                }
-            } else {
-                // there is NOT a piece at this position, add it to valid moves.
-                validMoves.add(new ChessMove(myPosition, currentPosition, null));
+        // lower left
+        y = myPosition.getRow()-1;
+        x = myPosition.getColumn()-1;
+        while (y > 0 && x > 0) {
+            currentPosition = new ChessPosition(y, x);
+            ChessMove move = checkIfValidMove(board, myPosition, currentPosition, pieceColor);
+            // if we could actually move, add it to validMoves.
+            if (move != null) {
+                validMoves.add(move);
             }
+            // check the spot we just evaluated to see if we need to stop.
+            if (board.getPiece(currentPosition) != null) {
+                break;
+            }
+            // move up right to next position
+            y--;
+            x--;
         }
-        // check upper left
-        for (int x = myPosition.getColumn()-1, y = myPosition.getRow()+1; x > 0 && y < 9; x--, y++) {
-            currentPosition = new ChessPosition(y, x);  // set current position
 
-            if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
-                // and both the piece we are checking and the piece in this position are of the same color...
-                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
-                    break;      // stop here. We cannot add the current position to valid moves
-                } else {        // however, if they are different team colors...
-                    // We can add a valid move here. But, we must break, because this is also a capture.
-                    validMoves.add(new ChessMove(myPosition, currentPosition, null));
-                    break;
-                }
-            } else {
-                // there is NOT a piece at this position, add it to valid moves.
-                validMoves.add(new ChessMove(myPosition, currentPosition, null));
+        // upper left
+        y = myPosition.getRow()+1;
+        x = myPosition.getColumn()-1;
+        while (y < 9 && x > 0) {
+            currentPosition = new ChessPosition(y, x);
+            ChessMove move = checkIfValidMove(board, myPosition, currentPosition, pieceColor);
+            // if we could actually move, add it to validMoves.
+            if (move != null) {
+                validMoves.add(move);
             }
+            // check the spot we just evaluated to see if we need to stop.
+            if (board.getPiece(currentPosition) != null) {
+                break;
+            }
+            // move up right to next position
+            y++;
+            x--;
         }
 
         return validMoves;
@@ -183,14 +210,10 @@ public class ChessPiece {
 
             // Check if out of bounds. if it is, move on.
             if (position.getColumn() < 9 && position.getColumn() > 0 && position.getRow() < 9 && position.getRow() > 0) {
-                // if it has no piece present, OR a piece of the different color, then it is valid.
-                if (board.getPiece(position) != null) {     // if there is a piece present...
-                    // ...and they are different teams, add them.
-                    if (board.getPiece(position).getTeamColor() != pieceColor) {
-                        validMoves.add(new ChessMove(myPosition, position, null));
-                    }
-                } else {        // if there is no piece present, add it.
-                    validMoves.add(new ChessMove(myPosition, position, null));
+                // Check if this is a valid move. if so, add it to validMoves.
+                ChessMove move = checkIfValidMove(board, myPosition, position, pieceColor);
+                if (move != null) {
+                    validMoves.add(move);
                 }
             }
         }
@@ -221,18 +244,10 @@ public class ChessPiece {
                 continue;       // move on to the next if out of bounds.
             }
 
-            // check for existing pieces in location. Similar logic from bishop/rook methods
-            if (board.getPiece(position) != null) {     // If there is a piece here...
-                // and both the piece we are checking and the piece in this position are NOT of the same color...
-                if (board.getPiece(position).getTeamColor() != pieceColor) {
-                    // We can add a valid move here. Then we move on.
-                    validMoves.add(new ChessMove(myPosition, position, null));
-                }
-                // if they were the same color, this still automatically moves to the not position. At this point in
-                // The if statement, we move on automatically, so we do not need to check.
-            } else {
-                // there is NOT a piece at this position, add it to valid moves.
-                validMoves.add(new ChessMove(myPosition, position, null));
+            // Check if this is a valid move. if so, add it to validMoves.
+            ChessMove move = checkIfValidMove(board, myPosition, position, pieceColor);
+            if (move != null) {
+                validMoves.add(move);
             }
         }
 
@@ -255,107 +270,77 @@ public class ChessPiece {
         return validMoves;
     }
 
-    private static Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
+    private static Collection<ChessMove> pawnMoves(ChessBoard board,
+                                                   ChessPosition myPosition,
+                                                   ChessGame.TeamColor pieceColor) {
         ArrayList<ChessMove> validMoves = new ArrayList<>();
-        int myPositionX = myPosition.getColumn();
-        int myPositionY = myPosition.getRow();
+        int y = myPosition.getRow();
+        int x = myPosition.getColumn();
 
-        ChessPosition possiblePosition;
+        // positions for moving forward, moving forward 2, capturing right, and capturing left.
+        ChessPosition forwardPosition;
+        ChessPosition jumpForwardPosition;
+        ChessPosition[] capturePositions = new ChessPosition[2];
+        int homeRow;        // starting row for pawns
+        int promotionRow;   // row pawn must reach to promote.
 
-        // The color of the piece determines the direction it can move in.
+        // depending on piece color, set the direction we will be moving in, the home row, etc.
         if (pieceColor == ChessGame.TeamColor.WHITE) {
-            // first move allows for moving forward two squares. For black pieces, this means if they are on row 7. For white, row 2.
+            forwardPosition = new ChessPosition(y + 1, x);       // up 1
+            jumpForwardPosition = new ChessPosition(y+2, x);    // up 2
+            // Positions for if a pawn captures.
+            capturePositions[0] = new ChessPosition(y+1,x+1);   // up 1 right 1
+            capturePositions[1] = new ChessPosition(y+1,x-1);   // up 1 left 1
 
-            // 1up
-            possiblePosition = new ChessPosition(myPositionY + 1, myPositionX);       // up 1
-            if (board.getPiece(possiblePosition) == null && possiblePosition.getRow() < 9) {    // we must land in a row below 9
-                if (possiblePosition.getRow() == 8) {     // promotable if we land on the top row, promote
-                    validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
-                } else {
-                    validMoves.addAll(addAllPromotions(myPosition, possiblePosition, false));
-                }
-                // we can move up one, so check if we are at the starting row and can move up 2.
-                possiblePosition = new ChessPosition(myPositionY + 2, myPositionX);       // up 2
-                if (myPositionY == 2 && board.getPiece(possiblePosition) == null) {
-                    // Do not have to worry about promotions; a piece cannot be promoted off start.
-                    validMoves.add(new ChessMove(myPosition, possiblePosition, null));
-                }
-            }
-            // 1up, 1right
-            possiblePosition = new ChessPosition(myPositionY + 1, myPositionX + 1);
-            if (possiblePosition.getRow() < 9 && possiblePosition.getColumn() < 9 ) {    // if we are in bounds
-                // if this possible position is not empty and taken by an opposite color piece (black, here), it is valid.
-                if (board.getPiece(possiblePosition) != null &&
-                    board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
-                    if (possiblePosition.getRow() == 8) {     // promotable if we land on the top row, promote
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
-                    } else {
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, false));
-                    }
-                }
-            }
-            // 1up, 1left
-            possiblePosition = new ChessPosition(myPositionY + 1, myPositionX - 1);
-            if (possiblePosition.getRow() < 9 && possiblePosition.getColumn() > 0) {    // if we are in bounds
-                // if this possible position is not empty and taken by an opposite color piece (black, here), it is valid.
-                if (board.getPiece(possiblePosition) != null &&
-                    board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.BLACK) {
-                    if (possiblePosition.getRow() == 8) {     // promotable if we land on the top row, promote
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
-                    } else {
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, false));
-                    }
-                }
-            }
-        } else {        // if pawn is team color black, all things are flipped.
+            homeRow = 2;
+            promotionRow = 8;
+        } else {
+            forwardPosition = new ChessPosition(y-1, x);       // down 1
+            jumpForwardPosition = new ChessPosition(y-2, x);    // down 2
+            capturePositions[0] = new ChessPosition(y-1,x+1);   // down 1 right 1
+            capturePositions[1] = new ChessPosition(y-1,x-1);   // down 1 left 1
 
-            // down 1
-            possiblePosition = new ChessPosition(myPositionY - 1, myPositionX);       // up 1
-            if (board.getPiece(possiblePosition) == null && possiblePosition.getRow() > 0) {    // we must land in a row below 9
-                if (possiblePosition.getRow() == 1) {     // promotable if we land on the top row, promote
-                    validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
-                } else {
-                    validMoves.addAll(addAllPromotions(myPosition, possiblePosition, false));
-                }
+            homeRow = 7;
+            promotionRow = 1;
+        }
 
-                // we can move down one, so check if we are at the starting row and can move down 2.
-                possiblePosition = new ChessPosition(myPositionY - 2, myPositionX);
-                if (myPositionY == 7 && board.getPiece(possiblePosition) == null) {
-                    // Do not have to worry about promotions; a piece cannot be promoted off start.
-                    validMoves.add(new ChessMove(myPosition, possiblePosition, null));
-                }
-            }
-            // 1down, 1right
-            possiblePosition = new ChessPosition(myPositionY - 1, myPositionX + 1);
-            if (possiblePosition.getRow() > 0 && possiblePosition.getColumn() < 9 ) {    // if we are in bounds
-                // if this possible position is not empty and taken by an opposite color piece (black, here), it is valid.
-                if (board.getPiece(possiblePosition) != null &&
-                    board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
+        // we can jump forward if we are starting at home row, and the next two spaces are clear.
+        if (y == homeRow && board.getPiece(forwardPosition) == null && board.getPiece(jumpForwardPosition) == null) {
+            validMoves.add(new ChessMove(myPosition, jumpForwardPosition, null));
+        }
 
-                    if (possiblePosition.getRow() == 1) {     // promotable if we land on the top row, promote
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
-                    } else {
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, false));
-                    }
-                }
-            }
-            // 1down , 1left
-            possiblePosition = new ChessPosition(myPositionY - 1, myPositionX - 1);
-            if (possiblePosition.getRow() > 0 && possiblePosition.getColumn() > 0) {    // if we are in bounds
-
-                // if this possible position is not empty and taken by an opposite color piece (black, here), it is valid.
-                if (board.getPiece(possiblePosition) != null &&
-                    board.getPiece(possiblePosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
-
-                    if (possiblePosition.getRow() == 1) {     // promotable if we land on the top row, promote
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, true));
-                    } else {
-                        validMoves.addAll(addAllPromotions(myPosition, possiblePosition, false));
-                    }
-                }
+        // forward move. If there are no pieces there, and we will remain in bounds, then:
+        if (forwardPosition.getRow() < 9 &&
+                forwardPosition.getRow() > 0 &&
+                board.getPiece(forwardPosition) == null) {
+            if (forwardPosition.getRow() == promotionRow) {
+                // promotable.
+                validMoves.addAll(addAllPromotions(myPosition, forwardPosition, true));
+            } else {
+                validMoves.addAll(addAllPromotions(myPosition, forwardPosition, false));
             }
         }
 
+        // Capture moves
+        for (ChessPosition endPosition : capturePositions) {
+            // if we are in bounds
+            if (endPosition.getRow() > 0 &&
+                    endPosition.getRow() < 9 &&
+                    endPosition.getColumn() > 0 &&
+                    endPosition.getColumn() < 9) {
+                // and only if there is a piece there of the opposite color
+                if (board.getPiece(endPosition) != null &&
+                        board.getPiece(endPosition).getTeamColor() != pieceColor) {
+                    if (endPosition.getRow() == promotionRow) {
+                        // promotable.
+                        validMoves.addAll(addAllPromotions(myPosition, endPosition, true));
+                    } else {
+                        validMoves.addAll(addAllPromotions(myPosition, endPosition, false));
+                    }
+
+                }
+            }
+        }
 
         return validMoves;
     }
@@ -381,76 +366,71 @@ public class ChessPiece {
         ArrayList<ChessMove> validMoves = new ArrayList<>();    // empty ArrayList for all valid moves.
 
         // Check up. These for loops continue if they are within the board, and have not encountered another piece.
-        for (int y = myPosition.getRow()+1; y < 9; y++) {
-            currentPosition = new ChessPosition(y, myPosition.getColumn());  // set current position. Row stays constant.
-
-            if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
-                // and both the piece we are checking and the piece in this position are of the same color...
-                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
-                    break;      // stop here. We cannot add the current position to valid moves
-                } else {        // however, if they are different team colors...
-                    // We can add a valid move here. But, we must break, because this is also a capture.
-                    validMoves.add(new ChessMove(myPosition, currentPosition, null));
-                    break;
-                }
-            } else {
-                // there is NOT a piece at this position, add it to valid moves.
-                validMoves.add(new ChessMove(myPosition, currentPosition, null));
+        int y = myPosition.getRow()+1;
+        int x = myPosition.getColumn();
+        while (y < 9) {
+            currentPosition = new ChessPosition(y, x);
+            ChessMove move = checkIfValidMove(board, myPosition, currentPosition, pieceColor);
+            // if we could actually move, add it to validMoves.
+            if (move != null) {
+                validMoves.add(move);
             }
+            // check the spot we just evaluated to see if we need to stop.
+            if (board.getPiece(currentPosition) != null) {
+                break;
+            }
+            y++;
         }
-        // check right
-        for (int x = myPosition.getColumn()+1; x < 9; x++) {
-            currentPosition = new ChessPosition(myPosition.getRow(), x);  // set current position. Column stays constant.
 
-            if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
-                // and both the piece we are checking and the piece in this position are of the same color...
-                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
-                    break;      // stop here. We cannot add the current position to valid moves
-                } else {        // however, if they are different team colors...
-                    // We can add a valid move here. But, we must break, because this is also a capture.
-                    validMoves.add(new ChessMove(myPosition, currentPosition, null));
-                    break;
-                }
-            } else {
-                // there is NOT a piece at this position, add it to valid moves.
-                validMoves.add(new ChessMove(myPosition, currentPosition, null));
+        // right
+        y = myPosition.getRow();
+        x = myPosition.getColumn()+1;
+        while (x < 9) {
+            currentPosition = new ChessPosition(y, x);
+            ChessMove move = checkIfValidMove(board, myPosition, currentPosition, pieceColor);
+            // if we could actually move, add it to validMoves.
+            if (move != null) {
+                validMoves.add(move);
             }
+            // check the spot we just evaluated to see if we need to stop.
+            if (board.getPiece(currentPosition) != null) {
+                break;
+            }
+            x++;
         }
-        // check down
-        for (int y = myPosition.getRow()-1; y > 0; y--) {
-            currentPosition = new ChessPosition(y, myPosition.getColumn());  // set current position. Row stays constant.
 
-            if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
-                // and both the piece we are checking and the piece in this position are of the same color...
-                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
-                    break;      // stop here. We cannot add the current position to valid moves
-                } else {        // however, if they are different team colors...
-                    // We can add a valid move here. But, we must break, because this is also a capture.
-                    validMoves.add(new ChessMove(myPosition, currentPosition, null));
-                    break;
-                }
-            } else {
-                // there is NOT a piece at this position, add it to valid moves.
-                validMoves.add(new ChessMove(myPosition, currentPosition, null));
+        // down
+        y = myPosition.getRow()-1;
+        x = myPosition.getColumn();
+        while (y > 0) {
+            currentPosition = new ChessPosition(y, x);
+            ChessMove move = checkIfValidMove(board, myPosition, currentPosition, pieceColor);
+            // if we could actually move, add it to validMoves.
+            if (move != null) {
+                validMoves.add(move);
             }
+            // check the spot we just evaluated to see if we need to stop.
+            if (board.getPiece(currentPosition) != null) {
+                break;
+            }
+            y--;
         }
-        // check left
-        for (int x = myPosition.getColumn()-1; x > 0; x--) {
-            currentPosition = new ChessPosition(myPosition.getRow(), x);  // set current position. column stays constant
 
-            if (board.getPiece(currentPosition) != null) {     // If there is a piece here...
-                // and both the piece we are checking and the piece in this position are of the same color...
-                if (board.getPiece(currentPosition).getTeamColor() == pieceColor) {
-                    break;      // stop here. We cannot add the current position to valid moves
-                } else {        // however, if they are different team colors...
-                    // We can add a valid move here. But, we must break, because this is also a capture.
-                    validMoves.add(new ChessMove(myPosition, currentPosition, null));
-                    break;
-                }
-            } else {
-                // there is NOT a piece at this position, add it to valid moves.
-                validMoves.add(new ChessMove(myPosition, currentPosition, null));
+        // left
+        y = myPosition.getRow();
+        x = myPosition.getColumn()-1;
+        while (x > 0) {
+            currentPosition = new ChessPosition(y, x);
+            ChessMove move = checkIfValidMove(board, myPosition, currentPosition, pieceColor);
+            // if we could actually move, add it to validMoves.
+            if (move != null) {
+                validMoves.add(move);
             }
+            // check the spot we just evaluated to see if we need to stop.
+            if (board.getPiece(currentPosition) != null) {
+                break;
+            }
+            x--;
         }
 
         return validMoves;
