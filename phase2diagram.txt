@@ -230,12 +230,36 @@ Handler->Service: joinGame(JoinGameRequest)
 // Authenticate
 Service->DataAccess: getAuth(authToken)
 DataAccess->db: Find AuthData by authToken
+
+// taken from logout.
+break No AuthData associated with authToken;\nunauthorized
+// break case: return null-no user of that name.
+DataAccess-->Service: null
+Service-->Server: NonExistentAuthException
+Server-->Client: 401\n{ "message": "Error: unauthorized"}
+end
+
 DataAccess-->Service: authData
 
 // verify game exists.
 Service->DataAccess: getGame(gameID)
 DataAccess->db: Find game by gameID
+
+// https://stackoverflow.com/questions/7939137/what-http-status-code-should-be-used-for-wrong-input
+//https://stackoverflow.com/questions/30158630/what-http-status-to-use-for-good-request-with-bad-input
+// current exceptions are not adequate for if a requested game does not exist. However, to stay according to specs, we will use 401
+break Requested game does not exist
+DataAccess-->Service: null
+Service-->Server: NonExistentGameException
+Server-->Client: [401]\n{"message": "Error: Bad Request"}
+end
+
 DataAccess-->Service: GameData game
+
+break User attempting to modify a game\nthat is already taken
+Service-->Server: GameTakenException
+Server-->Client: [403]\n{"message": "Error: already taken"}
+end
 
 // update game
 Service->DataAccess: updateGame(gameID, GameData)
