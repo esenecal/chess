@@ -12,7 +12,7 @@ Client -> Server: [POST] /user\n{"username":" ", "password":" ", "email":" "}
 
 // 400 error
 break Bad request from client
-Server -> Client: 400\n{"message": "Error: bad request" }
+Server-->Client: 400\n{"message": "Error: bad request"}
 end
 
 Server -> Handler: {"username":" ", "password":" ", "email":" "}
@@ -22,9 +22,9 @@ DataAccess -> db:Find UserData by username
 
 // 403 error
 break User with username already exists
-DataAccess --> Service: UserData
-Service --> Server: AlreadyTakenException
-Server --> Client: 403\n{"message": "Error: username already taken"}
+DataAccess-->Service: UserData
+Service-->Server: AlreadyTakenException
+Server->Client: 403\n{"message": "Error: username already taken"}
 end
 
 // happy path
@@ -49,7 +49,7 @@ Client -> Server: [POST] /session\n{"username":" ", "password":" "}
 
 // 400 error
 break Bad request from client
-Server -> Client: 400\n{"message": "Error: bad request" }
+Server-->Client: 400\n{"message": "Error: bad request"}
 end
 
 // server to handler. send information in form of JSON
@@ -66,19 +66,18 @@ Service ->DataAccess: getUser(username)
 // DAO manipulates DB
 DataAccess->db: Find UserData by username
 
-
+// User does not exist
 break Nonexistent User
-// break case: return null-no user of that name.
-DataAccess-->Service: null
+DataAccess-->Service:null
 Service-->Server: NonexistentUserException
-Server-->Client: 401\n{ "message": "Error: unauthorized"}
+Server-->Client: 401\n{"message": "Error: unauthorized"}
 end
 
+// wrong user
 break Unauthorized Credentials;\nUsername and password do not match
-// break case: return null-no user of that name.
-DataAccess-->Service: UserData
+DataAccess-->Service:UserData
 Service-->Server: UnauthorizedCredentialsException
-Server-->Client: 401\n{ "message": "Error: unauthorized"}
+Server-->Client: 401\n{"message": "Error: unauthorized"}
 end
 
 // happy path. We get the user data, and it is all correct.
@@ -111,12 +110,11 @@ Service->DataAccess: getAuth(authToken)
 DataAccess->db: Find AuthData by authToken
 
 // null means that this person was not authorized, and thus cannot log out.
-// we do not need to verify password, because the authtoken suggests that the user is logged in. Plus, we cannot deduce the authtoken from the username, anyway. 
+// we do not need to verify password, because the authtoken suggests that the user is logged in. Plus, we cannot deduce the authtoken from the username, anyway.
 break No AuthData associated with authToken
-// break case: return null-no user of that name.
-DataAccess-->Service: null
+DataAccess-->Service:null
 Service-->Server: NonExistentAuthException
-Server-->Client: 401\n{ "message": "Error: unauthorized"}
+Server-->Client: 401\n{"message": "Error: unauthorized"}
 end
 
 // we get the auth data
@@ -152,10 +150,9 @@ DataAccess->db: Find AuthData by authToken
 
 // taken from logout.
 break No AuthData associated with authToken;\nunauthorized
-// break case: return null-no user of that name.
 DataAccess-->Service: null
 Service-->Server: NonExistentAuthException
-Server-->Client: 401\n{ "message": "Error: unauthorized"}
+Server-->Client: 401\n{"message": "Error: unauthorized"}
 end
 
 DataAccess-->Service: AuthData
@@ -194,10 +191,9 @@ DataAccess->db: Find AuthData by authToken
 
 // taken from logout.
 break No AuthData associated with authToken;\nunauthorized
-// break case: return null-no user of that name.
 DataAccess-->Service: null
 Service-->Server: NonExistentAuthException
-Server-->Client: 401\n{ "message": "Error: unauthorized"}
+Server-->Client: 401\n{"message": "Error: unauthorized"}
 end
 
 DataAccess-->Service: authData
@@ -233,10 +229,9 @@ DataAccess->db: Find AuthData by authToken
 
 // taken from logout.
 break No AuthData associated with authToken;\nunauthorized
-// break case: return null-no user of that name.
 DataAccess-->Service: null
 Service-->Server: NonExistentAuthException
-Server-->Client: 401\n{ "message": "Error: unauthorized"}
+Server-->Client: 401\n{"message": "Error: unauthorized"}
 end
 
 DataAccess-->Service: authData
