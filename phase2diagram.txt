@@ -176,6 +176,11 @@ end
 group#d790e0 #E3CCE6 Create Game 
 Client -> Server: [POST] /game\nauthToken\n{gameName}
 
+// 400 error. Taken from login/register.
+break Bad request from client
+Server -> Client: 400\n{"message": "Error: bad request" }
+end
+
 // pass token, body to Handler.
 Server->Handler: authToken\n{"gameName":" "}
 
@@ -186,6 +191,14 @@ Handler->Service: createGame(CreateGameRequest)
 // validate authorization by getting authData associated with authToken.
 Service->DataAccess: getAuth(authToken)
 DataAccess->db: Find AuthData by authToken
+
+// taken from logout.
+break No AuthData associated with authToken;\nunauthorized
+// break case: return null-no user of that name.
+DataAccess-->Service: null
+Service-->Server: NonExistentAuthException
+Server-->Client: 401\n{ "message": "Error: unauthorized"}
+end
 
 DataAccess-->Service: authData
 
