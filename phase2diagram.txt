@@ -24,7 +24,7 @@ DataAccess -> db:Find UserData by username
 break User with username already exists
 DataAccess-->Service: UserData
 Service-->Server: AlreadyTakenException
-Server->Client: 403\n{"message": "Error: username already taken"}
+Server->Client: 403\n{"message": "Error: already taken"}
 end
 
 // happy path
