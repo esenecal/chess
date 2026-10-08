@@ -151,9 +151,16 @@ Service->DataAccess: getAuth(authToken)
 DataAccess->db: Find AuthData by authToken
 DataAccess-->Service: AuthData
 
-// if the AuthData is correct, then we can get the list of games.
+// if the AuthData is correct, then we can get the list of games associated with that authData.
+Service->DataAccess: listGames(authData)
+DataAccess->db: Find games associated\nwith authData
 
 // we pass that data back up. The Service will handle extracting the proper information that will be passed back to the Handler, to the Server, and eventually to the client.
+DataAccess-->Service: Collection<ChessGame> listGames
+Service-->Handler: ListGamesResponse
+Handler-->Server: {"games": [\n{"gameID": 1234, "whiteUsername":" ",\n"blackUsername:" ", "gameName:" "}\n] }
+
+Server-->Client: [200]\n{"games": [\n{"gameID": 1234, "whiteUsername":" ",\n"blackUsername:" ", "gameName:" "}\n] }
 
 end
 // ************************************************

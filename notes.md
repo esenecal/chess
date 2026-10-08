@@ -255,7 +255,7 @@ Exceptions are not yet considered.
     - `AuthData getAuth(authToken)`: get associated AuthData from authToken.
     - `void deleteAuth(AuthData)`: remove this authData from db.
   - `GameDAO`: handles data access for game related requests
-    - `Collection<ChessGame> listGames()`: list all games
+    - `Collection<ChessGame> listGames(authData)`: list all games associated with authData
   - `StorageDAO`: handles data access for storage management reasons.
     - `void removeUsers()`: remove all users.
     - `void removeGames()`: remove all games.
