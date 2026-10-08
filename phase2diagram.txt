@@ -217,7 +217,38 @@ end
 
 group#yellow #lightyellow Join Game #black
 Client -> Server: [PUT] /game\nauthToken\n{playerColor, gameID}
+
+// 400 error. Taken from login/register.
+break Bad request from client
+Server -> Client: 400\n{"message": "Error: bad request" }
 end
+
+Server->Handler: authToken\n{"playerColor":"WHITE/BLACK",\n"gameID": 1234}
+
+Handler->Service: joinGame(JoinGameRequest)
+
+// Authenticate
+Service->DataAccess: getAuth(authToken)
+DataAccess->db: Find AuthData by authToken
+DataAccess-->Service: authData
+
+// verify game exists.
+Service->DataAccess: getGame(gameID)
+DataAccess->db: Find game by gameID
+DataAccess-->Service: GameData game
+
+// update game
+Service->DataAccess: updateGame(gameID, GameData)
+DataAccess->db: Update game by gameID
+
+// Return out
+Service-->Handler: JoinGameResponse
+Handler-->Server: { }
+Server-->Client: [200]\n{ }
+
+end
+
+// ************************************************
 
 group#gray #lightgray Clear application 
 Client -> Server: [DELETE] /db

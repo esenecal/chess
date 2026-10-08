@@ -246,7 +246,8 @@ Exceptions are not yet considered.
       - Calls DAOs: `listGames`, `getAuth`.
     - `CreateGameResponse createGame(CreateGameRequest)`: create a game
       - Calls DAOs: `getAuth`, `createGame`
-    - `joinGame`
+    - `JoinGameResponse joinGame(JoinGameRequest)`: verify a game exists, add caller as requested color to game, provided that spot has not already been taken.
+      - Calls DAOs: `getGame`, `getAuth`, `updateGame`
   - `StorageService`: handles logic for storage related requests
 - DataAccess Classes: manipulates database. All methods throws DataAccessException or a child of. split auth/user?
   - `UserDAO`: handles data access for user related requests
@@ -258,6 +259,8 @@ Exceptions are not yet considered.
   - `GameDAO`: handles data access for game related requests
     - `Collection<GameData> listGames()`: list all games existing.
     - `void createGame(authData, gameData)`: create a game and associate it wi
+    - `GameData getGame(gameID)`: get game associated with ID.
+    - `void updateGame(gameID, GameData)`: used for joining a game, making move.
   - `StorageDAO`: handles data access for storage management reasons.
     - `void removeUsers()`: remove all users.
     - `void removeGames()`: remove all games.
