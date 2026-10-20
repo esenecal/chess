@@ -1,12 +1,9 @@
 package service;
 
-import dataaccess.AlreadyTakenException;
-import dataaccess.DataAccessException;
-import dataaccess.UnauthorizedCredentialsException;
+import dataaccess.*;
 import model.AuthData;
 import model.UserData;
 import requestresult.*;
-import dataaccess.UserDAO;
 
 import javax.xml.crypto.Data;
 
@@ -82,6 +79,16 @@ public class UserService {
 
     // See Phase 3 directions for why I use void.
     public void logout(LogoutRequest request) throws DataAccessException {
-        
+
+        // Get authData associated with request authToken.
+        AuthData authData = userDAO.getAuth(request.authToken());
+
+        // if user is not authenticated, say so.
+        if (authData == null) {
+            throw new NonexistentAuthException("Error: unauthorized");
+        }
+
+        // Remove the authData to log out the user.
+        userDAO.deleteAuth(authData);
     }
 }

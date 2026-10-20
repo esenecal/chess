@@ -142,7 +142,25 @@ public class Server {
 
         // Serialize header authToken to logout request.
         LogoutRequest request = serializer.fromJson(context.header("authToken"), LogoutRequest.class);
-        
+
+        try {
+            // make logout request.
+            new UserService(userDAO).logout(request);
+            context.status(200);
+            // do not return anything.
+        } catch (NonexistentAuthException ex) {
+            // authToken did not exist, nothing removed.
+            context.status(401);
+            var message = Map.of("message", ex.getMessage());
+            context.json(serializer.toJson(message));
+
+        } catch (Exception ex) {
+            // other exceptions.
+            context.status(500);
+            var message = Map.of("message", ex.getMessage());
+            context.json(serializer.toJson(message));
+        }
+
     }
 
     /**
