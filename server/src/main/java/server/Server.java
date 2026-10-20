@@ -34,11 +34,12 @@ public class Server {
     }
 
     /**
-     * Register new user
+     * Register new user. Handler.
      *
      * @param context context data for HTTP request
      */
     private void registerUser(Context context) {
+        
     }
 
     /**
