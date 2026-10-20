@@ -1,8 +1,6 @@
 package server;
 
-import dataaccess.AlreadyTakenException;
-import dataaccess.MemoryUserDAO;
-import dataaccess.UserDAO;
+import dataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
 import com.google.gson.Gson;
@@ -90,7 +88,7 @@ public class Server {
             var message = Map.of("message", ex.getMessage());
             context.json(serializer.toJson(message));
         } catch (Exception ex) {
-            // General exceptions.
+            // General exceptions, including other DataAccessExceptions.
             context.status(500);
             var message = Map.of("message", ex.getMessage());
             context.json(serializer.toJson(message));
@@ -109,11 +107,20 @@ public class Server {
         LoginRequest request = serializer.fromJson(context.body(), LoginRequest.class);
 
         // Make the request to UserService
-        LoginResult result = new UserService(userDAO).login(request);
-
-        // serialize the result and send it to the front end.
-        context.status(200);
-        context.json(serializer.toJson(result));
+        try {
+            LoginResult result = new UserService(userDAO).login(request);
+            // serialize the result and send it to the front end.
+            context.status(200);
+            context.json(serializer.toJson(result));
+        } catch (UnauthorizedCredentialsException ex) {
+            context.status(401);
+            var message = Map.of("message", ex.getMessage());
+            context.json(serializer.toJson(message));
+        } catch (Exception ex) {
+            context.status(500);
+            var message = Map.of("message", ex.getMessage());
+            context.json(serializer.toJson(message));
+        }
     }
 
     /**

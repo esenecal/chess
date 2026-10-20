@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AlreadyTakenException;
+import dataaccess.DataAccessException;
 import dataaccess.UnauthorizedCredentialsException;
 import model.AuthData;
 import model.UserData;
@@ -27,7 +28,7 @@ public class UserService {
      * @param request a request record containing a username, password, and email.
      * @return a RegisterResult containing a username and authToken.
      */
-    public RegisterResult register(RegisterRequest request) throws AlreadyTakenException {
+    public RegisterResult register(RegisterRequest request) throws DataAccessException {
 
         // create a UserData object using request.
         UserData userData = new UserData(request.username(), request.password(), request.email());
@@ -36,6 +37,9 @@ public class UserService {
         UserData existingUser = userDAO.getUser(userData.username());
 
         // If there is an existing user, then this user is already taken.
+        // These are thrown here to avoid check logic in DAOs, which would interfere with proper logic here.
+        // AlreadyTakenException and its siblings are still children of DataAccessException as they represent
+        // That part.
         if (existingUser != null) {
             throw new AlreadyTakenException("Error: already taken");
         }
@@ -52,7 +56,7 @@ public class UserService {
         return new RegisterResult(authData.username(), authData.authToken());
     }
 
-    public LoginResult login(LoginRequest request) throws UnauthorizedCredentialsException {
+    public LoginResult login(LoginRequest request) throws DataAccessException {
 
         // query storage for user data with username
         UserData existingUser = userDAO.getUser(request.username());
