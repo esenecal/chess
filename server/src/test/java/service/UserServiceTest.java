@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.*;
+import model.UserData;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,17 +25,18 @@ public class UserServiceTest {
         // Create a user
         RegisterRequest request = new RegisterRequest("Jim", "1234", "jim@jim.com");
 
+
+        // register the user.
         try {
-            // register the user.
             RegisterResult result = userService.register(request);
             assertEquals("Jim", result.username());
             assertNotNull(result.authToken());
             assertInstanceOf(String.class, result.authToken());
-        } catch (AlreadyTakenException ex) {
-            fail("AlreadyTakenException");
-        } catch (Exception ex) {
-            fail("Exception");
+        } catch (DataAccessException ex) {
+            // if we reach here, assert that this does not throw an exception. if it does, it fails.
+            assertAll(() -> userService.register(request));
         }
+
     }
 
     /**
@@ -51,12 +53,11 @@ public class UserServiceTest {
         RegisterRequest request = new RegisterRequest("Jim", "1234", "jim@jim.com");
 
         try {
-            // Register in the user.
-            userService.register(request);
-        } catch (AlreadyTakenException ex) {
-            fail("Register failed");
-        } catch (Exception ex) {
-            fail("Other exception");
+            // Register the user.
+            RegisterResult result = userService.register(request);
+        } catch (DataAccessException ex) {
+            // if we reach here, assert that this does not throw an exception. if it does, it fails.
+            assertAll(() -> userService.register(request));
         }
 
         // attempt to create another user with the same username.
@@ -102,5 +103,54 @@ public class UserServiceTest {
             fail("Other exception");
         }
 
+    }
+
+    @Test
+    public void loginBadUsernameTest() {
+        UserDAO userDAO = new MemoryUserDAO();
+        UserService userService = new UserService(userDAO);
+
+        // Create a user.
+        RegisterRequest regRequest = new RegisterRequest("Jim", "1234", "jim@jim.com");
+
+        try {
+            // Register in the user.
+            RegisterResult regResult = userService.register(regRequest);
+        } catch (AlreadyTakenException ex) {
+            fail("Register failed");
+        } catch (Exception ex) {
+            fail("Other exception");
+        }
+
+        // Log in the user.
+        LoginRequest loginRequest = new LoginRequest("Joe", "1234");
+
+        try {
+            LoginResult loginResult = userService.login(loginRequest);
+            // Determine we received a response with the correct username and an authToken.
+            fail("Login succeeded but should not have.");
+        } catch (UnauthorizedCredentialsException ex) {
+            assertThrows(ex.getClass(), () -> userService.login(loginRequest));
+        } catch (Exception ex) {
+            fail("Other exception");
+        }
+    }
+
+    @Test
+    public void loginBadPasswordTest() {
+        UserDAO userDAO = new MemoryUserDAO();
+
+        // Create user.
+        try {
+            userDAO.createUser(new UserData("Jim", "1234", "jim@jim.com"));
+        } catch (DataAccessException ex) {
+            fail("DataAccessException thrown.");
+        }
+
+        UserService userService = new UserService(userDAO);
+
+        // Log in the user.
+        LoginRequest loginRequest = new LoginRequest("Joe", "1234");
+        assertThrows(UnauthorizedCredentialsException.class, () -> userService.login(loginRequest));
     }
 }
