@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.*;
+import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.Test;
 
@@ -144,5 +145,35 @@ public class UserServiceTest {
         // Log in the user.
         LoginRequest loginRequest = new LoginRequest("Jim", "1");
         assertThrows(UnauthorizedCredentialsException.class, () -> userService.login(loginRequest));
+    }
+
+    @Test
+    public void logoutSuccessfulTest() {
+        UserDAO userDAO = new MemoryUserDAO();
+
+        // Create user and log them
+        AuthData authData = new AuthData(Util.generateAuthToken(), "Jim");
+        try {
+            // creates the user in memory.
+            userDAO.createUser(new UserData("Jim", "1234", "jim@jim.com"));
+            // logs in the user in memory.
+            userDAO.createAuth(authData);
+        } catch (DataAccessException ex) {
+            fail("DataAccessException thrown.");
+        }
+
+        UserService userService = new UserService(userDAO);
+
+        // log out the user.
+        LogoutRequest logoutRequest = new LogoutRequest(authData.authToken());
+        // Verify the user's authData is missing from the DAO.
+        try {
+            userService.logout(logoutRequest);
+            assertNull(userDAO.getAuth(authData.authToken()));
+        } catch (NonexistentAuthException ex) {
+            fail("NonexistentAuthException thrown");
+        } catch (DataAccessException ex) {
+            fail("DataAccessException thrown");
+        }
     }
 }
