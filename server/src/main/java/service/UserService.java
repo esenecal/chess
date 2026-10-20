@@ -8,6 +8,8 @@ import model.UserData;
 import requestresult.*;
 import dataaccess.UserDAO;
 
+import javax.xml.crypto.Data;
+
 /**
  * Contains logic for user-related requests
  */
@@ -76,5 +78,10 @@ public class UserService {
         userDAO.createAuth(authData);
 
         return new LoginResult(authData.username(), authData.authToken());
+    }
+
+    // See Phase 3 directions for why I use void.
+    public void logout(LogoutRequest request) throws DataAccessException {
+        
     }
 }

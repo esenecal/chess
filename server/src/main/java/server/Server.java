@@ -138,7 +138,11 @@ public class Server {
      * @param context context data for HTTP request
      */
     private void logoutUser(Context context) {
+        Gson serializer = new Gson();
 
+        // Serialize header authToken to logout request.
+        LogoutRequest request = serializer.fromJson(context.header("authToken"), LogoutRequest.class);
+        
     }
 
     /**
