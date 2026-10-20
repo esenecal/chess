@@ -49,7 +49,7 @@ public class UserService {
         userDAO.createAuth(authData);
 
         // return RegisterResult to Handler.
-        return new RegisterResult(authData.authToken(), authData.username());
+        return new RegisterResult(authData.username(), authData.authToken());
     }
 
 }
