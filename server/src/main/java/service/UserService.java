@@ -7,8 +7,6 @@ import model.UserData;
 import requestresult.*;
 import dataaccess.UserDAO;
 
-import java.util.UUID;
-
 /**
  * Contains logic for user-related requests
  */
@@ -41,7 +39,7 @@ public class UserService {
         userDAO.createUser(userData);
 
         // create auth
-        AuthData authData = new AuthData(util.generateAuthToken(), userData.username());
+        AuthData authData = new AuthData(Util.generateAuthToken(), userData.username());
         userDAO.createAuth(authData);
 
         // return RegisterResult to Handler.

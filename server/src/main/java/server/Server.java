@@ -1,5 +1,6 @@
 package server;
 
+import dataaccess.AlreadyTakenException;
 import io.javalin.*;
 import io.javalin.http.Context;
 import com.google.gson.Gson;
@@ -55,11 +56,17 @@ public class Server {
         RegisterRequest request = serializer.fromJson(context.body(), RegisterRequest.class);
 
         // make a register service call.
-        RegisterResult result = new UserService().register(request);
+        try {
+            RegisterResult result = new UserService().register(request);
 
-        // Serialize result to JSON and send it back
-        String jsonData = serializer.toJson(result);
-        context.json(jsonData);
+            // Serialize result to JSON and send it back
+            String jsonData = serializer.toJson(result);
+            context.json(jsonData);
+            
+        } catch (AlreadyTakenException ex) {
+            // send back the error message
+            context.json(ex.getCause());
+        }
     }
 
     /**
