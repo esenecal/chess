@@ -37,6 +37,6 @@ public class MemoryUserDAO implements UserDAO {
 
     @Override
     public void deleteAuth(AuthData authData) {
-
+        authMap.remove(authData.authToken());
     }
 }
