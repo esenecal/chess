@@ -1,7 +1,6 @@
 package service;
 
 import dataaccess.AlreadyTakenException;
-import dataaccess.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
 import requestresult.*;
@@ -52,4 +51,7 @@ public class UserService {
         return new RegisterResult(authData.username(), authData.authToken());
     }
 
+    public LoginResult login(LoginRequest request) {
+        return null;
+    }
 }

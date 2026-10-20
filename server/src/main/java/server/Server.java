@@ -103,7 +103,17 @@ public class Server {
      * @param context context data for HTTP request
      */
     private void loginUser(Context context) {
+        Gson serializer = new Gson();
 
+        // Deserialize username and password into LoginRequest.
+        LoginRequest request = serializer.fromJson(context.body(), LoginRequest.class);
+
+        // Make the request to UserService
+        LoginResult result = new UserService(userDAO).login(request);
+
+        // serialize the result and send it to the front end.
+        context.status(200);
+        context.json(serializer.toJson(result));
     }
 
     /**
