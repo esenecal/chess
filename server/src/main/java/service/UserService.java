@@ -1,10 +1,14 @@
 package service;
 
+import dataaccess.AlreadyTakenException;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryUserDAO;
+import model.AuthData;
 import model.UserData;
 import requestresult.*;
 import dataaccess.UserDAO;
+
+import java.util.UUID;
 
 /**
  * Contains logic for user-related requests
@@ -20,7 +24,7 @@ public class UserService {
      * @param request a request record containing a username, password, and email.
      * @return a RegisterResult containing a username and authToken.
      */
-    public RegisterResult register(RegisterRequest request) throws DataAccessException {
+    public RegisterResult register(RegisterRequest request) throws AlreadyTakenException {
 
         // create a UserData object using request.
         UserData userData = new UserData(request.username(), request.password(), request.email());
@@ -30,9 +34,24 @@ public class UserService {
 
         // If there is an existing user, then this user is already taken.
         if (existingUser != null) {
-            throw new DataAccessException("");
+            throw new AlreadyTakenException("Error: already taken");
         }
+        // otherwise, null.
 
-        return null;
+        // create user.
+        userDAO.createUser(userData);
+
+        // create auth
+        AuthData authData = new AuthData(generateAuthToken(), userData.username());
+        userDAO.createAuth(authData);
+
+        // return RegisterResult to Handler.
+        return new RegisterResult(authData.authToken(), authData.username());
+    }
+
+    // Pull this out somewhere else, like a utils.
+    // See MasteryLS "Phase 3: Chess Web API
+    public static String generateAuthToken() {
+        return UUID.randomUUID().toString();
     }
 }
