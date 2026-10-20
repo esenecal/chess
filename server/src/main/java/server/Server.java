@@ -61,10 +61,16 @@ public class Server {
 
             // Serialize result to JSON and send it back
             String jsonData = serializer.toJson(result);
+            context.status(200);
             context.json(jsonData);
 
         } catch (AlreadyTakenException ex) {
             // send back the error message
+            context.status(403);
+            context.json(ex.getMessage());
+        } catch (Exception ex) {
+            // General exceptions.
+            context.status(500);
             context.json(ex.getMessage());
         }
     }
