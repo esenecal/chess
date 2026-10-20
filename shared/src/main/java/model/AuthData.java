@@ -1,4 +1,4 @@
-package dataobjects;
+package model;
 
 /**
  * Contains data used for authenticating a user

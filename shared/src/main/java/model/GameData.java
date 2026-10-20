@@ -1,4 +1,4 @@
-package dataobjects;
+package model;
 
 import chess.ChessGame;
 

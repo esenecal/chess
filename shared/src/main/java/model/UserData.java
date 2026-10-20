@@ -1,4 +1,4 @@
-package dataobjects;
+package model;
 
 /**
  * Class for data object containing user data.
