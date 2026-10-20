@@ -1,6 +1,8 @@
 package service;
 
 import dataaccess.AlreadyTakenException;
+import dataaccess.MemoryUserDAO;
+import dataaccess.UserDAO;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,8 +19,9 @@ public class UserServiceTest {
      */
     @Test
     public void registerCorrectResult() {
+        UserDAO userDAO = new MemoryUserDAO();
         // meets 88% line coverage
-        UserService userService = new UserService();
+        UserService userService = new UserService(userDAO);
 
         // Create a user
         RegisterRequest request = new RegisterRequest("Jim", "1234", "jim@jim.com");
@@ -40,15 +43,17 @@ public class UserServiceTest {
     @Test
     public void registerAlreadyTaken() throws AlreadyTakenException {
         // 100% line coverage
-        UserService userService = new UserService();
+
+        UserDAO userDAO = new MemoryUserDAO();
+        UserService userService = new UserService(userDAO);
 
         // Create a user
         RegisterRequest request = new RegisterRequest("Jim", "1234", "jim@jim.com");
-        RegisterResult result = userService.register(request);
+        userService.register(request);
 
         // attempt to create another user with the same username.
         RegisterRequest request2 = new RegisterRequest("Jim", "0001", "notjim@jim.com");
-        assertThrows(AlreadyTakenException.class, () -> userService.register(request));
+        assertThrows(AlreadyTakenException.class, () -> userService.register(request2));
 
     }
 }

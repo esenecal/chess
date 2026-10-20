@@ -63,14 +63,23 @@ public class Server {
 
         RegisterRequest request = serializer.fromJson(context.body(), RegisterRequest.class);
 
+        // ensure all the proper components of the request exist. If not, it is a bad request. Also
+        // ensure they are not empty.
+        if (request.username() == null || request.password() == null || request.email() == null ||
+                request.username().isEmpty() || request.password().isEmpty() || request.email().isEmpty()) {
+            context.status(400);
+            var message = Map.of("message", "Error: bad request");
+            context.json(serializer.toJson(message));
+            return;
+        }
+
         // make a register service call.
-        String jsonData = "";
         try {
             // pass in userDAO.
             RegisterResult result = new UserService(userDAO).register(request);
 
             // Serialize result to JSON and send it back
-            jsonData = serializer.toJson(result);
+            String jsonData = serializer.toJson(result);
             context.status(200);
             context.json(jsonData);
 
