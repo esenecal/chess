@@ -1,7 +1,6 @@
 package service;
 
 import dataaccess.AlreadyTakenException;
-import dataaccess.DataAccessException;
 import dataaccess.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
@@ -42,16 +41,11 @@ public class UserService {
         userDAO.createUser(userData);
 
         // create auth
-        AuthData authData = new AuthData(generateAuthToken(), userData.username());
+        AuthData authData = new AuthData(util.generateAuthToken(), userData.username());
         userDAO.createAuth(authData);
 
         // return RegisterResult to Handler.
         return new RegisterResult(authData.authToken(), authData.username());
     }
 
-    // Pull this out somewhere else, like a utils.
-    // See MasteryLS "Phase 3: Chess Web API
-    public static String generateAuthToken() {
-        return UUID.randomUUID().toString();
-    }
 }
