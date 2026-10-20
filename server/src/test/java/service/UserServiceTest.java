@@ -54,9 +54,9 @@ public class UserServiceTest {
 
         try {
             // Register the user.
-            RegisterResult result = userService.register(request);
+            userService.register(request);
         } catch (DataAccessException ex) {
-            // if we reach here, assert that this does not throw an exception. if it does, it fails.
+            // if we reach here, assert that this does not throw an exception. if it does, it fails. Which it will.
             assertAll(() -> userService.register(request));
         }
 
@@ -98,9 +98,9 @@ public class UserServiceTest {
             assertNotNull(loginResult.authToken());
             assertInstanceOf(String.class, loginResult.authToken());
         } catch (UnauthorizedCredentialsException ex) {
-            fail("Login failed");
+            fail("Login failed. UnauthorizedCredentialsException thrown.");
         } catch (Exception ex) {
-            fail("Other exception");
+            fail("Other exception thrown.");
         }
 
     }
@@ -115,25 +115,17 @@ public class UserServiceTest {
 
         try {
             // Register in the user.
-            RegisterResult regResult = userService.register(regRequest);
+            userService.register(regRequest);
         } catch (AlreadyTakenException ex) {
             fail("Register failed");
         } catch (Exception ex) {
             fail("Other exception");
         }
 
-        // Log in the user.
+        // Log in the user with an incorrect username.
         LoginRequest loginRequest = new LoginRequest("Joe", "1234");
 
-        try {
-            LoginResult loginResult = userService.login(loginRequest);
-            // Determine we received a response with the correct username and an authToken.
-            fail("Login succeeded but should not have.");
-        } catch (UnauthorizedCredentialsException ex) {
-            assertThrows(ex.getClass(), () -> userService.login(loginRequest));
-        } catch (Exception ex) {
-            fail("Other exception");
-        }
+        assertThrows(UnauthorizedCredentialsException.class, () -> userService.login(loginRequest));
     }
 
     @Test
@@ -150,7 +142,7 @@ public class UserServiceTest {
         UserService userService = new UserService(userDAO);
 
         // Log in the user.
-        LoginRequest loginRequest = new LoginRequest("Joe", "1234");
+        LoginRequest loginRequest = new LoginRequest("Jim", "1");
         assertThrows(UnauthorizedCredentialsException.class, () -> userService.login(loginRequest));
     }
 }
