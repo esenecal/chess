@@ -1,6 +1,7 @@
 package service;
 
 import dataaccess.AlreadyTakenException;
+import dataaccess.NonexistentUserException;
 import model.AuthData;
 import model.UserData;
 import requestresult.*;
@@ -51,7 +52,16 @@ public class UserService {
         return new RegisterResult(authData.username(), authData.authToken());
     }
 
-    public LoginResult login(LoginRequest request) {
+    public LoginResult login(LoginRequest request) throws NonexistentUserException {
+
+        // query storage for user data with username
+        UserData existingUser = userDAO.getUser(request.username());
+
+        // If UserData is null, no such user exists.
+        if (existingUser == null) {
+            throw new NonexistentUserException("Error: unauthorized");
+        }
+
         return null;
     }
 }
