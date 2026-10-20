@@ -1,7 +1,7 @@
 package service;
 
 import dataaccess.AlreadyTakenException;
-import dataaccess.NonexistentUserException;
+import dataaccess.UnauthorizedCredentialsException;
 import model.AuthData;
 import model.UserData;
 import requestresult.*;
@@ -52,16 +52,25 @@ public class UserService {
         return new RegisterResult(authData.username(), authData.authToken());
     }
 
-    public LoginResult login(LoginRequest request) throws NonexistentUserException {
+    public LoginResult login(LoginRequest request) throws UnauthorizedCredentialsException {
 
         // query storage for user data with username
         UserData existingUser = userDAO.getUser(request.username());
 
-        // If UserData is null, no such user exists.
-        if (existingUser == null) {
-            throw new NonexistentUserException("Error: unauthorized");
+        // If UserData is null, no such user exists. Functionally checking if the username is correct.
+        // If the user does exist but the passwords do not match, then also unauthorized.
+        // This used to have two exceptions, but as a nonexistent username and an incorrect password are both
+        // functionally unauthorized credentials, we are simplifying.
+        // Removing distinction between an incorrect username vs. password also may increase security.
+        // The server does not need to know WHAT failed, only that it failed.
+        if (existingUser == null || !existingUser.password().equals(request.password())) {
+            throw new UnauthorizedCredentialsException("Error: unauthorized");
         }
 
-        return null;
+        // create auth with existing user data
+        AuthData authData = new AuthData(Util.generateAuthToken(), existingUser.username());
+        userDAO.createAuth(authData);
+
+        return new LoginResult(authData.username(), authData.authToken());
     }
 }
