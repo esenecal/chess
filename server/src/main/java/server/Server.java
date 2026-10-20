@@ -106,6 +106,15 @@ public class Server {
         // Deserialize username and password into LoginRequest.
         LoginRequest request = serializer.fromJson(context.body(), LoginRequest.class);
 
+        // ensure we have a good request.
+        if (request.username() == null || request.password() == null ||
+                request.username().isEmpty() || request.password().isEmpty()) {
+            context.status(400);
+            var message = Map.of("message", "Error: bad request");
+            context.json(serializer.toJson(message));
+            return;
+        }
+
         // Make the request to UserService
         try {
             LoginResult result = new UserService(userDAO).login(request);
