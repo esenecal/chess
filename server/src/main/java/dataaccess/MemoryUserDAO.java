@@ -3,10 +3,17 @@ package dataaccess;
 import model.AuthData;
 import model.UserData;
 
+import java.util.HashMap
+
 public class MemoryUserDAO implements UserDAO {
+
+    // map for storing user data. stored username: UserData.
+    private HashMap<String, UserData> userMap = new HashMap<>();
+
     @Override
     public UserData getUser(String username) {
-        return null;
+        // return UserData associated with username.
+        return userMap.get(username);
     }
 
     @Override
