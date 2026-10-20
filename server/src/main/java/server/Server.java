@@ -10,6 +10,8 @@ import model.*;
 import requestresult.*;
 import service.*;
 
+import java.util.Map;
+
 public class Server {
 
     private final Javalin javalin;
@@ -17,7 +19,6 @@ public class Server {
     // declaration of the userDAO. can be changed easily to switch the specific backend implementation.
     // This must be declared here; otherwise, it will not persist.
     UserDAO userDAO = new MemoryUserDAO();
-
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
@@ -70,17 +71,21 @@ public class Server {
 
             // Serialize result to JSON and send it back
             jsonData = serializer.toJson(result);
+            context.status(200);
+            context.json(jsonData);
+
         } catch (AlreadyTakenException ex) {
             // send back the error message
             context.status(403);
-            context.json(ex.getMessage());
+            // see MasteryLS, "JSON and Serialization"
+            var message = Map.of("message", ex.getMessage());
+            context.json(serializer.toJson(message));
         } catch (Exception ex) {
             // General exceptions.
             context.status(500);
-            context.json(ex.getMessage());
+            var message = Map.of("message", ex.getMessage());
+            context.json(serializer.toJson(message));
         }
-        context.status(200);
-        context.json(jsonData);
     }
 
     /**

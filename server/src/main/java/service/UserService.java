@@ -34,7 +34,6 @@ public class UserService {
 
         // attempt to get userData associated with userName.
         UserData existingUser = userDAO.getUser(userData.username());
-        System.out.println(existingUser);
 
         // If there is an existing user, then this user is already taken.
         if (existingUser != null) {
