@@ -12,8 +12,14 @@ import dataaccess.UserDAO;
  */
 public class UserService {
 
-    // declaration of the userDAO. can be changed easily to switch the specific backend implementation.
-    UserDAO userDAO = new MemoryUserDAO();
+    // the specific implementation of userDAO.
+    private final UserDAO userDAO;
+
+    // I got this idea from an old Discord message on this topic.
+    public UserService(UserDAO userDAO) {
+        // the specific implementation is passed in at runtime, at instantiation.
+        this.userDAO = userDAO;
+    }
 
     /**
      * Register a user.
@@ -28,6 +34,7 @@ public class UserService {
 
         // attempt to get userData associated with userName.
         UserData existingUser = userDAO.getUser(userData.username());
+        System.out.println(existingUser);
 
         // If there is an existing user, then this user is already taken.
         if (existingUser != null) {

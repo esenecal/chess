@@ -1,6 +1,8 @@
 package server;
 
 import dataaccess.AlreadyTakenException;
+import dataaccess.MemoryUserDAO;
+import dataaccess.UserDAO;
 import io.javalin.*;
 import io.javalin.http.Context;
 import com.google.gson.Gson;
@@ -11,6 +13,11 @@ import service.*;
 public class Server {
 
     private final Javalin javalin;
+
+    // declaration of the userDAO. can be changed easily to switch the specific backend implementation.
+    // This must be declared here; otherwise, it will not persist.
+    UserDAO userDAO = new MemoryUserDAO();
+
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
@@ -56,14 +63,13 @@ public class Server {
         RegisterRequest request = serializer.fromJson(context.body(), RegisterRequest.class);
 
         // make a register service call.
+        String jsonData = "";
         try {
-            RegisterResult result = new UserService().register(request);
+            // pass in userDAO.
+            RegisterResult result = new UserService(userDAO).register(request);
 
             // Serialize result to JSON and send it back
-            String jsonData = serializer.toJson(result);
-            context.status(200);
-            context.json(jsonData);
-
+            jsonData = serializer.toJson(result);
         } catch (AlreadyTakenException ex) {
             // send back the error message
             context.status(403);
@@ -73,6 +79,8 @@ public class Server {
             context.status(500);
             context.json(ex.getMessage());
         }
+        context.status(200);
+        context.json(jsonData);
     }
 
     /**

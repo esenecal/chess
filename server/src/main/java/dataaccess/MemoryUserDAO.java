@@ -17,12 +17,14 @@ public class MemoryUserDAO implements UserDAO {
     @Override
     public UserData getUser(String username) {
         // return UserData associated with username.
+        System.out.println(userMap);
         return userMap.get(username);
     }
 
     @Override
     public void createUser(UserData userData) {
         userMap.put(userData.username(), userData);
+        System.out.println(userData.username() + ", " + userData);
     }
 
     @Override
