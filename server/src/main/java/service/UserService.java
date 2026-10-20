@@ -1,13 +1,38 @@
 package service;
 
+import dataaccess.DataAccessException;
+import dataaccess.MemoryUserDAO;
+import model.UserData;
 import requestresult.*;
+import dataaccess.UserDAO;
 
 /**
  * Contains logic for user-related requests
  */
 public class UserService {
 
-    public RegisterResult register(RegisterRequest request) {
+    // declaration of the userDAO. can be changed easily to switch the specific backend implementation.
+    UserDAO userDAO = new MemoryUserDAO();
+
+    /**
+     * Register a user.
+     *
+     * @param request a request record containing a username, password, and email.
+     * @return a RegisterResult containing a username and authToken.
+     */
+    public RegisterResult register(RegisterRequest request) throws DataAccessException {
+
+        // create a UserData object using request.
+        UserData userData = new UserData(request.username(), request.password(), request.email());
+
+        // attempt to get userData associated with userName.
+        UserData existingUser = userDAO.getUser(userData.username());
+
+        // If there is an existing user, then this user is already taken.
+        if (existingUser != null) {
+            throw new DataAccessException("");
+        }
+
         return null;
     }
 }
