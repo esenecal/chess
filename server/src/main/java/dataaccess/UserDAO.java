@@ -15,16 +15,16 @@ public interface UserDAO {
     UserData getUser(String username);
 
     /**
-     * Create a user in memory using userData
+     * Create a user in memory using userData. Associate username: UserData
      *
      * @param userData username, password, email
      */
     void createUser(UserData userData);
 
     /**
-     * Add AuthData in memory.
+     * Add AuthData in memory. Associate authToken: AuthData
      *
-     * @param authData username, authToken
+     * @param authData authToken, username
      */
     void createAuth(AuthData authData);
 
