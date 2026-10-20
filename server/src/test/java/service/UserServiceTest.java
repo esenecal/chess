@@ -176,4 +176,19 @@ public class UserServiceTest {
             fail("DataAccessException thrown");
         }
     }
+
+    @Test
+    public void logoutNoAuthTokenTest() {
+        UserDAO userDAO = new MemoryUserDAO();
+
+        // Create an authToken, but do not add it to storage (do not log them in).
+        AuthData authData = new AuthData(Util.generateAuthToken(), "Jim");
+
+        UserService userService = new UserService(userDAO);
+
+        // try to log out they who are logged it.
+        LogoutRequest logoutRequest = new LogoutRequest(authData.authToken());
+        assertThrows(NonexistentAuthException.class, () -> userService.logout(logoutRequest));
+    }
+
 }
