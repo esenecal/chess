@@ -32,6 +32,19 @@ public class StorageServiceTest {
             fail("Exception thrown");
         }
 
-        
+        // clear
+        StorageService storageService = new StorageService(userDAO, gameDAO);
+
+        try {
+            storageService.clear();
+
+            // query and ensure everything is null
+            assertNull(userDAO.getUser(userData.username()));
+            assertNull(userDAO.getAuth(authData.authToken()));
+            assertNull(gameDAO.getGame(gameData.gameID()));
+        } catch (Exception ex) {
+            fail("Exception thrown");
+        }
+
     }
 }
