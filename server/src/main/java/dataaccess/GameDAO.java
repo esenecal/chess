@@ -43,5 +43,8 @@ public interface GameDAO {
      */
     void updateGame(int gameID, GameData gameData) throws DataAccessException;
 
-    
+    /**
+     * Remove all Games from storage
+     */
+    void removeGames() throws DataAccessException;
 }
