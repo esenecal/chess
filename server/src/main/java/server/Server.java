@@ -109,6 +109,8 @@ public class Server {
         // ensure we have a good request.
         if (request.username() == null || request.password() == null ||
                 request.username().isEmpty() || request.password().isEmpty()) {
+
+            // see Web API on MasterLS.
             context.status(400);
             var message = Map.of("message", "Error: bad request");
             context.json(serializer.toJson(message));
@@ -141,14 +143,17 @@ public class Server {
         Gson serializer = new Gson();
 
         // Serialize header authToken to logout request.
-        LogoutRequest request = serializer.fromJson(context.header("authToken"), LogoutRequest.class);
+        // https://javalin.io/documentation#context, Web API MasteryLS HTTP Headers
+        LogoutRequest request = new LogoutRequest(context.header("authorization"));
 
         try {
             // make logout request.
-            new UserService(userDAO).logout(request);
+            UserService userService = new UserService(userDAO);
+            userService.logout(request);
             context.status(200);
-            // do not return anything.
+            context.contentType("application/json");
         } catch (NonexistentAuthException ex) {
+
             // authToken did not exist, nothing removed.
             context.status(401);
             var message = Map.of("message", ex.getMessage());
