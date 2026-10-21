@@ -20,8 +20,9 @@ public class UserServiceTest {
     @Test
     public void registerCorrectResult() {
         UserDAO userDAO = new MemoryUserDAO();
+        AuthDAO authDAO = new MemoryAuthDAO();
         // meets 88% line coverage
-        UserService userService = new UserService(userDAO);
+        UserService userService = new UserService(userDAO, authDAO);
 
         // Create a user
         RegisterRequest request = new RegisterRequest("Jim", "1234", "jim@jim.com");
@@ -48,7 +49,8 @@ public class UserServiceTest {
         // 100% line coverage
 
         UserDAO userDAO = new MemoryUserDAO();
-        UserService userService = new UserService(userDAO);
+        AuthDAO authDAO = new MemoryAuthDAO();
+        UserService userService = new UserService(userDAO, authDAO);
 
         // Create a user
         RegisterRequest request = new RegisterRequest("Jim", "1234", "jim@jim.com");
@@ -75,7 +77,8 @@ public class UserServiceTest {
         // 88% coverage.
 
         UserDAO userDAO = new MemoryUserDAO();
-        UserService userService = new UserService(userDAO);
+        AuthDAO authDAO = new MemoryAuthDAO();
+        UserService userService = new UserService(userDAO, authDAO);
 
         // Create a user.
         RegisterRequest regRequest = new RegisterRequest("Jim", "1234", "jim@jim.com");
@@ -109,7 +112,8 @@ public class UserServiceTest {
     @Test
     public void loginBadUsernameTest() {
         UserDAO userDAO = new MemoryUserDAO();
-        UserService userService = new UserService(userDAO);
+        AuthDAO authDAO = new MemoryAuthDAO();
+        UserService userService = new UserService(userDAO, authDAO);
 
         // Create a user.
         RegisterRequest regRequest = new RegisterRequest("Jim", "1234", "jim@jim.com");
@@ -132,6 +136,7 @@ public class UserServiceTest {
     @Test
     public void loginBadPasswordTest() {
         UserDAO userDAO = new MemoryUserDAO();
+        AuthDAO authDAO = new MemoryAuthDAO();
 
         // Create user.
         try {
@@ -140,7 +145,7 @@ public class UserServiceTest {
             fail("DataAccessException thrown.");
         }
 
-        UserService userService = new UserService(userDAO);
+        UserService userService = new UserService(userDAO, authDAO);
 
         // Log in the user.
         LoginRequest loginRequest = new LoginRequest("Jim", "1");
@@ -150,6 +155,7 @@ public class UserServiceTest {
     @Test
     public void logoutSuccessfulTest() {
         UserDAO userDAO = new MemoryUserDAO();
+        AuthDAO authDAO = new MemoryAuthDAO();
 
         // Create user and log them
         AuthData authData = new AuthData(Util.generateAuthToken(), "Jim");
@@ -157,19 +163,19 @@ public class UserServiceTest {
             // creates the user in memory.
             userDAO.createUser(new UserData("Jim", "1234", "jim@jim.com"));
             // logs in the user in memory.
-            userDAO.createAuth(authData);
+            authDAO.createAuth(authData);
         } catch (DataAccessException ex) {
             fail("DataAccessException thrown.");
         }
 
-        UserService userService = new UserService(userDAO);
+        UserService userService = new UserService(userDAO, authDAO);
 
         // log out the user.
         LogoutRequest logoutRequest = new LogoutRequest(authData.authToken());
         // Verify the user's authData is missing from the DAO.
         try {
             userService.logout(logoutRequest);
-            assertNull(userDAO.getAuth(authData.authToken()));
+            assertNull(authDAO.getAuth(authData.authToken()));
         } catch (NonexistentAuthException ex) {
             fail("NonexistentAuthException thrown");
         } catch (DataAccessException ex) {
@@ -180,11 +186,12 @@ public class UserServiceTest {
     @Test
     public void logoutNoAuthTokenTest() {
         UserDAO userDAO = new MemoryUserDAO();
+        AuthDAO authDAO = new MemoryAuthDAO();
 
         // Create an authToken, but do not add it to storage (do not log them in).
         AuthData authData = new AuthData(Util.generateAuthToken(), "Jim");
 
-        UserService userService = new UserService(userDAO);
+        UserService userService = new UserService(userDAO, authDAO);
 
         // try to log out they who are logged it.
         LogoutRequest logoutRequest = new LogoutRequest(authData.authToken());

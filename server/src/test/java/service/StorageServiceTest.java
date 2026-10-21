@@ -16,6 +16,7 @@ public class StorageServiceTest {
         // 100% line coverage for StorageService.
 
         UserDAO userDAO = new MemoryUserDAO();
+        AuthDAO authDAO = new MemoryAuthDAO();
         GameDAO gameDAO = new MemoryGameDAO();
 
         // create a user
@@ -27,21 +28,21 @@ public class StorageServiceTest {
 
         try {
             userDAO.createUser(userData);
-            userDAO.createAuth(authData);
+            authDAO.createAuth(authData);
             gameDAO.createGame(gameData);
         } catch (DataAccessException ex) {
             fail("Exception thrown");
         }
 
         // clear
-        StorageService storageService = new StorageService(userDAO, gameDAO);
+        StorageService storageService = new StorageService(userDAO, authDAO, gameDAO);
 
         try {
             storageService.clear();
 
             // query and ensure everything is null
             assertNull(userDAO.getUser(userData.username()));
-            assertNull(userDAO.getAuth(authData.authToken()));
+            assertNull(authDAO.getAuth(authData.authToken()));
             assertNull(gameDAO.getGame(gameData.gameID()));
         } catch (Exception ex) {
             fail("Exception thrown");

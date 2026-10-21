@@ -17,6 +17,7 @@ public class Server {
     // declaration of the userDAO. can be changed easily to switch the specific backend implementation.
     // This must be declared here; otherwise, it will not persist.
     UserDAO userDAO = new MemoryUserDAO();
+    AuthDAO authDAO = new MemoryAuthDAO();
     GameDAO gameDAO = new MemoryGameDAO();
 
     public Server() {
@@ -47,7 +48,7 @@ public class Server {
 
         Gson serializer = new Gson();
 
-        StorageService storageService = new StorageService(userDAO, gameDAO);
+        StorageService storageService = new StorageService(userDAO, authDAO, gameDAO);
 
         try {
             storageService.clear();
@@ -89,7 +90,7 @@ public class Server {
         // make a register service call.
         try {
             // pass in userDAO.
-            RegisterResult result = new UserService(userDAO).register(request);
+            RegisterResult result = new UserService(userDAO, authDAO).register(request);
 
             // Serialize result to JSON and send it back
             String jsonData = serializer.toJson(result);
@@ -134,7 +135,7 @@ public class Server {
 
         // Make the request to UserService
         try {
-            LoginResult result = new UserService(userDAO).login(request);
+            LoginResult result = new UserService(userDAO, authDAO).login(request);
             // serialize the result and send it to the front end.
             context.status(200);
             context.json(serializer.toJson(result));
@@ -163,7 +164,7 @@ public class Server {
 
         try {
             // make logout request.
-            UserService userService = new UserService(userDAO);
+            UserService userService = new UserService(userDAO, authDAO);
             userService.logout(request);
             context.status(200);
             context.contentType("application/json");

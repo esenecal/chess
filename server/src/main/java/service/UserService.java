@@ -8,17 +8,19 @@ import requestresult.*;
 import javax.xml.crypto.Data;
 
 /**
- * Contains logic for user-related requests
+ * Contains logic for user-related requests.
  */
 public class UserService {
 
     // the specific implementation of userDAO.
     private final UserDAO userDAO;
+    private final AuthDAO authDAO;
 
     // I got this idea from an old Discord message on this topic.
-    public UserService(UserDAO userDAO) {
+    public UserService(UserDAO userDAO, AuthDAO authDAO) {
         // the specific implementation is passed in at runtime, at instantiation.
         this.userDAO = userDAO;
+        this.authDAO = authDAO;
     }
 
     /**
@@ -49,7 +51,7 @@ public class UserService {
 
         // create auth
         AuthData authData = new AuthData(Util.generateAuthToken(), userData.username());
-        userDAO.createAuth(authData);
+        authDAO.createAuth(authData);
 
         // return RegisterResult to Handler.
         return new RegisterResult(authData.username(), authData.authToken());
@@ -72,7 +74,7 @@ public class UserService {
 
         // create auth with existing user data
         AuthData authData = new AuthData(Util.generateAuthToken(), existingUser.username());
-        userDAO.createAuth(authData);
+        authDAO.createAuth(authData);
 
         return new LoginResult(authData.username(), authData.authToken());
     }
@@ -81,7 +83,7 @@ public class UserService {
     public void logout(LogoutRequest request) throws DataAccessException {
 
         // Get authData associated with request authToken.
-        AuthData authData = userDAO.getAuth(request.authToken());
+        AuthData authData = authDAO.getAuth(request.authToken());
 
         // if user is not authenticated, say so.
         if (authData == null) {
@@ -89,7 +91,7 @@ public class UserService {
         }
 
         // Remove the authData to log out the user.
-        userDAO.deleteAuth(authData);
+        authDAO.deleteAuth(authData);
     }
-    
+
 }
