@@ -13,6 +13,7 @@ public class StorageServiceTest {
 
     @Test
     public void clearPositiveTest() {
+        // 100% line coverage for StorageService.
 
         UserDAO userDAO = new MemoryUserDAO();
         GameDAO gameDAO = new MemoryGameDAO();
