@@ -190,7 +190,7 @@ public class Server {
      * @param context data for HTTP request
      */
     private void listGames(Context context) {
-
+        
     }
 
     /**
