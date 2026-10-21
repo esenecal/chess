@@ -91,4 +91,5 @@ public class UserService {
         // Remove the authData to log out the user.
         userDAO.deleteAuth(authData);
     }
+    
 }
