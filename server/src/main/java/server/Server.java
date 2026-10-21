@@ -17,6 +17,7 @@ public class Server {
     // declaration of the userDAO. can be changed easily to switch the specific backend implementation.
     // This must be declared here; otherwise, it will not persist.
     UserDAO userDAO = new MemoryUserDAO();
+    GameDAO gameDAO = new MemoryGameDAO();
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
@@ -43,6 +44,20 @@ public class Server {
      * @param context context data for HTTP request
      */
     private void clearDB(Context context) {
+
+        Gson serializer = new Gson();
+
+        StorageService storageService = new StorageService(userDAO, gameDAO);
+
+        try {
+            storageService.clear();
+            context.status(200);
+            context.contentType("application/json");
+        } catch (Exception ex) {
+            context.status(500);
+            var message = Map.of("message", ex.getMessage());
+            context.json(serializer.toJson(message));
+        }
 
     }
 

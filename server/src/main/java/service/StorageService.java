@@ -14,7 +14,7 @@ public class StorageService {
         this.gameDAO = gameDAO;
     }
 
-    void clear() throws DataAccessException {
+    public void clear() throws DataAccessException {
         userDAO.removeUsers();
         userDAO.removeAllAuthData();
         gameDAO.removeGames();
