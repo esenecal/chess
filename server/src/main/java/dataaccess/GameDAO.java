@@ -42,4 +42,6 @@ public interface GameDAO {
      * @throws DataAccessException throws DataAccessException
      */
     void updateGame(int gameID, GameData gameData) throws DataAccessException;
+
+    
 }

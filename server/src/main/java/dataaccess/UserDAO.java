@@ -42,4 +42,18 @@ public interface UserDAO {
      * @param authData username, authToken.
      */
     void deleteAuth(AuthData authData) throws DataAccessException;
+
+    /**
+     * Remove all users in storage
+     *
+     * @throws DataAccessException throws DataAccessException
+     */
+    void removeUsers() throws DataAccessException;
+
+    /**
+     * Remove all authTokens in storage
+     *
+     * @throws DataAccessException throws DataAccessException
+     */
+    void removeAllAuthData() throws DataAccessException;
 }
