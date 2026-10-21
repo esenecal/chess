@@ -23,7 +23,7 @@ public interface GameDAO {
      * @param gameData GameData
      * @throws DataAccessException throws DataAccessException
      */
-    void createGame(AuthData authData, GameData gameData) throws DataAccessException;
+    void createGame(GameData gameData) throws DataAccessException;
 
     /**
      * Get a game by ID
