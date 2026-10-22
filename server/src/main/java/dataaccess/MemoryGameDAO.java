@@ -14,8 +14,8 @@ public class MemoryGameDAO implements GameDAO {
     private final HashMap<Integer, GameData> gameMap = new HashMap<>();
 
     // used to create the gameID. As all of our data disappears (due to being in memory),
-    // We can simply start at 0 each time and increment as we create games.
-    int gameIDIncrement = 0;
+    // We can simply start at 1 each time and increment as we create games.
+    int gameIDIncrement = 1;
 
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
@@ -33,7 +33,7 @@ public class MemoryGameDAO implements GameDAO {
         gameIDIncrement++;
 
         gameMap.put(newGameData.gameID(), newGameData);
-        
+
         return newGameData.gameID();
     }
 

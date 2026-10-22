@@ -30,7 +30,8 @@ public class GameServiceTest {
         AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
 
         try {
-            // add games to storage
+            // add games to storage. Remember, createGame assigns its custom ID according to db schema;
+            // in this case, we simply created the games with the ID they will be assigned to.
             gameDAO.createGame(game1);
             gameDAO.createGame(game2);
 
@@ -113,6 +114,29 @@ public class GameServiceTest {
             assertNull(resultGame.whiteUsername());
             assertNull(resultGame.blackUsername());
             assertEquals(new ChessGame(), resultGame.game());
+        } catch (Exception ex) {
+            fail("Exception thrown: " + ex.getMessage());
+        }
+
+        clearStorage();
+    }
+
+    @Test
+    public void createGameNoAuthTest() {
+
+        // Create authData but do not log the user in.
+        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+
+        // create a game.
+        try {
+            // Create game called game1.
+            String gameName = "game1";
+            CreateGameRequest request = new CreateGameRequest(authData.authToken(), gameName);
+            GameService service = new GameService(authDAO, gameDAO);
+
+            // it should throw an error.
+            assertThrows(NonexistentAuthException.class, () -> service.createGame(request));
+
         } catch (Exception ex) {
             fail("Exception thrown: " + ex.getMessage());
         }

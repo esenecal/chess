@@ -107,8 +107,7 @@ public class Server {
         } catch (Exception ex) {
             // General exceptions, including other DataAccessExceptions.
             context.status(500);
-            var message = Map.of("message", ex.getMessage());
-            context.json(serializer.toJson(message));
+            context.json(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
     }
 
@@ -146,8 +145,7 @@ public class Server {
             context.json(serializer.toJson(message));
         } catch (Exception ex) {
             context.status(500);
-            var message = Map.of("message", ex.getMessage());
-            context.json(serializer.toJson(message));
+            context.json(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
     }
 
@@ -179,8 +177,7 @@ public class Server {
         } catch (Exception ex) {
             // other exceptions.
             context.status(500);
-            var message = Map.of("message", ex.getMessage());
-            context.json(serializer.toJson(message));
+            context.json(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
 
     }
@@ -208,7 +205,7 @@ public class Server {
             context.json(serializer.toJson(Map.of("message", ex.getMessage())));
         } catch (Exception ex) {
             context.status(500);
-            context.json(serializer.toJson(Map.of("message", ex.getMessage())));
+            context.json(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }
     }
 
@@ -218,7 +215,38 @@ public class Server {
      * @param context data for HTTP request
      */
     private void createGame(Context context) {
+        // get auth token, name.
+        Gson serializer = new Gson();
+        String authToken = context.header("authorization");
+        CreateGameRequest request = serializer.fromJson(context.body(), CreateGameRequest.class);
+        // To add the authToken, initialize another request and replace the old one.
+        request = new CreateGameRequest(authToken, request.gameName());
 
+        // ensure we have a good request. Taken and modified from loginUser.
+        if (request.authToken() == null || request.gameName() == null ||
+                request.authToken().isEmpty() || request.gameName().isEmpty()) {
+
+            // see Web API on MasterLS.
+            context.status(400);
+            context.json(serializer.toJson(Map.of("message", "Error: bad request")));
+            return;
+        }
+
+        // Run the service call.
+        try {
+            
+            CreateGameResult result = new GameService(authDAO, gameDAO).createGame(request);
+
+            context.status(200);
+            context.json(serializer.toJson(result));
+
+        } catch (NonexistentAuthException ex) {
+            context.status(401);
+            context.json(serializer.toJson(Map.of("message", ex.getMessage())));
+        } catch (Exception ex) {
+            context.status(500);
+            context.json(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+        }
     }
 
     /**
