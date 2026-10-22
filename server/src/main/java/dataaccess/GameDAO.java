@@ -40,7 +40,7 @@ public interface GameDAO {
      * @param gameData GameData
      * @throws DataAccessException throws DataAccessException
      */
-    void updateGame(int gameID, GameData gameData) throws DataAccessException;
+    void updateGame(GameData gameData) throws DataAccessException;
 
     /**
      * Remove all Games from storage

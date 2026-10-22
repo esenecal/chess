@@ -43,8 +43,9 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void updateGame(int gameID, GameData gameData) throws DataAccessException {
-
+    public void updateGame(GameData gameData) throws DataAccessException {
+        // replace the gameData with an update.
+        gameMap.put(gameData.gameID(), gameData);
     }
 
     @Override

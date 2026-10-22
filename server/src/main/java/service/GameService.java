@@ -75,8 +75,27 @@ public class GameService {
             throw new NonexistentGameException("Error: unauthorized");
         }
 
-        // Otherwise, update game.
-//        gameDAO.updateGame(game);
+        GameData updatedGame;
+        // construct updated game state
+        if (request.playerColor() == ChessGame.TeamColor.WHITE) {
+            updatedGame = new GameData(
+                    game.gameID(),          // game ID stays the same.
+                    authData.username(),    // replace white team username with user associated with auth data.
+                    game.blackUsername(),
+                    game.gameName(),
+                    game.game()
+            );
+        } else {
+            updatedGame = new GameData(
+                    game.gameID(),
+                    game.whiteUsername(),
+                    authData.username(),    // replace black team username with user associated with auth data.
+                    game.gameName(),
+                    game.game()
+            );
+        }
+
+        gameDAO.updateGame(updatedGame);
 
     }
 
