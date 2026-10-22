@@ -234,7 +234,7 @@ public class Server {
 
         // Run the service call.
         try {
-            
+
             CreateGameResult result = new GameService(authDAO, gameDAO).createGame(request);
 
             context.status(200);
@@ -255,6 +255,12 @@ public class Server {
      * @param context data for HTTP request
      */
     private void joinGame(Context context) {
+        // get auth token, name. See createGame
+        Gson serializer = new Gson();
+        String authToken = context.header("authorization");
+        JoinGameRequest request = serializer.fromJson(context.body(), JoinGameRequest.class);
+        // To add the authToken, initialize another request and replace the old one.
+        request = new JoinGameRequest(authToken, request.playerColor(), request.gameID());
 
     }
     // HANDLERS END *****************************************************************
