@@ -3,10 +3,7 @@ package service;
 import chess.ChessGame;
 import dataaccess.*;
 import model.AuthData;
-import requestresult.CreateGameRequest;
-import requestresult.CreateGameResult;
-import requestresult.ListGamesRequest;
-import requestresult.ListGamesResult;
+import requestresult.*;
 
 import model.GameData;
 import org.junit.jupiter.api.Test;
@@ -140,6 +137,58 @@ public class GameServiceTest {
         } catch (Exception ex) {
             fail("Exception thrown: " + ex.getMessage());
         }
+
+        clearStorage();
+    }
+
+    @Test
+    public void joinGamePositiveTest() {
+
+        // create a game and an authorized user.
+        GameData game = new GameData(1, null, null, "game1", new ChessGame());
+        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        ChessGame.TeamColor playerColor = ChessGame.TeamColor.WHITE;
+
+        try {
+            // add to storage. Remember, the game ID will be overwritten, but it should remain 1, as this is the first.
+            gameDAO.createGame(game);
+            authDAO.createAuth(authData);
+
+            JoinGameRequest request = new JoinGameRequest(authData.authToken(), playerColor, game.gameID());
+            // join the game.
+            GameService gameService = new GameService(authDAO, gameDAO);
+            gameService.joinGame(request);
+            GameData updatedGame = gameDAO.getGame(game.gameID());
+
+            // all information in the game must be the same, except the white team username should be jim.
+            assertEquals(game.gameID(), updatedGame.gameID());
+            assertEquals(authData.username(), updatedGame.whiteUsername());
+            assertEquals(game.blackUsername(), updatedGame.blackUsername());
+            assertEquals(game.gameName(), updatedGame.gameName());
+            assertEquals(game.game(), updatedGame.game());
+
+        } catch (Exception ex) {
+            fail("Exception thrown: " + ex.getMessage());
+        }
+
+        clearStorage();
+
+    }
+
+    @Test
+    public void joinGameNoAuthTest() {
+
+        clearStorage();
+    }
+
+    @Test
+    public void joinGameNoGameTest() {
+
+        clearStorage();
+    }
+
+    @Test
+    public void joinGameTakenTest() {
 
         clearStorage();
     }
