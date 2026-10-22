@@ -276,10 +276,7 @@ public class GameServiceTest {
             gameDAO.createGame(game);
             authDAO.createAuth(authData);
 
-            JoinGameRequest request = new JoinGameRequest(authData.authToken(), playerColor, game.gameID());
-            // join the game. It should throw a game taken exception.
-            GameService gameService = new GameService(authDAO, gameDAO);
-            assertThrows(GameTakenException.class, () -> gameService.joinGame(request));
+            testGameTaken(authData.authToken(), playerColor, game.gameID());
         } catch (Exception ex) {
             fail("Exception thrown: " + ex.getMessage());
         }
@@ -299,14 +296,18 @@ public class GameServiceTest {
             gameDAO.createGame(game);
             authDAO.createAuth(authData);
 
-            JoinGameRequest request = new JoinGameRequest(authData.authToken(), playerColor, game.gameID());
-            // join the game. It should throw a game taken exception.
-            GameService gameService = new GameService(authDAO, gameDAO);
-            assertThrows(GameTakenException.class, () -> gameService.joinGame(request));
+            testGameTaken(authData.authToken(), playerColor, game.gameID());
         } catch (Exception ex) {
             fail("Exception thrown: " + ex.getMessage());
         }
         clearStorage();
+    }
+
+    private void testGameTaken(String authToken, ChessGame.TeamColor playerColor, int gameID) {
+        JoinGameRequest request = new JoinGameRequest(authToken, playerColor, gameID);
+        // join the game. It should throw a game taken exception.
+        GameService gameService = new GameService(authDAO, gameDAO);
+        assertThrows(GameTakenException.class, () -> gameService.joinGame(request));
     }
 
     private void clearStorage() {
