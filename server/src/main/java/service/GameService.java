@@ -1,6 +1,9 @@
 package service;
 
 import chess.ChessGame;
+
+import java.util.Collection;
+
 import dataaccess.DataAccessException;
 import dataaccess.NonexistentAuthException;
 import dataaccess.NonexistentGameException;
@@ -38,8 +41,14 @@ public class GameService {
             throw new NonexistentAuthException("Error: unauthorized");
         }
 
-        // get all keys associated with GameData, then place the collection in a result record.
-        return new ListGamesResult(gameDAO.listGames());
+        // get all games.
+        Collection<GameData> gameList = gameDAO.listGames();
+
+        // we now need to prune out the GameData portion.
+        
+
+        // then place the collection in a result record.
+        return new ListGamesResult();
     }
 
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
