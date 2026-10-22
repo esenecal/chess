@@ -4,6 +4,7 @@ import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.NonexistentAuthException;
 import dataaccess.NonexistentGameException;
+import dataaccess.GameTakenException;
 
 import dataaccess.GameDAO;
 import dataaccess.AuthDAO;
@@ -69,30 +70,42 @@ public class GameService {
             throw new NonexistentAuthException("Error: unauthorized");
         }
 
-        // if we have authData, get game by gameID.
+        // Check if game exists.
         GameData game = gameDAO.getGame(request.gameID());
         if (game == null) {
             throw new NonexistentGameException("Error: unauthorized");
         }
 
+
         GameData updatedGame;
+
         // construct updated game state
         if (request.playerColor() == ChessGame.TeamColor.WHITE) {
-            updatedGame = new GameData(
-                    game.gameID(),          // game ID stays the same.
-                    authData.username(),    // replace white team username with user associated with auth data.
-                    game.blackUsername(),
-                    game.gameName(),
-                    game.game()
-            );
+            // if the white team is already taken
+            if (game.whiteUsername() != null) {
+                throw new GameTakenException("Error: already taken");
+            } else {
+                updatedGame = new GameData(
+                        game.gameID(),          // game ID stays the same.
+                        authData.username(),    // replace white team username with user associated with auth data.
+                        game.blackUsername(),
+                        game.gameName(),
+                        game.game()
+                );
+            }
         } else {
-            updatedGame = new GameData(
-                    game.gameID(),
-                    game.whiteUsername(),
-                    authData.username(),    // replace black team username with user associated with auth data.
-                    game.gameName(),
-                    game.game()
-            );
+            // if the black team is already taken
+            if (game.blackUsername() != null) {
+                throw new GameTakenException("Error: already taken");
+            } else {
+                updatedGame = new GameData(
+                        game.gameID(),
+                        game.whiteUsername(),
+                        authData.username(),    // replace black team username with user associated with auth data.
+                        game.gameName(),
+                        game.game()
+                );
+            }
         }
 
         gameDAO.updateGame(updatedGame);
