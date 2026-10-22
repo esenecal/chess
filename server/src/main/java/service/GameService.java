@@ -51,14 +51,16 @@ public class GameService {
             throw new NonexistentAuthException("Error: unauthorized");
         }
 
-        // Set the game ID to 0 as a placeholder. The DAO will assign the proper ID that works
-        // with the implemented storage system; that is an issue that cannot be well addressed here,
-        // as GameService does not know anything about the storage implementation.
+        // Set the game ID to 0 as a placeholder. The DAO or database will assign the proper ID that works
+        // with the implemented storage system; that is an concern that cannot be well addressed here,
+        // as GameService does not know anything about the storage implementation, and different storage
+        // implementations may have different schema for determining identification. So, we define something
+        // arbitrary and let the DAO handle it.
         GameData game = new GameData(0, null, null, request.gameName(), new ChessGame());
 
         int gameID = gameDAO.createGame(game);
 
-        return null;
+        return new CreateGameResult(gameID);
     }
 
 }
