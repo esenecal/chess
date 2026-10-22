@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessGame;
 import dataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
@@ -262,6 +263,34 @@ public class Server {
         // To add the authToken, initialize another request and replace the old one.
         request = new JoinGameRequest(authToken, request.playerColor(), request.gameID());
 
+        // ensure we have a good request. Taken and modified from loginUser.
+        // if playerColor is null, we did not get a valid enum.
+        if (request.authToken() == null || request.playerColor() == null || request.authToken().isEmpty()) {
+
+            // see Web API on MasterLS.
+            context.status(400);
+            context.json(serializer.toJson(Map.of("message", "Error: bad request")));
+            return;
+        }
+
+        try {
+            GameService service = new GameService(authDAO, gameDAO);
+            service.joinGame(request);
+            context.status(200);
+            context.contentType("application/json");
+        } catch (NonexistentGameException ex) {
+            context.status(400);
+            context.json(serializer.toJson(Map.of("message", ex.getMessage())));
+        } catch (NonexistentAuthException ex) {
+            context.status(401);
+            context.json(serializer.toJson(Map.of("message", ex.getMessage())));
+        } catch (GameTakenException ex) {
+            context.status(403);
+            context.json(serializer.toJson(Map.of("message", ex.getMessage())));
+        } catch (Exception ex) {
+            context.status(500);
+            context.json(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
+        }
     }
     // HANDLERS END *****************************************************************
 

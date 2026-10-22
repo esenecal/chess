@@ -73,9 +73,8 @@ public class GameService {
         // Check if game exists.
         GameData game = gameDAO.getGame(request.gameID());
         if (game == null) {
-            throw new NonexistentGameException("Error: unauthorized");
+            throw new NonexistentGameException("Error: already taken");
         }
-
 
         GameData updatedGame;
 
