@@ -13,14 +13,16 @@ import requestresult.*;
 
 // See MasteryLS "Unit Testing"
 public class UserServiceTest {
+
+    UserDAO userDAO = new MemoryUserDAO();
+    AuthDAO authDAO = new MemoryAuthDAO();
+
     /**
      * Positive register test. Successfully register a user.
      * Verifies the correct username, existence of a String authToken.
      */
     @Test
     public void registerCorrectResult() {
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
         // meets 88% line coverage
         UserService userService = new UserService(userDAO, authDAO);
 
@@ -34,10 +36,13 @@ public class UserServiceTest {
             assertEquals("Jim", result.username());
             assertNotNull(result.authToken());
             assertInstanceOf(String.class, result.authToken());
+
+            clearStorage();
         } catch (DataAccessException ex) {
             // if we reach here, assert that this does not throw an exception. if it does, it fails.
             assertAll(() -> userService.register(request));
         }
+
 
     }
 
@@ -48,8 +53,6 @@ public class UserServiceTest {
     public void registerAlreadyTaken() {
         // 100% line coverage
 
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
         UserService userService = new UserService(userDAO, authDAO);
 
         // Create a user
@@ -67,6 +70,7 @@ public class UserServiceTest {
         RegisterRequest request2 = new RegisterRequest("Jim", "0001", "notjim@jim.com");
         assertThrows(AlreadyTakenException.class, () -> userService.register(request2));
 
+        clearStorage();
     }
 
     /**
@@ -76,8 +80,6 @@ public class UserServiceTest {
     public void loginSuccessfulTest() {
         // 88% coverage.
 
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
         UserService userService = new UserService(userDAO, authDAO);
 
         // Create a user.
@@ -107,12 +109,13 @@ public class UserServiceTest {
             fail("Other exception thrown.");
         }
 
+        clearStorage();
+
     }
 
     @Test
     public void loginBadUsernameTest() {
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
+
         UserService userService = new UserService(userDAO, authDAO);
 
         // Create a user.
@@ -131,12 +134,12 @@ public class UserServiceTest {
         LoginRequest loginRequest = new LoginRequest("Joe", "1234");
 
         assertThrows(UnauthorizedCredentialsException.class, () -> userService.login(loginRequest));
+
+        clearStorage();
     }
 
     @Test
     public void loginBadPasswordTest() {
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
 
         // Create user.
         try {
@@ -150,12 +153,12 @@ public class UserServiceTest {
         // Log in the user.
         LoginRequest loginRequest = new LoginRequest("Jim", "1");
         assertThrows(UnauthorizedCredentialsException.class, () -> userService.login(loginRequest));
+
+        clearStorage();
     }
 
     @Test
     public void logoutSuccessfulTest() {
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
 
         // Create user and log them
         AuthData authData = new AuthData(Util.generateAuthToken(), "Jim");
@@ -181,12 +184,12 @@ public class UserServiceTest {
         } catch (DataAccessException ex) {
             fail("DataAccessException thrown");
         }
+
+        clearStorage();
     }
 
     @Test
     public void logoutNoAuthTokenTest() {
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
 
         // Create an authToken, but do not add it to storage (do not log them in).
         AuthData authData = new AuthData(Util.generateAuthToken(), "Jim");
@@ -196,6 +199,18 @@ public class UserServiceTest {
         // try to log out they who are logged it.
         LogoutRequest logoutRequest = new LogoutRequest(authData.authToken());
         assertThrows(NonexistentAuthException.class, () -> userService.logout(logoutRequest));
+
+        clearStorage();
+    }
+
+    private void clearStorage() {
+        try {
+            // Clear storage for next test.
+            userDAO.removeUsers();
+            authDAO.removeAllAuthData();
+        } catch (Exception ex) {
+            fail("Exception thrown when clearing storage");
+        }
     }
 
 }
