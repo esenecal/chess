@@ -11,8 +11,6 @@ import model.GameData;
 import requestresult.ListGamesRequest;
 import requestresult.ListGamesResult;
 
-import java.util.Collection;
-
 public class GameService {
 
     private final AuthDAO authDAO;
