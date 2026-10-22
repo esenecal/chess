@@ -3,16 +3,14 @@ package service;
 import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.NonexistentAuthException;
+import dataaccess.NonexistentGameException;
 
 import dataaccess.GameDAO;
 import dataaccess.AuthDAO;
 
 import model.AuthData;
 import model.GameData;
-import requestresult.CreateGameRequest;
-import requestresult.CreateGameResult;
-import requestresult.ListGamesRequest;
-import requestresult.ListGamesResult;
+import requestresult.*;
 
 public class GameService {
 
@@ -61,6 +59,25 @@ public class GameService {
         int gameID = gameDAO.createGame(game);
 
         return new CreateGameResult(gameID);
+    }
+
+    public void joinGame(JoinGameRequest request) throws DataAccessException {
+
+        // first, get auth token. verify authentication. from createGame.
+        AuthData authData = authDAO.getAuth(request.authToken());
+        if (authData == null) {
+            throw new NonexistentAuthException("Error: unauthorized");
+        }
+
+        // if we have authData, get game by gameID.
+        GameData game = gameDAO.getGame(request.gameID());
+        if (game == null) {
+            throw new NonexistentGameException("Error: unauthorized");
+        }
+
+        // Otherwise, update game.
+//        gameDAO.updateGame(game);
+
     }
 
 }
