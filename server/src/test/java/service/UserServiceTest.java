@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import service.UserService.*;
-
 import requestresult.*;
 
 // See MasteryLS "Unit Testing"
@@ -161,7 +159,7 @@ public class UserServiceTest {
     public void logoutSuccessfulTest() {
 
         // Create user and log them
-        AuthData authData = new AuthData(Util.generateAuthToken(), "Jim");
+        AuthData authData = new AuthData(UserService.generateAuthToken(), "Jim");
         try {
             // creates the user in memory.
             userDAO.createUser(new UserData("Jim", "1234", "jim@jim.com"));
@@ -192,7 +190,7 @@ public class UserServiceTest {
     public void logoutNoAuthTokenTest() {
 
         // Create an authToken, but do not add it to storage (do not log them in).
-        AuthData authData = new AuthData(Util.generateAuthToken(), "Jim");
+        AuthData authData = new AuthData(UserService.generateAuthToken(), "Jim");
 
         UserService userService = new UserService(userDAO, authDAO);
 

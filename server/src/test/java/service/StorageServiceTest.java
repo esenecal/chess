@@ -22,7 +22,7 @@ public class StorageServiceTest {
         // create a user
         UserData userData = new UserData("Jim", "1234", "jim@jim.com");
         // create an auth
-        AuthData authData = new AuthData(Util.generateAuthToken(), userData.username());
+        AuthData authData = new AuthData(UserService.generateAuthToken(), userData.username());
         // create a game
         GameData gameData = new GameData(0, "Jim", "Fred", "game0", new ChessGame());
 

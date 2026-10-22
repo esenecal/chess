@@ -5,7 +5,7 @@ import model.AuthData;
 import model.UserData;
 import requestresult.*;
 
-import javax.xml.crypto.Data;
+import java.util.UUID;
 
 /**
  * Contains logic for user-related requests.
@@ -50,7 +50,7 @@ public class UserService {
         userDAO.createUser(userData);
 
         // create auth
-        AuthData authData = new AuthData(Util.generateAuthToken(), userData.username());
+        AuthData authData = new AuthData(generateAuthToken(), userData.username());
         authDAO.createAuth(authData);
 
         // return RegisterResult to Handler.
@@ -73,7 +73,7 @@ public class UserService {
         }
 
         // create auth with existing user data
-        AuthData authData = new AuthData(Util.generateAuthToken(), existingUser.username());
+        AuthData authData = new AuthData(generateAuthToken(), existingUser.username());
         authDAO.createAuth(authData);
 
         return new LoginResult(authData.username(), authData.authToken());
@@ -92,6 +92,14 @@ public class UserService {
 
         // Remove the authData to log out the user.
         authDAO.deleteAuth(authData);
+    }
+
+    // I originally moved this out in to its own file, and refactored with IntelliJ's refactoring tool. However,
+    // That was not needed, so I moved it here. I refactored again completely by hand, I believe, since I
+    // just pasted the method here. If IntelliJ did do something that time, it was small, like removing some imports.
+    // See MasteryLS "Phase 3: Chess Web API"
+    public static String generateAuthToken() {
+        return UUID.randomUUID().toString();
     }
 
 }

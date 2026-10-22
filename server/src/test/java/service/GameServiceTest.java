@@ -4,7 +4,6 @@ import chess.ChessGame;
 import dataaccess.*;
 import model.AuthData;
 import requestresult.*;
-
 import model.GameData;
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +23,7 @@ public class GameServiceTest {
         GameData game2 = new GameData(2, "fred", "john", "game2", new ChessGame());
 
         // Authentication
-        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        AuthData authData = new AuthData(UserService.generateAuthToken(), "jim");
 
         try {
             // add games to storage. Remember, createGame assigns its custom ID according to db schema;
@@ -65,7 +64,7 @@ public class GameServiceTest {
         GameData game2 = new GameData(2, "fred", "john", "game2", new ChessGame());
 
         // Authentication
-        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        AuthData authData = new AuthData(UserService.generateAuthToken(), "jim");
 
         try {
             // add games to storage
@@ -93,7 +92,7 @@ public class GameServiceTest {
         // we do not use UserService because then we would need to create a user and everything.
         // This allows us to only create the data that we need.
         // It also avoids this test failing if any of the other service methods are not correct.
-        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        AuthData authData = new AuthData(UserService.generateAuthToken(), "jim");
         try {
             authDAO.createAuth(authData);
         } catch (Exception ex) {
@@ -126,7 +125,7 @@ public class GameServiceTest {
     public void createGameNoAuthTest() {
 
         // Create authData but do not log the user in.
-        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        AuthData authData = new AuthData(UserService.generateAuthToken(), "jim");
 
         // create a game.
         try {
@@ -152,7 +151,7 @@ public class GameServiceTest {
 
         // create a game and an authorized user.
         GameData game = new GameData(1, null, null, "game1", new ChessGame());
-        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        AuthData authData = new AuthData(UserService.generateAuthToken(), "jim");
         ChessGame.TeamColor playerColor = ChessGame.TeamColor.WHITE;
 
         try {
@@ -188,7 +187,7 @@ public class GameServiceTest {
 
         // create a game and an authorized user.
         GameData game = new GameData(1, null, null, "game1", new ChessGame());
-        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        AuthData authData = new AuthData(UserService.generateAuthToken(), "jim");
         ChessGame.TeamColor playerColor = ChessGame.TeamColor.BLACK;
 
         try {
@@ -225,7 +224,7 @@ public class GameServiceTest {
 
         // create a game
         GameData game = new GameData(1, null, null, "game1", new ChessGame());
-        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        AuthData authData = new AuthData(UserService.generateAuthToken(), "jim");
         ChessGame.TeamColor playerColor = ChessGame.TeamColor.WHITE;
 
         try {
@@ -248,7 +247,7 @@ public class GameServiceTest {
     public void joinGameNoGameTest() {
 
         // create a game
-        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        AuthData authData = new AuthData(UserService.generateAuthToken(), "jim");
         ChessGame.TeamColor playerColor = ChessGame.TeamColor.WHITE;
 
         try {
@@ -272,7 +271,7 @@ public class GameServiceTest {
 
         // create a game with a white player already, and an authorized user.
         GameData game = new GameData(1, "max", null, "game1", new ChessGame());
-        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        AuthData authData = new AuthData(UserService.generateAuthToken(), "jim");
         ChessGame.TeamColor playerColor = ChessGame.TeamColor.WHITE;
 
         try {
@@ -292,7 +291,7 @@ public class GameServiceTest {
 
         // create a game with a black player already, and an authorized user.
         GameData game = new GameData(1, null, "max", "game1", new ChessGame());
-        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        AuthData authData = new AuthData(UserService.generateAuthToken(), "jim");
         ChessGame.TeamColor playerColor = ChessGame.TeamColor.BLACK;
 
         try {
