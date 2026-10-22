@@ -54,6 +54,8 @@ public class GameServiceTest {
 
     @Test
     public void listGamesNoAuthTest() {
+        // largely the same to the other listGames test, just we do not log in the user.
+        
         // Games
         GameData game1 = new GameData(1, "jim", "kim", "game1", new ChessGame());
         GameData game2 = new GameData(2, "fred", "john", "game2", new ChessGame());

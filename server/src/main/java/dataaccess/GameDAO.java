@@ -19,7 +19,6 @@ public interface GameDAO {
     /**
      * Create a game and associate it with authData
      *
-     * @param authData AuthData
      * @param gameData GameData
      * @throws DataAccessException throws DataAccessException
      */
