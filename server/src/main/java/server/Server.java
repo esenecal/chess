@@ -191,15 +191,24 @@ public class Server {
      * @param context data for HTTP request
      */
     private void listGames(Context context) {
+
+        Gson serializer = new Gson();
+
         // get authToken and build request
         ListGamesRequest request = new ListGamesRequest(context.header("authorization"));
 
         try {
             ListGamesResult result = new GameService(authDAO, gameDAO).listGames(request);
+            // serialize result.
+            var message = Map.of("games", result.gameList());
+            context.status(200);
+            context.json(serializer.toJson(message));
         } catch (NonexistentAuthException ex) {
-            return;
+            context.status(401);
+            context.json(serializer.toJson(Map.of("message", ex.getMessage())));
         } catch (Exception ex) {
-            return;
+            context.status(500);
+            context.json(serializer.toJson(Map.of("message", ex.getMessage())));
         }
     }
 
