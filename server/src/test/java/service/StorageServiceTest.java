@@ -11,13 +11,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class StorageServiceTest {
 
+    UserDAO userDAO = new MemoryUserDAO();
+    AuthDAO authDAO = new MemoryAuthDAO();
+    GameDAO gameDAO = new MemoryGameDAO();
+
     @Test
     public void clearPositiveTest() {
         // 100% line coverage for StorageService.
-
-        UserDAO userDAO = new MemoryUserDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
 
         // create a user
         UserData userData = new UserData("Jim", "1234", "jim@jim.com");
