@@ -42,23 +42,9 @@ public class GameService {
             throw new NonexistentAuthException("Error: unauthorized");
         }
 
-        // get all games.
-        Collection<GameData> gameList = gameDAO.listGames();
-
-        // we now need to prune out the GameData portion.
-        ArrayList<GameMetaData> gameMetaDataList = new ArrayList<>();
-        for (GameData game : gameList) {
-            GameMetaData newGameData = new GameMetaData(
-                    game.gameID(),
-                    game.whiteUsername(),
-                    game.blackUsername(),
-                    game.gameName()
-            );
-            gameMetaDataList.add(newGameData);
-        }
-
+        // get all game metadata. The DAO handles returning the appropriate amount of data.
         // then place the collection in a result record.
-        return new ListGamesResult(gameMetaDataList);
+        return new ListGamesResult(gameDAO.listGames());
     }
 
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {

@@ -2,6 +2,7 @@ package dataaccess;
 
 import model.AuthData;
 import model.GameData;
+import requestresult.GameMetaData;
 
 import javax.xml.crypto.Data;
 import java.util.Collection;
@@ -14,7 +15,7 @@ public interface GameDAO {
      * @return Collection of GameData
      * @throws DataAccessException throws DataAccessException
      */
-    Collection<GameData> listGames() throws DataAccessException;
+    Collection<GameMetaData> listGames() throws DataAccessException;
 
     /**
      * Create a game and associate it with authData

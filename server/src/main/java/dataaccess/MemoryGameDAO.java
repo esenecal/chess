@@ -3,7 +3,9 @@ package dataaccess;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import requestresult.GameMetaData;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
@@ -18,8 +20,19 @@ public class MemoryGameDAO implements GameDAO {
     int gameIDIncrement = 1;
 
     @Override
-    public Collection<GameData> listGames() throws DataAccessException {
-        return gameMap.values();
+    public Collection<GameMetaData> listGames() throws DataAccessException {
+        Collection<GameData> gameList = gameMap.values();
+        // iterate through each gameData to get the required metadata
+        ArrayList<GameMetaData> metaData = new ArrayList<>();
+        for (GameData game : gameList) {
+            metaData.add(new GameMetaData(
+                    game.gameID(),
+                    game.whiteUsername(),
+                    game.blackUsername(),
+                    game.gameName()
+            ));
+        }
+        return metaData;
     }
 
     @Override
