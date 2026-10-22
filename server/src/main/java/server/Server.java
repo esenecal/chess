@@ -16,6 +16,7 @@ public class Server {
 
     // declaration of the userDAO. can be changed easily to switch the specific backend implementation.
     // This must be declared here; otherwise, it will not persist.
+    // Got this idea from the CS 240 Discord.
     UserDAO userDAO = new MemoryUserDAO();
     AuthDAO authDAO = new MemoryAuthDAO();
     GameDAO gameDAO = new MemoryGameDAO();
@@ -190,7 +191,16 @@ public class Server {
      * @param context data for HTTP request
      */
     private void listGames(Context context) {
-        
+        // get authToken and build request
+        ListGamesRequest request = new ListGamesRequest(context.header("authorization"));
+
+        try {
+            ListGamesResult result = new GameService(authDAO, gameDAO).listGames(request);
+        } catch (NonexistentAuthException ex) {
+            return;
+        } catch (Exception ex) {
+            return;
+        }
     }
 
     /**

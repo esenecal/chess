@@ -14,7 +14,7 @@ public class MemoryGameDAO implements GameDAO {
 
     @Override
     public Collection<GameData> listGames() throws DataAccessException {
-        return null;
+        return gameMap.values();
     }
 
     @Override
