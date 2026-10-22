@@ -144,6 +144,8 @@ public class GameServiceTest {
     @Test
     public void joinGamePositiveTest() {
 
+        // this test provides the template for other joinGame tests; others are modifications of this one.
+
         // create a game and an authorized user.
         GameData game = new GameData(1, null, null, "game1", new ChessGame());
         AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
@@ -175,14 +177,52 @@ public class GameServiceTest {
 
     }
 
+    /**
+     * Invalid authorization.
+     */
     @Test
     public void joinGameNoAuthTest() {
+
+        // create a game
+        GameData game = new GameData(1, null, null, "game1", new ChessGame());
+        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        ChessGame.TeamColor playerColor = ChessGame.TeamColor.WHITE;
+
+        try {
+            // add to storage. Do not add auth.
+            gameDAO.createGame(game);
+
+            JoinGameRequest request = new JoinGameRequest(authData.authToken(), playerColor, game.gameID());
+            // join the game.
+            GameService gameService = new GameService(authDAO, gameDAO);
+            assertThrows(NonexistentAuthException.class, () -> gameService.joinGame(request));
+
+        } catch (Exception ex) {
+            fail("Incorrect exception thrown: " + ex.getMessage());
+        }
 
         clearStorage();
     }
 
     @Test
     public void joinGameNoGameTest() {
+
+        // create a game
+        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        ChessGame.TeamColor playerColor = ChessGame.TeamColor.WHITE;
+
+        try {
+            // No game added.
+            authDAO.createAuth(authData);
+
+            JoinGameRequest request = new JoinGameRequest(authData.authToken(), playerColor, 1);
+            // join the game.
+            GameService gameService = new GameService(authDAO, gameDAO);
+            assertThrows(NonexistentGameException.class, () -> gameService.joinGame(request));
+
+        } catch (Exception ex) {
+            fail("Incorrect exception thrown: " + ex.getMessage());
+        }
 
         clearStorage();
     }
