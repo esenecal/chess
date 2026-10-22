@@ -15,8 +15,8 @@ import java.util.Collection;
 
 public class GameService {
 
-    public final AuthDAO authDAO;
-    public final GameDAO gameDAO;
+    private final AuthDAO authDAO;
+    private final GameDAO gameDAO;
 
     public GameService(AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
