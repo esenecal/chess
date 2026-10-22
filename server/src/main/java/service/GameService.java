@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.NonexistentAuthException;
 
@@ -8,6 +9,8 @@ import dataaccess.AuthDAO;
 
 import model.AuthData;
 import model.GameData;
+import requestresult.CreateGameRequest;
+import requestresult.CreateGameResult;
 import requestresult.ListGamesRequest;
 import requestresult.ListGamesResult;
 
@@ -39,5 +42,23 @@ public class GameService {
         // get all keys associated with GameData, then place the collection in a result record.
         return new ListGamesResult(gameDAO.listGames());
     }
-    
+
+    public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
+
+        // verify authentication. see listGames
+        AuthData authData = authDAO.getAuth(request.authToken());
+        if (authData == null) {
+            throw new NonexistentAuthException("Error: unauthorized");
+        }
+
+        // Set the game ID to 0 as a placeholder. The DAO will assign the proper ID that works
+        // with the implemented storage system; that is an issue that cannot be well addressed here,
+        // as GameService does not know anything about the storage implementation.
+        GameData game = new GameData(0, null, null, request.gameName(), new ChessGame());
+
+        int gameID = gameDAO.createGame(game);
+
+        return null;
+    }
+
 }

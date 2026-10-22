@@ -6,6 +6,7 @@ import model.UserData;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
 
 public class MemoryGameDAO implements GameDAO {
 
@@ -18,8 +19,9 @@ public class MemoryGameDAO implements GameDAO {
     }
 
     @Override
-    public void createGame(GameData gameData) throws DataAccessException {
+    public int createGame(GameData gameData) throws DataAccessException {
         gameMap.put(gameData.gameID(), gameData);
+        return gameData.gameID();
     }
 
     @Override
