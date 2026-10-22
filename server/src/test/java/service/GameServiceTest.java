@@ -52,6 +52,35 @@ public class GameServiceTest {
 
     }
 
+    @Test
+    public void listGamesNoAuthTest() {
+        // Games
+        GameData game1 = new GameData(1, "jim", "kim", "game1", new ChessGame());
+        GameData game2 = new GameData(2, "fred", "john", "game2", new ChessGame());
+
+        // Authentication
+        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+
+        try {
+            // add games to storage
+            gameDAO.createGame(game1);
+            gameDAO.createGame(game2);
+
+            // Get all games
+            GameService gameService = new GameService(authDAO, gameDAO);
+
+            // Throw an error due to no authorization.
+            assertThrows(NonexistentAuthException.class,
+                    () -> gameService.listGames(new ListGamesRequest(authData.authToken())));
+
+        } catch (Exception ex) {
+            clearStorage();
+            fail("Exception thrown");
+        }
+
+        clearStorage();
+    }
+
     private void clearStorage() {
         try {
             // Clear storage for next test.
