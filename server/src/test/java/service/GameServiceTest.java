@@ -142,7 +142,7 @@ public class GameServiceTest {
     }
 
     @Test
-    public void joinGamePositiveTest() {
+    public void joinGameWhiteTest() {
 
         // this test provides the template for other joinGame tests; others are modifications of this one.
 
@@ -166,6 +166,42 @@ public class GameServiceTest {
             assertEquals(game.gameID(), updatedGame.gameID());
             assertEquals(authData.username(), updatedGame.whiteUsername());
             assertEquals(game.blackUsername(), updatedGame.blackUsername());
+            assertEquals(game.gameName(), updatedGame.gameName());
+            assertEquals(game.game(), updatedGame.game());
+
+        } catch (Exception ex) {
+            fail("Exception thrown: " + ex.getMessage());
+        }
+
+        clearStorage();
+
+    }
+
+    @Test
+    public void joinGameBlackTest() {
+
+        // this test provides the template for other joinGame tests; others are modifications of this one.
+
+        // create a game and an authorized user.
+        GameData game = new GameData(1, null, null, "game1", new ChessGame());
+        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        ChessGame.TeamColor playerColor = ChessGame.TeamColor.BLACK;
+
+        try {
+            // add to storage. Remember, the game ID will be overwritten, but it should remain 1, as this is the first.
+            gameDAO.createGame(game);
+            authDAO.createAuth(authData);
+
+            JoinGameRequest request = new JoinGameRequest(authData.authToken(), playerColor, game.gameID());
+            // join the game.
+            GameService gameService = new GameService(authDAO, gameDAO);
+            gameService.joinGame(request);
+            GameData updatedGame = gameDAO.getGame(game.gameID());
+
+            // all information in the game must be the same, except the black team username should be jim.
+            assertEquals(game.gameID(), updatedGame.gameID());
+            assertEquals(game.whiteUsername(), updatedGame.whiteUsername());
+            assertEquals(authData.username(), updatedGame.blackUsername());
             assertEquals(game.gameName(), updatedGame.gameName());
             assertEquals(game.game(), updatedGame.game());
 
@@ -228,8 +264,48 @@ public class GameServiceTest {
     }
 
     @Test
-    public void joinGameTakenTest() {
+    public void joinGameTakenWhiteTest() {
 
+        // create a game with a white player already, and an authorized user.
+        GameData game = new GameData(1, "max", null, "game1", new ChessGame());
+        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        ChessGame.TeamColor playerColor = ChessGame.TeamColor.WHITE;
+
+        try {
+            // add to storage
+            gameDAO.createGame(game);
+            authDAO.createAuth(authData);
+
+            JoinGameRequest request = new JoinGameRequest(authData.authToken(), playerColor, game.gameID());
+            // join the game. It should throw a game taken exception.
+            GameService gameService = new GameService(authDAO, gameDAO);
+            assertThrows(GameTakenException.class, () -> gameService.joinGame(request));
+        } catch (Exception ex) {
+            fail("Exception thrown: " + ex.getMessage());
+        }
+        clearStorage();
+    }
+
+    @Test
+    public void joinGameTakenBlackTest() {
+
+        // create a game with a black player already, and an authorized user.
+        GameData game = new GameData(1, null, "max", "game1", new ChessGame());
+        AuthData authData = new AuthData(Util.generateAuthToken(), "jim");
+        ChessGame.TeamColor playerColor = ChessGame.TeamColor.BLACK;
+
+        try {
+            // add to storage
+            gameDAO.createGame(game);
+            authDAO.createAuth(authData);
+
+            JoinGameRequest request = new JoinGameRequest(authData.authToken(), playerColor, game.gameID());
+            // join the game. It should throw a game taken exception.
+            GameService gameService = new GameService(authDAO, gameDAO);
+            assertThrows(GameTakenException.class, () -> gameService.joinGame(request));
+        } catch (Exception ex) {
+            fail("Exception thrown: " + ex.getMessage());
+        }
         clearStorage();
     }
 
