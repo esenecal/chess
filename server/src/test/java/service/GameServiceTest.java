@@ -40,8 +40,12 @@ public class GameServiceTest {
             ListGamesResult result = gameService.listGames(new ListGamesRequest(authData.authToken()));
 
             // Verify.
-            assertTrue(result.gameList().contains(game1));
-            assertTrue(result.gameList().contains(game2));
+            GameMetaData game1Data = new GameMetaData(game1.gameID(), game1.whiteUsername(),
+                    game1.blackUsername(), game1.gameName());
+            GameMetaData game2Data = new GameMetaData(game2.gameID(), game2.whiteUsername(),
+                    game2.blackUsername(), game2.gameName());
+            assertTrue(result.gameList().contains(game1Data));
+            assertTrue(result.gameList().contains(game2Data));
 
         } catch (Exception ex) {
             clearStorage();

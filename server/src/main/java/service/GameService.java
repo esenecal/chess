@@ -2,6 +2,7 @@ package service;
 
 import chess.ChessGame;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import dataaccess.DataAccessException;
@@ -45,10 +46,19 @@ public class GameService {
         Collection<GameData> gameList = gameDAO.listGames();
 
         // we now need to prune out the GameData portion.
-        
+        ArrayList<GameMetaData> gameMetaDataList = new ArrayList<>();
+        for (GameData game : gameList) {
+            GameMetaData newGameData = new GameMetaData(
+                    game.gameID(),
+                    game.whiteUsername(),
+                    game.blackUsername(),
+                    game.gameName()
+            );
+            gameMetaDataList.add(newGameData);
+        }
 
         // then place the collection in a result record.
-        return new ListGamesResult();
+        return new ListGamesResult(gameMetaDataList);
     }
 
     public CreateGameResult createGame(CreateGameRequest request) throws DataAccessException {
