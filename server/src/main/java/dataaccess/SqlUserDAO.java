@@ -1,22 +1,14 @@
 package dataaccess;
 
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 
 import static dataaccess.DatabaseManager.createDatabase;
 
 public class SqlUserDAO implements UserDAO {
-
-    // syntax from pet shop mysqldataaccess.java
-    private final String createTableStatement = """
-            CREATE TABLE IF NOT EXISTS user (
-                username varchar(255) NOT NULL,
-                password varchar(255) NOT NULL,
-                email varchar(255) NOT NULL,
-                PRIMARY KEY (username)
-            );
-            """;
 
     public SqlUserDAO() throws DataAccessException {
         configureDatabase();
@@ -29,8 +21,26 @@ public class SqlUserDAO implements UserDAO {
     }
 
     @Override
+    // thanks, masteryls jdbc.
     public void createUser(UserData userData) throws DataAccessException {
 
+        // hash the password
+        String hash = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
+
+        // create a connection.
+        try (var conn = DatabaseManager.getConnection()) {
+            // create a prepared statement
+            var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+            // insert username, password hash, email.
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, userData.username());
+                preparedStatement.setString(2, hash);
+                preparedStatement.setString(3, userData.email());
+            }
+
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: issue adding new user.");
+        }
     }
 
     @Override
@@ -43,6 +53,17 @@ public class SqlUserDAO implements UserDAO {
         DatabaseManager.createDatabase();
         // connect to database.
         try (var conn = DatabaseManager.getConnection()) {
+
+            // syntax from pet shop mysqldataaccess.java
+            final String createTableStatement = """
+                    CREATE TABLE IF NOT EXISTS user (
+                        username varchar(255) NOT NULL,
+                        password varchar(255) NOT NULL,
+                        email varchar(255) NOT NULL,
+                        PRIMARY KEY (username)
+                    );
+                    """;
+
             // create a prepared statement using the create table statement. Execute it.
             try (var preparedStatement = conn.prepareStatement(createTableStatement)) {
                 preparedStatement.executeUpdate();
@@ -51,4 +72,5 @@ public class SqlUserDAO implements UserDAO {
             throw new DataAccessException("Unable to configure database.");
         }
     }
+
 }
