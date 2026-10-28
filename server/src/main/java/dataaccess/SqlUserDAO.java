@@ -36,6 +36,8 @@ public class SqlUserDAO implements UserDAO {
                 preparedStatement.setString(1, userData.username());
                 preparedStatement.setString(2, hash);
                 preparedStatement.setString(3, userData.email());
+
+                preparedStatement.executeUpdate();
             }
 
         } catch (SQLException ex) {

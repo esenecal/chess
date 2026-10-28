@@ -1,6 +1,7 @@
 package dataaccess;
 
 import model.AuthData;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
 
@@ -13,7 +14,20 @@ public class SqlAuthDAO implements AuthDAO {
     // auto-implemented with intellij
     @Override
     public void createAuth(AuthData authData) throws DataAccessException {
+        // create connection. Copied and modified from sqluserdao.java
+        try (var conn = DatabaseManager.getConnection()) {
+            // create a prepared statement
+            var statement = "INSERT INTO auth (auth_token, username) VALUES (?, ?)";
+            // insert authToken, username
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, authData.authToken());
+                preparedStatement.setString(2, authData.username());
+                preparedStatement.executeUpdate();
+            }
 
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: issue adding new authentication.");
+        }
     }
 
     @Override
