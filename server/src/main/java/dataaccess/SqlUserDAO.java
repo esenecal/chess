@@ -2,9 +2,21 @@ package dataaccess;
 
 import model.UserData;
 
+import java.sql.SQLException;
+
 import static dataaccess.DatabaseManager.createDatabase;
 
 public class SqlUserDAO implements UserDAO {
+
+    // syntax from pet shop mysqldataaccess.java
+    private final String createTableStatement = """
+            CREATE TABLE IF NOT EXISTS user (
+                username varchar(255) NOT NULL,
+                password varchar(255) NOT NULL,
+                email varchar(255) NOT NULL,
+                PRIMARY KEY (username)
+            );
+            """;
 
     public SqlUserDAO() throws DataAccessException {
         configureDatabase();
@@ -26,7 +38,17 @@ public class SqlUserDAO implements UserDAO {
 
     }
 
+    // pet shop helping me out with this, as well as MasteryLS "JDBC"
     private void configureDatabase() throws DataAccessException {
         DatabaseManager.createDatabase();
+        // connect to database.
+        try (var conn = DatabaseManager.getConnection()) {
+            // create a prepared statement using the create table statement. Execute it.
+            try (var preparedStatement = conn.prepareStatement(createTableStatement)) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {  // throw a DataAccessException instead of the SQL exception.
+            throw new DataAccessException("Unable to configure database.");
+        }
     }
 }
