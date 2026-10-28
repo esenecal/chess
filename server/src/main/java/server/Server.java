@@ -19,13 +19,14 @@ public class Server {
     // This must be declared here; otherwise, it will not persist.
     // Got this idea from the CS 240 Discord.
     UserDAO userDAO;
-
-    AuthDAO authDAO = new MemoryAuthDAO();
+    AuthDAO authDAO;
+    
     GameDAO gameDAO = new MemoryGameDAO();
 
     public Server() {
         try {
             this.userDAO = new SqlUserDAO();
+            this.authDAO = new SqlAuthDAO();
         } catch (DataAccessException ex) {
             System.out.println(ex.getMessage());
         }
