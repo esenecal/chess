@@ -18,11 +18,18 @@ public class Server {
     // declaration of the userDAO. can be changed easily to switch the specific backend implementation.
     // This must be declared here; otherwise, it will not persist.
     // Got this idea from the CS 240 Discord.
-    UserDAO userDAO = new MemoryUserDAO();
+    UserDAO userDAO;
+
     AuthDAO authDAO = new MemoryAuthDAO();
     GameDAO gameDAO = new MemoryGameDAO();
 
     public Server() {
+        try {
+            this.userDAO = new SqlUserDAO();
+        } catch (DataAccessException ex) {
+            System.out.println(ex.getMessage());
+        }
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .delete("/db", this::clearDB)
                 .post("/user", this::registerUser)
