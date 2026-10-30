@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import service.UserService;
 
 import javax.xml.crypto.Data;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -79,11 +80,7 @@ public class AuthSQLTest {
             clearTable();
 
             // add authData.
-            try (var preparedStatement = conn.prepareStatement(
-                    "INSERT INTO auth (auth_token, username) VALUES ('1234', 'joe');"
-            )) {
-                preparedStatement.executeUpdate();
-            }
+            manuallyAddAuth(conn, "1234", "joe");
 
             // get auth
             AuthData authData = authDAO.getAuth("1234");
@@ -108,6 +105,44 @@ public class AuthSQLTest {
             clearTable();
         } catch (Exception ex) {
             fail("Exception thrown.");
+        }
+    }
+
+    @Test
+    public void deleteAuthSuccess() {
+        try (var conn = DatabaseManager.getConnection()) {
+            clearTable();
+
+            // add authData.
+            AuthData authData = new AuthData("1234", "joe");
+            manuallyAddAuth(conn, authData.authToken(), authData.username());
+
+            // delete auth
+            authDAO.deleteAuth(authData);
+            // check to ensure everything was deleted. Taken and modified from UserSQLTest
+            try (var ps = conn.prepareStatement("SELECT * FROM auth")) {
+                try (var rs = ps.executeQuery()) {
+                    // if this is false, it is empty. If it is true, then no delete occurred.
+                    assertFalse(rs.next());
+                }
+            }
+
+            clearTable();
+        } catch (Exception ex) {
+            fail("Exception thrown.");
+        }
+    }
+
+    private void manuallyAddAuth(
+            Connection conn, String authToken, String username
+    ) throws SQLException {
+        var statement = """
+                INSERT INTO auth (auth_token, username) VALUES (?, ?);
+                """;
+        try (var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setString(1, authToken);
+            preparedStatement.setString(2, username);
+            preparedStatement.executeUpdate();
         }
     }
 
