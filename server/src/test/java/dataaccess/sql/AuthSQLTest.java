@@ -89,6 +89,23 @@ public class AuthSQLTest {
             AuthData authData = authDAO.getAuth("1234");
             assertEquals("1234", authData.authToken());
             assertEquals("joe", authData.username());
+
+            clearTable();
+        } catch (Exception ex) {
+            fail("Exception thrown.");
+        }
+    }
+
+    @Test
+    public void getAuthNonExistent() {
+        try (var conn = DatabaseManager.getConnection()) {
+            clearTable();
+
+            // get a nonexistent Auth.
+            AuthData authData = authDAO.getAuth("1234");
+            assertNull(authData);
+
+            clearTable();
         } catch (Exception ex) {
             fail("Exception thrown.");
         }
