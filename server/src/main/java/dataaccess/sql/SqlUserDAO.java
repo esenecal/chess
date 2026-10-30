@@ -1,12 +1,12 @@
-package dataaccess;
+package dataaccess.sql;
 
+import dataaccess.DataAccessException;
+import dataaccess.DatabaseManager;
+import dataaccess.UserDAO;
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
-import javax.xml.crypto.Data;
 import java.sql.SQLException;
-
-import static dataaccess.DatabaseManager.createDatabase;
 
 public class SqlUserDAO implements UserDAO {
 

@@ -1,11 +1,11 @@
 package server;
 
-import chess.ChessGame;
 import dataaccess.*;
+import dataaccess.sql.SqlAuthDAO;
+import dataaccess.sql.SqlUserDAO;
 import io.javalin.*;
 import io.javalin.http.Context;
 import com.google.gson.Gson;
-import model.*;
 import requestresult.*;
 import service.*;
 
@@ -20,7 +20,7 @@ public class Server {
     // Got this idea from the CS 240 Discord.
     UserDAO userDAO;
     AuthDAO authDAO;
-    
+
     GameDAO gameDAO = new MemoryGameDAO();
 
     public Server() {
