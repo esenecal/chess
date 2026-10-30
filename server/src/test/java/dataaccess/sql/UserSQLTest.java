@@ -7,6 +7,7 @@ import model.UserData;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,25 +20,30 @@ public class UserSQLTest {
     public UserSQLTest() throws DataAccessException {
     }
 
+    private void manuallyAddUser(
+            Connection conn, String username, String passwordHash, String email
+    ) throws SQLException {
+        var statement = """
+                INSERT INTO user (username, password, email) VALUES (?, ?, ?);
+                """;
+        try (var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, passwordHash);
+            preparedStatement.setString(3, email);
+            preparedStatement.executeUpdate();
+        }
+    }
+
     @Test
     public void getUserSuccess() {
 
         try (var conn = DatabaseManager.getConnection()) {
             clearTable();
 
-            // create a user
             String username = "joe";
             String passwordHash = BCrypt.hashpw("1234", BCrypt.gensalt());
             String email = "joe@gmail.com";
-            var statement = """
-                    INSERT INTO user (username, password, email) VALUES (?, ?, ?);
-                    """;
-            try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, passwordHash);
-                preparedStatement.setString(3, email);
-                preparedStatement.executeUpdate();
-            }
+            manuallyAddUser(conn, username, passwordHash, email);
 
             // get user
             UserData userData = userDAO.getUser("joe");
@@ -65,15 +71,7 @@ public class UserSQLTest {
             String username = "joe";
             String passwordHash = BCrypt.hashpw("1234", BCrypt.gensalt());
             String email = "joe@gmail.com";
-            var statement = """
-                    INSERT INTO user (username, password, email) VALUES (?, ?, ?);
-                    """;
-            try (var preparedStatement = conn.prepareStatement(statement)) {
-                preparedStatement.setString(1, username);
-                preparedStatement.setString(2, passwordHash);
-                preparedStatement.setString(3, email);
-                preparedStatement.executeUpdate();
-            }
+            manuallyAddUser(conn, username, passwordHash, email);
 
             // get nonexistent user.
             UserData userData = userDAO.getUser("jim");
@@ -90,7 +88,7 @@ public class UserSQLTest {
     @Test
     public void addUserSuccess() {
 
-        try {
+        try (var conn = DatabaseManager.getConnection()) {
             clearTable();
             // clear table
 
@@ -105,16 +103,15 @@ public class UserSQLTest {
             String dataUsername = "";
             String dataPassword = "";
             String dataEmail = "";
-            try (var conn = DatabaseManager.getConnection()) {
-                // we can select everything, as there should only be one thing in the database.
-                try (var ps = conn.prepareStatement("SELECT * FROM user")) {
-                    try (var data = ps.executeQuery()) {
-                        // see MasteryLS "JDBC"
-                        while (data.next()) {
-                            dataUsername = data.getString("username");
-                            dataPassword = data.getString("password");
-                            dataEmail = data.getString("email");
-                        }
+
+            // we can select everything, as there should only be one thing in the database.
+            try (var ps = conn.prepareStatement("SELECT * FROM user")) {
+                try (var data = ps.executeQuery()) {
+                    // see MasteryLS "JDBC"
+                    while (data.next()) {
+                        dataUsername = data.getString("username");
+                        dataPassword = data.getString("password");
+                        dataEmail = data.getString("email");
                     }
                 }
             }
