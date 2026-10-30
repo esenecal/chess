@@ -71,7 +71,7 @@ public class SqlUserDAO implements UserDAO {
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {  // throw a DataAccessException instead of the SQL exception.
-            throw new DataAccessException("Unable to configure database.");
+            throw new DataAccessException("Unable to configure user storage.");
         }
     }
 
