@@ -76,12 +76,14 @@ public class SqlUserDAO implements UserDAO {
     @Override
     public void removeUsers() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            // empty table
-            final String statement = "TRUNCATE TABLE user";
+            // Drop and reconfigure. This way we have a fresh start with the correct schema.
+            // this fixes any schema changes if somehow that occurred.
+            final String statement = "DROP TABLE user";
 
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
+            configureDatabase();
         } catch (SQLException ex) {
             throw new DataAccessException("Error: issue removing users.");
         }
