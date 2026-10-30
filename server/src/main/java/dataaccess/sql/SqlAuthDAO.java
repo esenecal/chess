@@ -77,13 +77,25 @@ public class SqlAuthDAO implements AuthDAO {
                 ps.executeUpdate();
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("Error: issue deleting authentication");
+            throw new DataAccessException("Error: issue deleting authentication.");
         }
     }
 
     @Override
     public void removeAllAuthData() throws DataAccessException {
+        // Copied over and modified from SqlUserDAO
+        try (var conn = DatabaseManager.getConnection()) {
+            // Drop and reconfigure. This way we have a fresh start with the correct schema.
+            // this fixes any schema changes if somehow that occurred.
+            final String statement = "DROP TABLE auth";
 
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.executeUpdate();
+            }
+            configureTable();
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: issue clearing authentication data.");
+        }
     }
 
     // copied over and modified from SqlUserDAO.java
