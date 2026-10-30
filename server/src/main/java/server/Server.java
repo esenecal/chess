@@ -116,7 +116,7 @@ public class Server {
             var message = Map.of("message", ex.getMessage());
             context.json(serializer.toJson(message));
         } catch (Exception ex) {
-            // General exceptions, including other DataAccessExceptions.
+            // General exceptions, including other DataAccessExceptions and AuthCollisionException.
             context.status(500);
             context.json(serializer.toJson(Map.of("message", "Error: " + ex.getMessage())));
         }

@@ -61,7 +61,15 @@ public class UserService {
         // And, when we log in, we check to ensure that the authData does not exist.
         // thus, we cannot have a nonexistent user, and existing authData. That would only happen
         // in testing.
-        AuthData authData = new AuthData(generateAuthToken(), userData.username());
+
+        // just to be safe, check that no authData already exists. as authToken is random,
+        // This is a rare, rare collision case.
+        String authToken = generateAuthToken();
+        // The authData associated with this authToken exists. Uh Oh.
+        if (authDAO.getAuth(authToken) != null) {
+            throw new AuthCollisionException("Error: Auth Collision. Please reregister.");
+        }
+        AuthData authData = new AuthData(authToken, userData.username());
         authDAO.createAuth(authData);
 
         // return RegisterResult to Handler.
