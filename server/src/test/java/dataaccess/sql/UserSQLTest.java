@@ -39,7 +39,7 @@ public class UserSQLTest {
                 preparedStatement.executeUpdate();
             }
 
-            // login user
+            // get user
             UserData userData = userDAO.getUser("joe");
             // Assert that we got the right user.
             assertEquals(username, userData.username());
@@ -55,7 +55,33 @@ public class UserSQLTest {
 
     @Test
     public void getNonexistentUser() {
+        try (var conn = DatabaseManager.getConnection()) {
+            clearTable();
 
+            // create a user
+            String username = "joe";
+            String passwordHash = BCrypt.hashpw("1234", BCrypt.gensalt());
+            String email = "joe@gmail.com";
+            var statement = """
+                    INSERT INTO user (username, password, email) VALUES (?, ?, ?);
+                    """;
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, passwordHash);
+                preparedStatement.setString(3, email);
+                preparedStatement.executeUpdate();
+            }
+
+            // get nonexistent user.
+            UserData userData = userDAO.getUser("jim");
+            // Assert that we got the right user.
+            assertNull(userData);
+
+            clearTable();
+
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
     }
 
     @Test
