@@ -47,7 +47,16 @@ public class SqlUserDAO implements UserDAO {
 
     @Override
     public void removeUsers() throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
+            // empty table
+            final String statement = "TRUNCATE TABLE user";
 
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: issue removing users.");
+        }
     }
 
     // pet shop helping me out with this, as well as MasteryLS "JDBC"
