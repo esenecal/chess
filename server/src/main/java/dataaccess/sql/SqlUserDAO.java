@@ -47,7 +47,7 @@ public class SqlUserDAO implements UserDAO {
             }
 
         } catch (SQLException ex) {
-            throw new DataAccessException("Error: issue adding new user. " + ex.getMessage());
+            throw new DataAccessException("Error: issue adding new user.");
         }
     }
 

@@ -53,6 +53,9 @@ public class UserSQLTest {
         }
     }
 
+    // many exceptions thrown by the DAO are for exceptional, rare cases; thus, they are not able to be
+    // effectively tested here.
+
     @Test
     public void getNonexistentUser() {
         try (var conn = DatabaseManager.getConnection()) {
