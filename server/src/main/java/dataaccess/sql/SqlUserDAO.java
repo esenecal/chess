@@ -26,24 +26,28 @@ public class SqlUserDAO implements UserDAO {
                 preparedStatement.setString(1, username);
 
                 try (var resultSet = preparedStatement.executeQuery()) {
-                    // moves cursor to the first row. If there are no rows (an empty set), then it returns false
-                    // If it is an empty set, there is no user, so return null.
-                    if (resultSet.first()) {
+
+                    String dataUsername = null;
+                    String passHash = null;
+                    String email = null;
+                    // There is only one row. So, if resultSet.next() is true, we are good.
+                    // if it is false, there was never a row, and we return null. There was no user.
+                    if (resultSet.next()) {
+                        dataUsername = resultSet.getString("username");
+                        passHash = resultSet.getString("password");
+                        email = resultSet.getString("email");
+
+                        return new UserData(dataUsername, passHash, email);
+                    } else {
+                        // we do not need to throw a NonexistentUser exception; that is handled
+                        // service side. Service expects null for no user.
                         return null;
                     }
-
-                    // no need to use rs.next(), as there can only be one set of data.
-                    String dataUsername = resultSet.getString("username");
-                    String passHash = resultSet.getString("password");
-                    String email = resultSet.getString("email");
-
-                    // return it as UserData
-                    return new UserData(dataUsername, passHash, email);
                 }
             }
 
         } catch (SQLException ex) {
-            throw new DataAccessException("Error: issue adding new user.");
+            throw new DataAccessException("Error: issue adding new user. " + ex.getMessage());
         }
     }
 

@@ -20,6 +20,45 @@ public class UserSQLTest {
     }
 
     @Test
+    public void getUserSuccess() {
+
+        try (var conn = DatabaseManager.getConnection()) {
+            clearTable();
+
+            // create a user
+            String username = "joe";
+            String passwordHash = BCrypt.hashpw("1234", BCrypt.gensalt());
+            String email = "joe@gmail.com";
+            var statement = """
+                    INSERT INTO user (username, password, email) VALUES (?, ?, ?);
+                    """;
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.setString(1, username);
+                preparedStatement.setString(2, passwordHash);
+                preparedStatement.setString(3, email);
+                preparedStatement.executeUpdate();
+            }
+
+            // login user
+            UserData userData = userDAO.getUser("joe");
+            // Assert that we got the right user.
+            assertEquals(username, userData.username());
+            assertEquals(passwordHash, userData.password());
+            assertEquals(email, userData.email());
+
+            clearTable();
+
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
+    @Test
+    public void getNonexistentUser() {
+
+    }
+
+    @Test
     public void addUserSuccess() {
 
         try {
