@@ -25,11 +25,17 @@ public class SqlUserDAO implements UserDAO {
                 // guaranteed to be unique, as username is a primary key.
                 preparedStatement.setString(1, username);
 
-                try (var data = preparedStatement.executeQuery()) {
+                try (var resultSet = preparedStatement.executeQuery()) {
+                    // moves cursor to the first row. If there are no rows (an empty set), then it returns false
+                    // If it is an empty set, there is no user, so return null.
+                    if (resultSet.first()) {
+                        return null;
+                    }
+
                     // no need to use rs.next(), as there can only be one set of data.
-                    String dataUsername = data.getString("username");
-                    String passHash = data.getString("password");
-                    String email = data.getString("email");
+                    String dataUsername = resultSet.getString("username");
+                    String passHash = resultSet.getString("password");
+                    String email = resultSet.getString("email");
 
                     // return it as UserData
                     return new UserData(dataUsername, passHash, email);
