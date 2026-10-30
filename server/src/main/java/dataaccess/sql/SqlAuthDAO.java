@@ -77,7 +77,7 @@ public class SqlAuthDAO implements AuthDAO {
                 ps.executeUpdate();
             }
         } catch (SQLException ex) {
-            throw new DataAccessException("Error: issue getting authentication");
+            throw new DataAccessException("Error: issue deleting authentication");
         }
     }
 
