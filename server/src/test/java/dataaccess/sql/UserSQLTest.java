@@ -20,7 +20,7 @@ public class UserSQLTest {
     public UserSQLTest() throws DataAccessException {
     }
 
-    private void manuallyAddUser(
+    public void manuallyAddUser(
             Connection conn, String username, String passwordHash, String email
     ) throws SQLException {
         var statement = """
@@ -195,7 +195,7 @@ public class UserSQLTest {
     }
 
     // clear table. Essentially a duplicate of removeUsers
-    public void clearTable() throws DataAccessException {
+    private void clearTable() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             // empty table
             final String statement = "TRUNCATE TABLE user";
