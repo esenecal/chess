@@ -3,7 +3,9 @@ package dataaccess.sql;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.UserDAO;
+import model.UserData;
 import org.junit.jupiter.api.Test;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
 
@@ -20,6 +22,45 @@ public class UserSQLTest {
     @Test
     public void addUserSuccess() {
 
+        try {
+            clearTable();
+            // clear table
+
+            // add a user.
+            String username = "jim";
+            String password = "1234";
+            String email = "jim@gmail.com";
+            UserData user = new UserData(username, password, email);
+            userDAO.createUser(user);
+
+            // get data
+            String dataUsername = "";
+            String dataPassword = "";
+            String dataEmail = "";
+            try (var conn = DatabaseManager.getConnection()) {
+                // we can select everything, as there should only be one thing in the database.
+                try (var ps = conn.prepareStatement("SELECT * FROM user")) {
+                    try (var data = ps.executeQuery()) {
+                        // see MasteryLS "JDBC"
+                        while (data.next()) {
+                            dataUsername = data.getString("username");
+                            dataPassword = data.getString("password");
+                            dataEmail = data.getString("email");
+                        }
+                    }
+                }
+            }
+
+            assertEquals(username, dataUsername);
+            // Check that the received password hash is true.
+            assertTrue(BCrypt.checkpw(password, dataPassword));
+            assertEquals(email, dataEmail);
+
+            clearTable();
+
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
     }
 
     @Test
@@ -27,7 +68,7 @@ public class UserSQLTest {
 
         // add several users.
         try (var conn = DatabaseManager.getConnection()) {
-            clearTable("user");
+            clearTable();
 
             // create a prepared statement
             var statement = """
@@ -66,7 +107,7 @@ public class UserSQLTest {
     }
 
     // clear table. Essentially a duplicate of removeUsers
-    public void clearTable(String table) throws DataAccessException {
+    public void clearTable() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             // empty table
             final String statement = "TRUNCATE TABLE user";
