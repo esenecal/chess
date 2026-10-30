@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.mindrot.jbcrypt.BCrypt;
 import requestresult.*;
 
 // See MasteryLS "Unit Testing"
@@ -141,7 +142,10 @@ public class UserServiceTest {
 
         // Create user.
         try {
-            userDAO.createUser(new UserData("Jim", "1234", "jim@jim.com"));
+            // due to implementation of hashing, we just need to hash the password here for the test
+            // to still hold, as login is expecting a hashed password.
+            String passwordHash = BCrypt.hashpw("1234", BCrypt.gensalt());
+            userDAO.createUser(new UserData("Jim", passwordHash, "jim@jim.com"));
         } catch (DataAccessException ex) {
             fail("DataAccessException thrown.");
         }

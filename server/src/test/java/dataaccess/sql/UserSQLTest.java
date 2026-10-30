@@ -53,8 +53,31 @@ public class UserSQLTest {
 
             assertEquals(username, dataUsername);
             // Check that the received password hash is true.
-            assertTrue(BCrypt.checkpw(password, dataPassword));
+            assertEquals(password, dataPassword);
             assertEquals(email, dataEmail);
+
+            clearTable();
+
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
+    @Test
+    public void addDuplicateUserFail() {
+
+        try {
+            clearTable();
+            // clear table
+
+            // add two users with the same username.
+            String username = "jim";
+            String password = "1234";
+            String email = "jim@gmail.com";
+            UserData user = new UserData(username, password, email);
+            userDAO.createUser(user);
+
+            assertThrows(DataAccessException.class, () -> userDAO.createUser(user));
 
             clearTable();
 

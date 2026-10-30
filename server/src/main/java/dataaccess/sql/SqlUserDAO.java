@@ -23,10 +23,6 @@ public class SqlUserDAO implements UserDAO {
     @Override
     // thanks, masteryls jdbc.
     public void createUser(UserData userData) throws DataAccessException {
-
-        // hash the password
-        String hash = BCrypt.hashpw(userData.password(), BCrypt.gensalt());
-
         // create a connection.
         try (var conn = DatabaseManager.getConnection()) {
             // create a prepared statement
@@ -34,7 +30,8 @@ public class SqlUserDAO implements UserDAO {
             // insert username, password hash, email.
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, userData.username());
-                preparedStatement.setString(2, hash);
+                // password is received hashed.
+                preparedStatement.setString(2, userData.password());
                 preparedStatement.setString(3, userData.email());
 
                 preparedStatement.executeUpdate();

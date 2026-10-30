@@ -3,6 +3,7 @@ package service;
 import dataaccess.*;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import requestresult.*;
 
 import java.util.UUID;
@@ -31,8 +32,14 @@ public class UserService {
      */
     public RegisterResult register(RegisterRequest request) throws DataAccessException {
 
+        // Hash the password. This ensures that password hashing remains consistent,
+        // no matter the database implementation.
+        // we must do this service side, as we cannot expect the DAO to check the passwords for us
+        // (that would be logic) and we cannot decrypt a hash.
+        String passwordHash = BCrypt.hashpw(request.password(), BCrypt.gensalt());
+
         // create a UserData object using request.
-        UserData userData = new UserData(request.username(), request.password(), request.email());
+        UserData userData = new UserData(request.username(), passwordHash, request.email());
 
         // attempt to get userData associated with userName.
         UserData existingUser = userDAO.getUser(userData.username());
@@ -63,12 +70,12 @@ public class UserService {
         UserData existingUser = userDAO.getUser(request.username());
 
         // If UserData is null, no such user exists. Functionally checking if the username is correct.
-        // If the user does exist but the passwords do not match, then also unauthorized.
+        // If the user does exist but the password does not match the hash, then also unauthorized.
         // This used to have two exceptions, but as a nonexistent username and an incorrect password are both
         // functionally unauthorized credentials, we are simplifying.
         // Removing distinction between an incorrect username vs. password also may increase security.
         // The server does not need to know WHAT failed, only that it failed.
-        if (existingUser == null || !existingUser.password().equals(request.password())) {
+        if (existingUser == null || !BCrypt.checkpw(request.password(), existingUser.password())) {
             throw new UnauthorizedCredentialsException("Error: unauthorized");
         }
 
