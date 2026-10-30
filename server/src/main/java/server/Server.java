@@ -2,6 +2,7 @@ package server;
 
 import dataaccess.*;
 import dataaccess.sql.SqlAuthDAO;
+import dataaccess.sql.SqlGameDAO;
 import dataaccess.sql.SqlUserDAO;
 import io.javalin.*;
 import io.javalin.http.Context;
@@ -27,6 +28,7 @@ public class Server {
         try {
             this.userDAO = new SqlUserDAO();
             this.authDAO = new SqlAuthDAO();
+            this.gameDAO = new SqlGameDAO();
         } catch (DataAccessException ex) {
             System.out.println(ex.getMessage());
         }
