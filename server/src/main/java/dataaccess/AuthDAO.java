@@ -14,7 +14,7 @@ public interface AuthDAO {
      * return authData associated with an authToken
      *
      * @param authToken an authToken used for authenticating a user's session
-     * @return AuthData
+     * @return AuthData. Null of authToken does not correspond to any data.
      */
     AuthData getAuth(String authToken) throws DataAccessException;
 

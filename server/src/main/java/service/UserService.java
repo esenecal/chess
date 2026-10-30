@@ -56,7 +56,11 @@ public class UserService {
         // create user.
         userDAO.createUser(userData);
 
-        // create auth
+        // create auth. We are fairly guaranteed that this will be a unique authData,
+        // As we cannot create an authData without verifying there is no existing user.
+        // And, when we log in, we check to ensure that the authData does not exist.
+        // thus, we cannot have a nonexistent user, and existing authData. That would only happen
+        // in testing.
         AuthData authData = new AuthData(generateAuthToken(), userData.username());
         authDAO.createAuth(authData);
 
