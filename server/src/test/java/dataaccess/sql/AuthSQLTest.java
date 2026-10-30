@@ -161,6 +161,35 @@ public class AuthSQLTest {
     // no negative test, as a failure of deleteAuth would be an exceptional case, as the query
     // itself would be problematic.
 
+    @Test
+    // copied and modified from UserSQLTest
+    public void removeAllAuthSuccess() {
+
+        // add several auth.
+        try (var conn = DatabaseManager.getConnection()) {
+            clearTable();
+
+            // add authData.
+            manuallyAddAuth(conn, "1234", "joe");
+            manuallyAddAuth(conn, "0", "tom");
+            manuallyAddAuth(conn, "2", "bill");
+            // clear table
+            authDAO.removeAllAuthData();
+
+            // Select everything from table.
+            try (var ps = conn.prepareStatement("SELECT * FROM auth")) {
+                try (var rs = ps.executeQuery()) {
+                    // verify table is empty.
+                    assertFalse(rs.next());
+                }
+            }
+
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+
+    }
+
     private void manuallyAddAuth(
             Connection conn, String authToken, String username
     ) throws SQLException {
