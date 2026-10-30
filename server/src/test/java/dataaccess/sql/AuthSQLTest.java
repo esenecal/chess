@@ -73,6 +73,27 @@ public class AuthSQLTest {
         }
     }
 
+    @Test
+    public void getAuthSuccess() {
+        try (var conn = DatabaseManager.getConnection()) {
+            clearTable();
+
+            // add authData.
+            try (var preparedStatement = conn.prepareStatement(
+                    "INSERT INTO auth (auth_token, username) VALUES ('1234', 'joe');"
+            )) {
+                preparedStatement.executeUpdate();
+            }
+
+            // get auth
+            AuthData authData = authDAO.getAuth("1234");
+            assertEquals("1234", authData.authToken());
+            assertEquals("joe", authData.username());
+        } catch (Exception ex) {
+            fail("Exception thrown.");
+        }
+    }
+
     // see UserSQLTest
     private void clearTable() throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
