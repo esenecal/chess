@@ -16,7 +16,7 @@ import com.google.gson.Gson;
 public class SqlGameDAO implements GameDAO {
 
     public SqlGameDAO() throws DataAccessException {
-        configureDatabase();
+        configureTable();
     }
 
     // Methods auto added by intelliJ
@@ -75,10 +75,23 @@ public class SqlGameDAO implements GameDAO {
 
     @Override
     public void removeGames() throws DataAccessException {
+        // Copied over and modified from SqlAuthDAO
+        try (var conn = DatabaseManager.getConnection()) {
+            // Drop and reconfigure. This way we have a fresh start with the correct schema.
+            // this fixes any schema changes if somehow that occurred.
+            final String statement = "DROP TABLE game;";
 
+            try (var preparedStatement = conn.prepareStatement(statement)) {
+                preparedStatement.executeUpdate();
+            }
+            // regenerate table.
+            configureTable();
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: issue clearing authentication data.");
+        }
     }
 
-    private void configureDatabase() throws DataAccessException {
+    private void configureTable() throws DataAccessException {
         DatabaseManager.createDatabase();
         // connect to db
         try (var conn = DatabaseManager.getConnection()) {
