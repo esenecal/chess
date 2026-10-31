@@ -80,7 +80,7 @@ public class GameSQLTest {
     // empty list.
     @Test
     public void listGamesEmpty() {
-        try (var conn = DatabaseManager.getConnection()) {
+        try {
             clearTable();
 
             // we have an empty table.
@@ -189,7 +189,7 @@ public class GameSQLTest {
 
             // manually create games.
             String emptyGameJson = new Gson().toJson(new ChessGame());
-            int game1 = manuallyCreateGame(conn,
+            manuallyCreateGame(conn,
                     "fred", "joe", "game1", emptyGameJson);
 
             // get nonexistent
@@ -320,11 +320,11 @@ public class GameSQLTest {
             // manually create some games.
             String emptyGameJson = new Gson().toJson(new ChessGame());
 
-            int gameOne = manuallyCreateGame(conn,
+            manuallyCreateGame(conn,
                     "fred", "joe", "game1", emptyGameJson);
-            int gameTwo = manuallyCreateGame(conn,
+            manuallyCreateGame(conn,
                     "fred", "bill", "game2", emptyGameJson);
-            int gameThree = manuallyCreateGame(conn,
+            manuallyCreateGame(conn,
                     "jim", "bill", "game3", emptyGameJson);
 
             gameDAO.removeGames();
@@ -351,7 +351,7 @@ public class GameSQLTest {
             Connection conn,
             String whiteUsername,
             String blackUsername,
-            String game_name,
+            String gameName,
             String gameJson
     ) throws SQLException {
         var statement = """
@@ -360,14 +360,14 @@ public class GameSQLTest {
         try (var preparedStatement = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, whiteUsername);
             preparedStatement.setString(2, blackUsername);
-            preparedStatement.setString(3, game_name);
+            preparedStatement.setString(3, gameName);
             preparedStatement.setString(4, gameJson);
 
             preparedStatement.executeUpdate();
 
             // get the generated game_id. See MasteryLS JDBC
             var resultSet = preparedStatement.getGeneratedKeys();
-            int gameID = 0; // initialize at 0.
+            int gameID;
 
             if (resultSet.next()) {
                 gameID = resultSet.getInt(1);

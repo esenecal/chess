@@ -4,7 +4,6 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.UserDAO;
 import model.UserData;
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.SQLException;
 
@@ -26,16 +25,12 @@ public class SqlUserDAO implements UserDAO {
                 preparedStatement.setString(1, username);
 
                 try (var resultSet = preparedStatement.executeQuery()) {
-
-                    String dataUsername = null;
-                    String passHash = null;
-                    String email = null;
                     // There is only one row. So, if resultSet.next() is true, we are good.
                     // if it is false, there was never a row, and we return null. There was no user.
                     if (resultSet.next()) {
-                        dataUsername = resultSet.getString("username");
-                        passHash = resultSet.getString("password");
-                        email = resultSet.getString("email");
+                        String dataUsername = resultSet.getString("username");
+                        String passHash = resultSet.getString("password");
+                        String email = resultSet.getString("email");
 
                         return new UserData(dataUsername, passHash, email);
                     } else {
@@ -52,7 +47,7 @@ public class SqlUserDAO implements UserDAO {
     }
 
     @Override
-    // thanks, masteryls jdbc.
+    // thanks, MasteryLS JDBC.
     public void createUser(UserData userData) throws DataAccessException {
         // create a connection.
         try (var conn = DatabaseManager.getConnection()) {

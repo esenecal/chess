@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import com.google.gson.Gson;
 
@@ -80,11 +79,9 @@ public class SqlGameDAO implements GameDAO {
 
                 // get the generated game_id. See MasteryLS JDBC
                 var rs = ps.getGeneratedKeys();
-                int gameID = 0; // initialize at 0.
                 // if this is false, we did not receive an auto increment. That should not occur.
                 if (rs.next()) {
-                    gameID = rs.getInt(1);
-                    return gameID;
+                    return rs.getInt(1);
                 } else {
                     // failed to create the game data. This is a SQL issue if it occurs;
                     // not a logic issue.

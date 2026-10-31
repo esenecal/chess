@@ -7,7 +7,6 @@ import model.AuthData;
 import org.junit.jupiter.api.Test;
 import service.UserService;
 
-import javax.xml.crypto.Data;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -60,7 +59,7 @@ public class AuthSQLTest {
         String username = "jim";
         AuthData authData = new AuthData(authToken, username);
 
-        try (var conn = DatabaseManager.getConnection()) {
+        try {
             clearTable();
             // create auth
             authDAO.createAuth(authData);
@@ -95,7 +94,7 @@ public class AuthSQLTest {
 
     @Test
     public void getAuthNonExistent() {
-        try (var conn = DatabaseManager.getConnection()) {
+        try {
             clearTable();
 
             // get a nonexistent Auth.

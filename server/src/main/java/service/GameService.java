@@ -2,9 +2,6 @@ package service;
 
 import chess.ChessGame;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import dataaccess.DataAccessException;
 import dataaccess.NonexistentAuthException;
 import dataaccess.NonexistentGameException;

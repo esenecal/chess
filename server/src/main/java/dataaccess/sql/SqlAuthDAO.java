@@ -13,7 +13,7 @@ public class SqlAuthDAO implements AuthDAO {
         configureTable();
     }
 
-    // auto-implemented with intellij
+    // auto-implemented with intelliJ
     @Override
     public void createAuth(AuthData authData) throws DataAccessException {
         // create connection. Copied and modified from sqluserdao.java
@@ -65,8 +65,8 @@ public class SqlAuthDAO implements AuthDAO {
             // authToken is unique as a primary key, so it must be unique. Thus, we only
             // have to use it to remove something.
             // we cannot have different authTokens and the same username as well, as on register
-            // an authData cannot be created if a user exists (so reregistering is not possible)
-            // and on login, an authData cannot be created if the token already exists.
+            // an authData cannot be created if a user exists (so reregistering is not possible).
+            // On login, an authData cannot be created if the token already exists.
             // someone could theoretically spoof a token to have a different token for a username
             // and thus try to log in with that, but that would be more of a hack.
             // https://www.w3schools.com/mysql/mysql_primarykey.asp
