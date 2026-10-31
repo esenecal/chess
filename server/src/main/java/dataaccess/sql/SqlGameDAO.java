@@ -34,7 +34,7 @@ public class SqlGameDAO implements GameDAO {
 
         try (var conn = DatabaseManager.getConnection()) {
             // game_id is auto created.
-            // usernames are null
+            // usernames are passed in. Service determines if they are null or not.
             var statement = """
                     INSERT INTO game (game_name, game) VALUES (?, ?);
                     """;

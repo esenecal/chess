@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -74,27 +75,52 @@ public class GameSQLTest {
 
     @Test
     public void clearGameSuccessful() {
+        try (var conn = DatabaseManager.getConnection()) {
+            clearTable();
 
+            // manually create some games.
+            String emptyGameJson = new Gson().toJson(new ChessGame());
+
+            int gameOne = manuallyCreateGame(conn,
+                    "fred", "joe", "game1", emptyGameJson);
+            int gameTwo = manuallyCreateGame(conn,
+                    "fred", "bill", "game2", emptyGameJson);
+            int gameThree = manuallyCreateGame(conn,
+                    "jim", "bill", "game3", emptyGameJson);
+
+            gameDAO.removeGames();
+
+            // Select everything from table. See AuthSQLTest
+            try (var ps = conn.prepareStatement("SELECT * FROM game")) {
+                try (var rs = ps.executeQuery()) {
+                    // verify table is empty.
+                    assertFalse(rs.next());
+                }
+            }
+
+        } catch (Exception ex) {
+            fail("Exception thrown: " + ex.getMessage());
+        }
     }
 
     /*
     Return game_id.
      */
-    private int manuallyCreateUser(
+    private int manuallyCreateGame(
             Connection conn,
             String whiteUsername,
             String blackUsername,
             String game_name,
-            String game
+            String gameJson
     ) throws SQLException {
         var statement = """
                 INSERT INTO game (white_username, black_username, game_name, game) VALUES (?, ?, ?, ?);
                 """;
-        try (var preparedStatement = conn.prepareStatement(statement)) {
+        try (var preparedStatement = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, whiteUsername);
             preparedStatement.setString(2, blackUsername);
             preparedStatement.setString(3, game_name);
-            preparedStatement.setString(4, game);
+            preparedStatement.setString(4, gameJson);
 
             preparedStatement.executeUpdate();
 
