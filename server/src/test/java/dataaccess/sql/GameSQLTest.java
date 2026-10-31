@@ -245,9 +245,63 @@ public class GameSQLTest {
                         assertEquals(newGame.blackUsername(), rsBlackUsername);
                         assertEquals(newGame.gameName(), rsGameName);
                         assertEquals(newChessGame, rsGame);
-                        
+
                     } else {
                         fail("Table empty");
+                    }
+                }
+            }
+
+            clearTable();
+        } catch (Exception ex) {
+            fail("Exception thrown: " + ex.getMessage());
+        }
+    }
+
+    @Test
+    public void updateNonexistentGame() {
+        try (var conn = DatabaseManager.getConnection()) {
+            clearTable();
+
+            // manually create a game.
+            String emptyGameJson = new Gson().toJson(new ChessGame());
+            int gameID = manuallyCreateGame(conn,
+                    null, null, "game1", emptyGameJson);
+
+            // new chess game. move leftmost pawn for white up one.
+            ChessGame newChessGame = new ChessGame();
+            newChessGame.makeMove(new ChessMove(
+                    new ChessPosition(2, 1),
+                    new ChessPosition(3, 1),
+                    null
+            ));
+
+            // game to update to. Everything is different, and we are now trying to update a game with ID 3, which
+            // does not exist.
+            GameData newGame = new GameData(
+                    3, "bill", "jim", "newGame", newChessGame
+            );
+            gameDAO.updateGame(newGame);
+
+            // now get everything from the table.
+            try (var ps = conn.prepareStatement("SELECT * FROM game")) {
+                try (var rs = ps.executeQuery()) {
+                    // should only execute once. Nothing should be added or changed.
+                    while (rs.next()) {
+                        int retrievedID = rs.getInt("game_id");
+                        String rsWhiteUsername = rs.getString("white_username");
+                        String rsBlackUsername = rs.getString("black_username");
+                        String rsGameName = rs.getString("game_name");
+                        String rsGameJson = rs.getString("game");
+
+                        // deserialize game
+                        ChessGame rsGame = new Gson().fromJson(rsGameJson, ChessGame.class);
+
+                        assertEquals(gameID, retrievedID);
+                        assertNull(rsWhiteUsername);
+                        assertNull(rsBlackUsername);
+                        assertEquals("game1", rsGameName);
+                        assertEquals(new ChessGame(), rsGame);
                     }
                 }
             }
