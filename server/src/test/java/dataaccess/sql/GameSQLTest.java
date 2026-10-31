@@ -14,8 +14,11 @@ import requestresult.GameMetaData;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
+import static dataaccess.sql.UserSQLTest.getSchema;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameSQLTest {
@@ -24,6 +27,32 @@ public class GameSQLTest {
 
     public GameSQLTest() throws DataAccessException {
         this.gameDAO = new SqlGameDAO();
+    }
+
+    @Test
+    public void checkSchema() {
+
+        try {
+            // DAO has been initialized. We now clear it, and just check the schema.
+            clearTable();
+
+            // get everything from table
+            String statement = """
+                    DESCRIBE game;
+                    """;
+
+            ArrayList<ArrayList<String>> schema = getSchema(statement);
+
+            // https://stackoverflow.com/questions/21696784/how-to-declare-an-arraylist-with-values
+            assertEquals(new ArrayList<>(Arrays.asList("username", "password", "email")), schema.get(0));
+            assertEquals(new ArrayList<>(Arrays.asList("varchar(255)", "varchar(255)", "varchar(255)")), schema.get(1));
+            assertEquals(new ArrayList<>(Arrays.asList("NO", "NO", "NO")), schema.get(2));
+            assertEquals(new ArrayList<>(Arrays.asList("PRI", "", "")), schema.get(3));
+
+            clearTable();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
     }
 
     // successful list of games
