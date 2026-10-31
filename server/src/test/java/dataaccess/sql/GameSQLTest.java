@@ -7,10 +7,12 @@ import dataaccess.DatabaseManager;
 import dataaccess.GameDAO;
 import model.GameData;
 import org.junit.jupiter.api.Test;
+import requestresult.GameMetaData;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,6 +25,55 @@ public class GameSQLTest {
     }
 
     // successful list of games
+    @Test
+    public void listGamesSuccessful() {
+        try (var conn = DatabaseManager.getConnection()) {
+            clearTable();
+
+            // create three games
+            String emptyGameJson = new Gson().toJson(new ChessGame());
+            final int game1 = manuallyCreateGame(conn,
+                    null, null, "game1", emptyGameJson);
+            final int game2 = manuallyCreateGame(conn,
+                    null, "bill", "game2", emptyGameJson);
+            final int game3 = manuallyCreateGame(conn,
+                    "fred", "joe", "game3", emptyGameJson);
+
+            // get list of games.
+            Collection<GameMetaData> gameList = gameDAO.listGames();
+            // verify the collection length and contents.
+
+            assertEquals(3, gameList.toArray().length);
+
+            // we iterate and use a switch because the collection is not guaranteed to be ordered.
+            // https://www.w3schools.com/java/java_switch.asp
+            for (GameMetaData gameData : gameList) {
+                switch (gameData.gameID()) {
+                    case 1:
+                        assertEquals(game1, gameData.gameID());
+                        assertNull(gameData.whiteUsername());
+                        assertNull(gameData.blackUsername());
+                        assertEquals("game1", gameData.gameName());
+                        break;
+                    case 2:
+                        assertEquals(game2, gameData.gameID());
+                        assertNull(gameData.whiteUsername());
+                        assertEquals("bill", gameData.blackUsername());
+                        assertEquals("game2", gameData.gameName());
+                        break;
+                    case 3:
+                        assertEquals(game3, gameData.gameID());
+                        assertEquals("fred", gameData.whiteUsername());
+                        assertEquals("joe", gameData.blackUsername());
+                        assertEquals("game3", gameData.gameName());
+                }
+            }
+
+            clearTable();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
 
     // empty list.
 
