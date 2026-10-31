@@ -1,6 +1,8 @@
 package service;
 
 import dataaccess.*;
+import dataaccess.sql.SqlAuthDAO;
+import dataaccess.sql.SqlUserDAO;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.Test;
@@ -13,8 +15,13 @@ import requestresult.*;
 // See MasteryLS "Unit Testing"
 public class UserServiceTest {
 
-    UserDAO userDAO = new MemoryUserDAO();
-    AuthDAO authDAO = new MemoryAuthDAO();
+    UserDAO userDAO;
+    AuthDAO authDAO;
+
+    public UserServiceTest() throws DataAccessException {
+        this.userDAO = new SqlUserDAO();
+        this.authDAO = new SqlAuthDAO();
+    }
 
     /**
      * Positive register test. Successfully register a user.
