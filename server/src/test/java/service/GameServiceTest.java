@@ -2,6 +2,8 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.*;
+import dataaccess.sql.SqlAuthDAO;
+import dataaccess.sql.SqlGameDAO;
 import model.AuthData;
 import requestresult.*;
 import model.GameData;
@@ -11,9 +13,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class GameServiceTest {
 
-    // Initialize memory. Placed here.
-    AuthDAO authDAO = new MemoryAuthDAO();
-    GameDAO gameDAO = new MemoryGameDAO();
+    AuthDAO authDAO;
+    GameDAO gameDAO;
+
+    public GameServiceTest() throws DataAccessException {
+        authDAO = new SqlAuthDAO();
+        gameDAO = new SqlGameDAO();
+    }
 
     @Test
     public void listGamesPositiveTest() {

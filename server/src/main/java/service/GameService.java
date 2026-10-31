@@ -84,6 +84,9 @@ public class GameService {
         GameData updatedGame;
 
         // construct updated game state
+        // note: this current implementation does allow a player to be added in both white and black teams.
+        // Is this an issue? Only if we do not want people to play against themselves.
+        // I am okay with that, so we'll keep this implementation for now.
         if (request.playerColor() == ChessGame.TeamColor.WHITE) {
             // if the white team is already taken
             if (game.whiteUsername() != null) {
