@@ -29,7 +29,7 @@ public interface GameDAO {
      * Get a game by ID
      *
      * @param gameID int
-     * @return GameData
+     * @return GameData, null if no game.
      * @throws DataAccessException throws DataAccessException
      */
     GameData getGame(int gameID) throws DataAccessException;

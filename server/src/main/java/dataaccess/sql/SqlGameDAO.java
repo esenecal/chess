@@ -67,7 +67,17 @@ public class SqlGameDAO implements GameDAO {
 
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
-        return null;
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = """
+                    SELECT game_id, white_username, black_username, game_name, game FROM game WHERE game_id=?;
+                    """;
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1,);
+            }
+
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: issue adding new game. " + ex.getMessage());
+        }
     }
 
     @Override
