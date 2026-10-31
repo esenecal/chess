@@ -23,30 +23,6 @@ public class UserSQLTest {
     public UserSQLTest() throws DataAccessException {
     }
 
-    private void getSchema(Connection conn,
-                           ArrayList<String> fields,
-                           ArrayList<String> types,
-                           ArrayList<String> isNull,
-                           ArrayList<String> primaryKey
-    ) throws SQLException {
-        // check field, type, if something can be null, and key.
-        // get everything from table
-        String statement = """
-                DESCRIBE user;
-                """;
-
-        try (var ps = conn.prepareStatement(statement)) {
-            try (var rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    fields.add(rs.getString("field"));
-                    types.add(rs.getString("type"));
-                    isNull.add(rs.getString("null"));
-                    primaryKey.add(rs.getString("key"));
-                }
-            }
-        }
-    }
-
     @Test
     public void checkSchema() {
 
@@ -54,14 +30,27 @@ public class UserSQLTest {
             // DAO has been initialized. We now clear it, and just check the schema.
             clearTable();
 
+            // get everything from table
+            String statement = """
+                    DESCRIBE user;
+                    """;
+
             // check field, type, if something can be null, and key.
             ArrayList<String> fields = new ArrayList<>();
             ArrayList<String> types = new ArrayList<>();
             ArrayList<String> isNull = new ArrayList<>();
             ArrayList<String> primaryKey = new ArrayList<>();
 
-            getSchema(conn, fields, types, isNull, primaryKey);
-
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        fields.add(rs.getString("field"));
+                        types.add(rs.getString("type"));
+                        isNull.add(rs.getString("null"));
+                        primaryKey.add(rs.getString("key"));
+                    }
+                }
+            }
             // https://stackoverflow.com/questions/21696784/how-to-declare-an-arraylist-with-values
             assertEquals(new ArrayList<>(Arrays.asList("username", "password", "email")), fields);
             assertEquals(new ArrayList<>(Arrays.asList("varchar(255)", "varchar(255)", "varchar(255)")), types);
