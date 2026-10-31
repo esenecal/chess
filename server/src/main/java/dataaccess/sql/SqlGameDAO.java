@@ -10,6 +10,8 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.gson.Gson;
+
 public class SqlGameDAO implements GameDAO {
 
     public SqlGameDAO() throws DataAccessException {
@@ -24,7 +26,43 @@ public class SqlGameDAO implements GameDAO {
 
     @Override
     public int createGame(GameData gameData) throws DataAccessException {
-        return 0;
+        // create connection. Copied and modified from sqluserdao.java
+
+        // serialize the game for storage.
+        String serializedGame = new Gson().toJson(gameData);
+
+        try (var conn = DatabaseManager.getConnection()) {
+            // game_id is auto created.
+            // usernames are null
+            var statement = """
+                    INSERT INTO game
+                        (game_name, game)
+                    VALUES (?, ?);
+                    """;
+            // insert authToken, username
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, gameData.gameName());
+                ps.setString(2, serializedGame);
+                ps.executeUpdate();
+
+                // get the generated game_id. See MasteryLS JDBC
+                var rs = ps.getGeneratedKeys();
+                int gameID = 0; // initialize at 0.
+                // if this is false, we did not receive an auto increment. That should not occur.
+                if (rs.next()) {
+                    gameID = rs.getInt(1);
+                    return gameID;
+                } else {
+                    // failed to create the game data. This is a SQL issue if it occurs;
+                    // not a logic issue.
+                    throw new DataAccessException("Error: issue adding new game.");
+                }
+
+            }
+
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: issue adding new game.");
+        }
     }
 
     @Override

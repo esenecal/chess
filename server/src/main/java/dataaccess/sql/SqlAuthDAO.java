@@ -19,7 +19,7 @@ public class SqlAuthDAO implements AuthDAO {
         // create connection. Copied and modified from sqluserdao.java
         try (var conn = DatabaseManager.getConnection()) {
             // create a prepared statement
-            var statement = "INSERT INTO auth (auth_token, username) VALUES (?, ?)";
+            var statement = "INSERT INTO auth (auth_token, username) VALUES (?, ?);";
             // insert authToken, username
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, authData.authToken());
@@ -36,7 +36,7 @@ public class SqlAuthDAO implements AuthDAO {
     public AuthData getAuth(String authToken) throws DataAccessException {
         // create connection.
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT auth_token, username FROM auth WHERE auth_token=?";
+            var statement = "SELECT auth_token, username FROM auth WHERE auth_token=?;";
             // preparedStatement. Insert authToken.
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, authToken);
@@ -70,7 +70,7 @@ public class SqlAuthDAO implements AuthDAO {
             // someone could theoretically spoof a token to have a different token for a username
             // and thus try to log in with that, but that would be more of a hack.
             // https://www.w3schools.com/mysql/mysql_primarykey.asp
-            var statement = "DELETE FROM auth WHERE auth_token=?";
+            var statement = "DELETE FROM auth WHERE auth_token=?;";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, authData.authToken());
 
@@ -87,7 +87,7 @@ public class SqlAuthDAO implements AuthDAO {
         try (var conn = DatabaseManager.getConnection()) {
             // Drop and reconfigure. This way we have a fresh start with the correct schema.
             // this fixes any schema changes if somehow that occurred.
-            final String statement = "DROP TABLE auth";
+            final String statement = "DROP TABLE auth;";
 
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();

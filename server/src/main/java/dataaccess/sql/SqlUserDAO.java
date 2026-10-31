@@ -20,7 +20,7 @@ public class SqlUserDAO implements UserDAO {
         // create a connection.
         try (var conn = DatabaseManager.getConnection()) {
             // create a prepared statement
-            var statement = "SELECT username, password, email FROM user WHERE username=?";
+            var statement = "SELECT username, password, email FROM user WHERE username=?;";
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 // guaranteed to be unique, as username is a primary key.
                 preparedStatement.setString(1, username);
@@ -57,7 +57,7 @@ public class SqlUserDAO implements UserDAO {
         // create a connection.
         try (var conn = DatabaseManager.getConnection()) {
             // create a prepared statement
-            var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+            var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?);";
             // insert username, password hash, email.
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.setString(1, userData.username());
@@ -78,7 +78,7 @@ public class SqlUserDAO implements UserDAO {
         try (var conn = DatabaseManager.getConnection()) {
             // Drop and reconfigure. This way we have a fresh start with the correct schema.
             // this fixes any schema changes if somehow that occurred.
-            final String statement = "DROP TABLE user";
+            final String statement = "DROP TABLE user;";
 
             try (var preparedStatement = conn.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
@@ -105,7 +105,7 @@ public class SqlUserDAO implements UserDAO {
                     );
                     """;
 
-            // create a prepared statement using the create table statement. Execute it.
+            // create a prepared statement using the table statement. Execute it.
             try (var preparedStatement = conn.prepareStatement(createTableStatement)) {
                 preparedStatement.executeUpdate();
             }

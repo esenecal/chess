@@ -18,7 +18,7 @@ public interface GameDAO {
     Collection<GameMetaData> listGames() throws DataAccessException;
 
     /**
-     * Create a game and associate it with authData
+     * Create a game. The whiteUsername and blackUsername are initialized as null.
      *
      * @param gameData GameData
      * @throws DataAccessException throws DataAccessException
@@ -37,7 +37,6 @@ public interface GameDAO {
     /**
      * Update game. Joining a game, making a move.
      *
-     * @param gameID   int
      * @param gameData GameData
      * @throws DataAccessException throws DataAccessException
      */
