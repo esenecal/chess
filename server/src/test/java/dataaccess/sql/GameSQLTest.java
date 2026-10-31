@@ -44,10 +44,14 @@ public class GameSQLTest {
             ArrayList<ArrayList<String>> schema = getSchema(statement);
 
             // https://stackoverflow.com/questions/21696784/how-to-declare-an-arraylist-with-values
-            assertEquals(new ArrayList<>(Arrays.asList("username", "password", "email")), schema.get(0));
-            assertEquals(new ArrayList<>(Arrays.asList("varchar(255)", "varchar(255)", "varchar(255)")), schema.get(1));
-            assertEquals(new ArrayList<>(Arrays.asList("NO", "NO", "NO")), schema.get(2));
-            assertEquals(new ArrayList<>(Arrays.asList("PRI", "", "")), schema.get(3));
+            assertEquals(new ArrayList<>(
+                            Arrays.asList("game_id", "white_username", "black_username", "game_name", "game")),
+                    schema.get(0));
+            assertEquals(new ArrayList<>(
+                            Arrays.asList("int", "varchar(255)", "varchar(255)", "varchar(255)", "text")),
+                    schema.get(1));
+            assertEquals(new ArrayList<>(Arrays.asList("NO", "YES", "YES", "NO", "NO")), schema.get(2));
+            assertEquals(new ArrayList<>(Arrays.asList("PRI", "", "", "", "")), schema.get(3));
 
             clearTable();
         } catch (Exception ex) {

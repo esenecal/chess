@@ -38,10 +38,10 @@ public class AuthSQLTest {
             ArrayList<ArrayList<String>> schema = getSchema(statement);
 
             // https://stackoverflow.com/questions/21696784/how-to-declare-an-arraylist-with-values
-            assertEquals(new ArrayList<>(Arrays.asList("username", "password", "email")), schema.get(0));
-            assertEquals(new ArrayList<>(Arrays.asList("varchar(255)", "varchar(255)", "varchar(255)")), schema.get(1));
-            assertEquals(new ArrayList<>(Arrays.asList("NO", "NO", "NO")), schema.get(2));
-            assertEquals(new ArrayList<>(Arrays.asList("PRI", "", "")), schema.get(3));
+            assertEquals(new ArrayList<>(Arrays.asList("auth_token", "username")), schema.get(0));
+            assertEquals(new ArrayList<>(Arrays.asList("varchar(255)", "varchar(255)")), schema.get(1));
+            assertEquals(new ArrayList<>(Arrays.asList("NO", "NO")), schema.get(2));
+            assertEquals(new ArrayList<>(Arrays.asList("PRI", "")), schema.get(3));
 
             clearTable();
         } catch (Exception ex) {
