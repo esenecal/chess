@@ -1,6 +1,8 @@
 package dataaccess.sql;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
@@ -200,6 +202,61 @@ public class GameSQLTest {
         }
     }
     // No other negative tests, as all other routes would be exceptional sql errors.
+
+    @Test
+    public void updateGameSuccessful() {
+        try (var conn = DatabaseManager.getConnection()) {
+            clearTable();
+
+            // manually create a game.
+            String emptyGameJson = new Gson().toJson(new ChessGame());
+            int gameID = manuallyCreateGame(conn,
+                    "fred", "joe", "game1", emptyGameJson);
+
+            // new chess game. move leftmost pawn for white up one.
+            ChessGame newChessGame = new ChessGame();
+            newChessGame.makeMove(new ChessMove(
+                    new ChessPosition(2, 1),
+                    new ChessPosition(3, 1),
+                    null
+            ));
+
+            // game to update to. Everything is different.
+            GameData newGame = new GameData(
+                    gameID, "bill", "jim", "newGame", newChessGame
+            );
+            gameDAO.updateGame(newGame);
+
+            // now get everything from the table.
+            try (var ps = conn.prepareStatement("SELECT * FROM game")) {
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        int retrievedID = rs.getInt("game_id");
+                        String rsWhiteUsername = rs.getString("white_username");
+                        String rsBlackUsername = rs.getString("black_username");
+                        String rsGameName = rs.getString("game_name");
+                        String rsGameJson = rs.getString("game");
+
+                        // deserialize game
+                        ChessGame rsGame = new Gson().fromJson(rsGameJson, ChessGame.class);
+
+                        assertEquals(newGame.gameID(), retrievedID);
+                        assertEquals(newGame.whiteUsername(), rsWhiteUsername);
+                        assertEquals(newGame.blackUsername(), rsBlackUsername);
+                        assertEquals(newGame.gameName(), rsGameName);
+                        assertEquals(newChessGame, rsGame);
+                        
+                    } else {
+                        fail("Table empty");
+                    }
+                }
+            }
+
+            clearTable();
+        } catch (Exception ex) {
+            fail("Exception thrown: " + ex.getMessage());
+        }
+    }
 
     @Test
     public void clearGameSuccessful() {

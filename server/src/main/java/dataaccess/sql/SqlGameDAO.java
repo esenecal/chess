@@ -157,6 +157,8 @@ public class SqlGameDAO implements GameDAO {
 
                 // by ID
                 ps.setInt(5, gameData.gameID());
+
+                ps.executeUpdate();
             }
         } catch (SQLException ex) {
             throw new DataAccessException("Error: issue updating game.");
