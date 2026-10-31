@@ -7,6 +7,7 @@ import model.GameData;
 import requestresult.GameMetaData;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,18 +30,16 @@ public class SqlGameDAO implements GameDAO {
         // create connection. Copied and modified from sqluserdao.java
 
         // serialize the game for storage.
-        String serializedGame = new Gson().toJson(gameData);
+        String serializedGame = new Gson().toJson(gameData.game());
 
         try (var conn = DatabaseManager.getConnection()) {
             // game_id is auto created.
             // usernames are null
             var statement = """
-                    INSERT INTO game
-                        (game_name, game)
-                    VALUES (?, ?);
+                    INSERT INTO game (game_name, game) VALUES (?, ?);
                     """;
             // insert authToken, username
-            try (var ps = conn.prepareStatement(statement)) {
+            try (var ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, gameData.gameName());
                 ps.setString(2, serializedGame);
                 ps.executeUpdate();
@@ -57,11 +56,10 @@ public class SqlGameDAO implements GameDAO {
                     // not a logic issue.
                     throw new DataAccessException("Error: issue adding new game.");
                 }
-
             }
 
         } catch (SQLException ex) {
-            throw new DataAccessException("Error: issue adding new game.");
+            throw new DataAccessException("Error: issue adding new game. " + ex.getMessage());
         }
     }
 

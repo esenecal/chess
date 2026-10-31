@@ -1,18 +1,117 @@
 package dataaccess.sql;
 
+import chess.ChessGame;
+import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
+import dataaccess.GameDAO;
+import model.GameData;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class GameSQLTest {
 
+    GameDAO gameDAO;
+
+    public GameSQLTest() throws DataAccessException {
+        this.gameDAO = new SqlGameDAO();
+    }
+
+    @Test
+    public void createGameSuccessful() {
+
+        try (var conn = DatabaseManager.getConnection()) {
+            clearTable();
+
+            GameData gameData = new GameData(
+                    0,
+                    null,
+                    null,
+                    "gameName",
+                    new ChessGame());
+
+            // add game data
+            int id = gameDAO.createGame(gameData);
+
+            // retrieve data in game table.
+            try (var ps = conn.prepareStatement("SELECT * FROM game")) {
+                var rs = ps.executeQuery();
+                if (rs.next()) {
+                    // get retrieved data.
+                    int gameID = rs.getInt("game_id");
+                    String whiteUsername = rs.getString("white_username");
+                    String blackUsername = rs.getString("black_username");
+                    String gameName = rs.getString("game_name");
+                    String gameJson = rs.getString("game");
+
+                    // deserialize game.
+                    ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
+
+                    // Verify
+                    assertEquals(id, gameID);    // retrieved gameID should be one, as it is first in the table
+                    assertNull(whiteUsername);
+                    assertNull(blackUsername);
+                    assertEquals("gameName", gameName);
+                    assertEquals(new ChessGame(), game);
+
+                } else {
+                    fail("Not created.");
+                }
+            }
+
+            clearTable();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+
+    }
+
+    // no negative tests; throwing an exception would be a SQL issue.
+
     @Test
     public void clearGameSuccessful() {
-        
+
+    }
+
+    /*
+    Return game_id.
+     */
+    private int manuallyCreateUser(
+            Connection conn,
+            String whiteUsername,
+            String blackUsername,
+            String game_name,
+            String game
+    ) throws SQLException {
+        var statement = """
+                INSERT INTO game (white_username, black_username, game_name, game) VALUES (?, ?, ?, ?);
+                """;
+        try (var preparedStatement = conn.prepareStatement(statement)) {
+            preparedStatement.setString(1, whiteUsername);
+            preparedStatement.setString(2, blackUsername);
+            preparedStatement.setString(3, game_name);
+            preparedStatement.setString(4, game);
+
+            preparedStatement.executeUpdate();
+
+            // get the generated game_id. See MasteryLS JDBC
+            var resultSet = preparedStatement.getGeneratedKeys();
+            int gameID = 0; // initialize at 0.
+
+            if (resultSet.next()) {
+                gameID = resultSet.getInt(1);
+                return gameID;
+            } else {
+                // If we did not create anything, throw an exception.
+
+                throw new SQLException("Did not create user.");
+            }
+
+        }
     }
 
     // see UserSQLTest
