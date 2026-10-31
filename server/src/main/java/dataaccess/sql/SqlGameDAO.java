@@ -5,6 +5,7 @@ import dataaccess.DatabaseManager;
 import dataaccess.GameDAO;
 import model.GameData;
 import requestresult.GameMetaData;
+import chess.ChessGame;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -72,7 +73,29 @@ public class SqlGameDAO implements GameDAO {
                     SELECT game_id, white_username, black_username, game_name, game FROM game WHERE game_id=?;
                     """;
             try (var ps = conn.prepareStatement(statement)) {
-                ps.setInt(1,);
+                // SELECT by gameID
+                ps.setInt(1, gameID);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        // construct a game data object and send it back.
+                        int id = rs.getInt("game_id");
+                        String whiteUsername = rs.getString("white_username");
+                        String blackUsername = rs.getString("black_username");
+                        String gameName = rs.getString("game_name");
+                        String gameJson = rs.getString("game");
+
+                        // Deserialize game.
+                        ChessGame game = new Gson().fromJson(gameJson, ChessGame.class);
+
+                        // yeah, getting id seems a little redundant, but may as well ensure that all the information
+                        // we are sending back is guaranteed from the database.
+                        return new GameData(id, whiteUsername, blackUsername, gameName, game);
+
+                    } else {
+                        // if false, nothing was retrieved.
+                        return null;
+                    }
+                }
             }
 
         } catch (SQLException ex) {
