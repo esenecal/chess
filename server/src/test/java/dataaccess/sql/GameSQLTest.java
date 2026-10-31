@@ -76,6 +76,24 @@ public class GameSQLTest {
     }
 
     // empty list.
+    @Test
+    public void listGamesEmpty() {
+        try (var conn = DatabaseManager.getConnection()) {
+            clearTable();
+
+            // we have an empty table.
+
+            // get list of games.
+            Collection<GameMetaData> gameList = gameDAO.listGames();
+
+            // verify it is empty.
+            assertEquals(0, gameList.toArray().length);
+
+            clearTable();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
 
     @Test
     public void createGameSuccessful() {
