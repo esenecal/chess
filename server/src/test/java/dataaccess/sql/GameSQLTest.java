@@ -107,6 +107,26 @@ public class GameSQLTest {
     }
 
     @Test
+    public void getNonExistentGame() {
+        try (var conn = DatabaseManager.getConnection()) {
+            clearTable();
+
+            // manually create games.
+            String emptyGameJson = new Gson().toJson(new ChessGame());
+            int game1 = manuallyCreateGame(conn,
+                    "fred", "joe", "game1", emptyGameJson);
+
+            // get nonexistent
+            GameData gameDataOne = gameDAO.getGame(2);
+            assertNull(gameDataOne);
+
+            clearTable();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
+    @Test
     public void clearGameSuccessful() {
         try (var conn = DatabaseManager.getConnection()) {
             clearTable();
