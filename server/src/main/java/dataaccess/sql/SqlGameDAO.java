@@ -50,7 +50,7 @@ public class SqlGameDAO implements GameDAO {
             }
 
             // return the list.
-            return gameList
+            return gameList;
 
         } catch (SQLException ex) {
             throw new DataAccessException("Error: issue adding new game. " + ex.getMessage());
