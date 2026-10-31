@@ -125,6 +125,7 @@ public class GameSQLTest {
             fail("Exception thrown. " + ex.getMessage());
         }
     }
+    // No other negative tests, as all other routes would be exceptional sql errors.
 
     @Test
     public void clearGameSuccessful() {
