@@ -49,11 +49,11 @@ public class SqlGameDAO implements GameDAO {
                 }
             }
 
-            // return the list.
+            // return the list. Nothing is added if nothing was retrieved.
             return gameList;
 
         } catch (SQLException ex) {
-            throw new DataAccessException("Error: issue adding new game. " + ex.getMessage());
+            throw new DataAccessException("Error: issue getting game list. " + ex.getMessage());
         }
     }
 
@@ -130,7 +130,7 @@ public class SqlGameDAO implements GameDAO {
             }
 
         } catch (SQLException ex) {
-            throw new DataAccessException("Error: issue adding new game. " + ex.getMessage());
+            throw new DataAccessException("Error: issue getting game. " + ex.getMessage());
         }
     }
 

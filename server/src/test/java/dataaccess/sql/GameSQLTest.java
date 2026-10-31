@@ -94,6 +94,7 @@ public class GameSQLTest {
             fail("Exception thrown. " + ex.getMessage());
         }
     }
+    // no further tests; all negative tests are exceptional sql cases.
 
     @Test
     public void createGameSuccessful() {
