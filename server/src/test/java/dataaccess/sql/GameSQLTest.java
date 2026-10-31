@@ -14,6 +14,8 @@ import requestresult.GameMetaData;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,6 +26,53 @@ public class GameSQLTest {
 
     public GameSQLTest() throws DataAccessException {
         this.gameDAO = new SqlGameDAO();
+    }
+
+    @Test
+    // copied from UserSQLTest
+    public void checkSchema() {
+
+        try (var conn = DatabaseManager.getConnection()) {
+            // DAO has been initialized. We now clear it, and just check the schema.
+            clearTable();
+
+            // get everything from table
+            String statement = """
+                    DESCRIBE game;
+                    """;
+
+            // check field, type, if something can be null, and key.
+            ArrayList<String> fields = new ArrayList<>();
+            ArrayList<String> types = new ArrayList<>();
+            ArrayList<String> isNull = new ArrayList<>();
+            ArrayList<String> primaryKey = new ArrayList<>();
+
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        fields.add(rs.getString("field"));
+                        types.add(rs.getString("type"));
+                        isNull.add(rs.getString("null"));
+                        primaryKey.add(rs.getString("key"));
+                    }
+                }
+            }
+            // https://stackoverflow.com/questions/21696784/how-to-declare-an-arraylist-with-values
+            assertEquals(new ArrayList<>(
+                            Arrays.asList("game_id", "white_username", "black_username", "game_name", "game")),
+                    fields);
+            assertEquals(new ArrayList<>(
+                            Arrays.asList("int", "varchar(255)", "varchar(255)", "varchar(255)", "text")),
+                    types);
+            assertEquals(new ArrayList<>(
+                            Arrays.asList("NO", "YES", "YES", "NO", "NO")),
+                    isNull);
+            assertEquals(new ArrayList<>(Arrays.asList("PRI", "", "", "", "")), primaryKey);
+
+            clearTable();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
     }
 
     // successful list of games
