@@ -2,6 +2,9 @@ package service;
 
 import chess.ChessGame;
 import dataaccess.*;
+import dataaccess.sql.SqlAuthDAO;
+import dataaccess.sql.SqlGameDAO;
+import dataaccess.sql.SqlUserDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -11,9 +14,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class StorageServiceTest {
 
-    UserDAO userDAO = new MemoryUserDAO();
-    AuthDAO authDAO = new MemoryAuthDAO();
-    GameDAO gameDAO = new MemoryGameDAO();
+    UserDAO userDAO;
+    AuthDAO authDAO;
+    GameDAO gameDAO;
+
+    public StorageServiceTest() throws DataAccessException {
+        this.userDAO = new SqlUserDAO();
+        this.authDAO = new SqlAuthDAO();
+        this.gameDAO = new SqlGameDAO();
+    }
 
     @Test
     public void clearPositiveTest() {
