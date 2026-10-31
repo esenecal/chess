@@ -70,8 +70,41 @@ public class GameSQLTest {
         }
 
     }
+    // no negative tests; throwing an exception would be a SQL side, exceptional issue.
 
-    // no negative tests; throwing an exception would be a SQL issue.
+    @Test
+    public void getGameSuccessful() {
+        try (var conn = DatabaseManager.getConnection()) {
+            clearTable();
+
+            // manually create games.
+            String emptyGameJson = new Gson().toJson(new ChessGame());
+            int game1 = manuallyCreateGame(conn,
+                    "fred", "joe", "game1", emptyGameJson);
+            int game2 = manuallyCreateGame(conn,
+                    null, "bill", "game2", emptyGameJson);
+
+            // get game 1.
+            GameData gameDataOne = gameDAO.getGame(game1);
+            assertEquals(game1, gameDataOne.gameID());
+            assertEquals("fred", gameDataOne.whiteUsername());
+            assertEquals("joe", gameDataOne.blackUsername());
+            assertEquals("game1", gameDataOne.gameName());
+            assertEquals(new ChessGame(), gameDataOne.game());
+
+            // get game 2. Ensure that it is actually game 2.
+            GameData gameDataTwo = gameDAO.getGame(game2);
+            assertEquals(game2, gameDataTwo.gameID());
+            assertNull(gameDataTwo.whiteUsername());
+            assertEquals("bill", gameDataTwo.blackUsername());
+            assertEquals("game2", gameDataTwo.gameName());
+            assertEquals(new ChessGame(), gameDataTwo.game());
+
+            clearTable();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
 
     @Test
     public void clearGameSuccessful() {
@@ -97,6 +130,8 @@ public class GameSQLTest {
                     assertFalse(rs.next());
                 }
             }
+
+            clearTable();
 
         } catch (Exception ex) {
             fail("Exception thrown: " + ex.getMessage());
