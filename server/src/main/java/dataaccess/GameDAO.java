@@ -12,7 +12,7 @@ public interface GameDAO {
     /**
      * List all existing games.
      *
-     * @return Collection of GameData
+     * @return Collection of GameData, empty if no Game exist.
      * @throws DataAccessException throws DataAccessException
      */
     Collection<GameMetaData> listGames() throws DataAccessException;

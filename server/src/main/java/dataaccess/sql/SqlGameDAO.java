@@ -9,6 +9,7 @@ import chess.ChessGame;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -23,7 +24,37 @@ public class SqlGameDAO implements GameDAO {
     // Methods auto added by intelliJ
     @Override
     public Collection<GameMetaData> listGames() throws DataAccessException {
-        return List.of();
+
+        ArrayList<GameMetaData> gameList = new ArrayList<>();
+
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = """
+                    SELECT game_id, white_username, black_username, game_name FROM game;
+                    """;
+            try (var ps = conn.prepareStatement(statement)) {
+                // select all information by row.
+                try (var rs = ps.executeQuery()) {
+                    // get all rows.
+                    while (rs.next()) {
+                        // get all game metadata
+                        int gameID = rs.getInt("game_id");
+                        String whiteUsername = rs.getString("white_username");
+                        String blackUsername = rs.getString("black_username");
+                        String gameName = rs.getString("game_name");
+
+                        // add to gameList
+                        gameList.add(new GameMetaData(gameID, whiteUsername, blackUsername, gameName));
+
+                    }
+                }
+            }
+
+            // return the list.
+            return gameList
+
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: issue adding new game. " + ex.getMessage());
+        }
     }
 
     @Override

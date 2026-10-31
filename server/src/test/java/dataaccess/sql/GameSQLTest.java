@@ -22,6 +22,10 @@ public class GameSQLTest {
         this.gameDAO = new SqlGameDAO();
     }
 
+    // successful list of games
+
+    // empty list.
+
     @Test
     public void createGameSuccessful() {
 
