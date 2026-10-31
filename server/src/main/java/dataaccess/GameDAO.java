@@ -35,7 +35,7 @@ public interface GameDAO {
     GameData getGame(int gameID) throws DataAccessException;
 
     /**
-     * Update game. Joining a game, making a move.
+     * Update game. Joining a game, making a move. Effectively replaces the data in storage.
      *
      * @param gameData GameData
      * @throws DataAccessException throws DataAccessException

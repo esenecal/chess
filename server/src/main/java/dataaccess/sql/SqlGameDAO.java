@@ -53,7 +53,7 @@ public class SqlGameDAO implements GameDAO {
             return gameList;
 
         } catch (SQLException ex) {
-            throw new DataAccessException("Error: issue getting game list. " + ex.getMessage());
+            throw new DataAccessException("Error: issue getting game list.");
         }
     }
 
@@ -93,7 +93,7 @@ public class SqlGameDAO implements GameDAO {
             }
 
         } catch (SQLException ex) {
-            throw new DataAccessException("Error: issue adding new game. " + ex.getMessage());
+            throw new DataAccessException("Error: issue adding new game.");
         }
     }
 
@@ -130,13 +130,37 @@ public class SqlGameDAO implements GameDAO {
             }
 
         } catch (SQLException ex) {
-            throw new DataAccessException("Error: issue getting game. " + ex.getMessage());
+            throw new DataAccessException("Error: issue getting game.");
         }
     }
 
     @Override
     public void updateGame(GameData gameData) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()) {
 
+            // serialize game
+            String gameJson = new Gson().toJson(gameData.game());
+
+            // make the update. in game, set the usernames, game name, and game string. ID remains unchanged.
+            String statement = """
+                    UPDATE game SET white_username=?,
+                                    black_username=?,
+                                    game_name=?,
+                                    game=?
+                                WHERE game_id=?;
+                    """;
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, gameData.whiteUsername());
+                ps.setString(2, gameData.blackUsername());
+                ps.setString(3, gameData.gameName());
+                ps.setString(4, gameJson);
+
+                // by ID
+                ps.setInt(5, gameData.gameID());
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException("Error: issue updating game.");
+        }
     }
 
     @Override
