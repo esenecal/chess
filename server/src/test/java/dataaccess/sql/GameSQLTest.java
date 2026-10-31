@@ -31,7 +31,7 @@ public class GameSQLTest {
             GameData gameData = new GameData(
                     0,
                     null,
-                    null,
+                    "person",
                     "gameName",
                     new ChessGame());
 
@@ -55,7 +55,7 @@ public class GameSQLTest {
                     // Verify
                     assertEquals(id, gameID);    // retrieved gameID should be one, as it is first in the table
                     assertNull(whiteUsername);
-                    assertNull(blackUsername);
+                    assertEquals("person", blackUsername);
                     assertEquals("gameName", gameName);
                     assertEquals(new ChessGame(), game);
 

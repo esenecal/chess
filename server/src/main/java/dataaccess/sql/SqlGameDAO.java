@@ -36,12 +36,14 @@ public class SqlGameDAO implements GameDAO {
             // game_id is auto created.
             // usernames are passed in. Service determines if they are null or not.
             var statement = """
-                    INSERT INTO game (game_name, game) VALUES (?, ?);
+                    INSERT INTO game (white_username, black_username, game_name, game) VALUES (?, ?, ?, ?);
                     """;
-            // insert authToken, username
             try (var ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
-                ps.setString(1, gameData.gameName());
-                ps.setString(2, serializedGame);
+                ps.setString(1, gameData.whiteUsername());
+                ps.setString(2, gameData.blackUsername());
+
+                ps.setString(3, gameData.gameName());
+                ps.setString(4, serializedGame);
                 ps.executeUpdate();
 
                 // get the generated game_id. See MasteryLS JDBC
