@@ -39,6 +39,11 @@ public class ServerFacade {
     public ServerFacade(String host, int port) {
         // on initialization,
         urlString = String.format(Locale.getDefault(), "http://%s:%d", host, port);
+        System.out.println("Initialized Client ServerFacade at url " + urlString + ", port " + port);
+    }
+
+    public void clearData() {
+
     }
 
     /**
@@ -67,7 +72,7 @@ public class ServerFacade {
             }
 
         } catch (Exception ex) {    // try something different later.
-            throw new Exception("Unable to register rser. Please try again.");
+            throw new Exception("Unable to register user. Please try again.");
         }
     }
 
