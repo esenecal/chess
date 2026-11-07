@@ -3,6 +3,8 @@ package client;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.UserData;
+import records.LoginData;
+import records.RegisterData;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -62,8 +64,8 @@ public class ServerFacade {
     /**
      * Register a user, using the username, password, and email.
      */
-    public AuthData registerUser(UserData userData) throws Exception {
-        String body = new Gson().toJson(userData);
+    public AuthData registerUser(RegisterData registerData) throws Exception {
+        String body = new Gson().toJson(registerData);
 
         HttpResponse<String> response = buildRequest("/user", "POST", body);
 
@@ -88,8 +90,9 @@ public class ServerFacade {
     /**
      * logging in a user.
      */
-    public void loginUser() {
-
+    public AuthData loginUser(LoginData loginData) throws Exception {
+        // serialize for body data.
+        String body = new Gson().toJson(loginData);
     }
 
     /**
