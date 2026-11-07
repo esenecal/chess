@@ -177,6 +177,24 @@ public class ServerFacadeTests {
         }
     }
 
+    @Test
+    public void logoutSuccessTest() {
+        try {
+            // register user
+            AuthData authData = facade.registerUser(
+                    new RegisterData("jim", "1234", "jim@gmail.com")
+            );
+
+            // log out user.
+            facade.logoutUser(authData.authToken());
+
+            // if no exception was thrown, then we are all good.
+            assertTrue(true);
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
     // write tests for clearing data when you can. For now, we can see that it works according to our needs.
 
 }
