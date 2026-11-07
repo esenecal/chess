@@ -70,4 +70,20 @@ public class ServerFacadeTests {
         }
     }
 
+    @Test
+    public void registerUserUsernameTakenTest() {
+        UserData userData = new UserData("jim", "1234", "jim@gmail.com");
+        UserData userData2 = new UserData("jim", "0", "who@gmail.com");
+
+        try {
+            // register jim.
+            facade.registerUser(userData);
+            // register another user as jim. should throw an exception.
+            assertThrows(UsernameTakenException.class, () -> facade.registerUser(userData));
+
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
 }
