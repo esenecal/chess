@@ -1,6 +1,8 @@
 package client;
 
 import com.google.gson.Gson;
+import model.AuthData;
+import model.UserData;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -26,27 +28,47 @@ public class ServerFacade {
     private static final HttpClient httpClient = HttpClient.newHttpClient();
 
     // URL string for making requests.
-    private static final String urlString = null;
-    private final int timeout;
+    private static String urlString;
 
     /**
      * Initialize a facade
      *
-     * @param host    Host name
-     * @param port    port number
-     * @param timeout Length for a timeout, in milliseconds.
+     * @param host Host name
+     * @param port port number
      */
-    public ServerFacade(String host, int port, int timeout) {
+    public ServerFacade(String host, int port) {
         // on initialization,
         urlString = String.format(Locale.getDefault(), "http://%s:%d", host, port);
-        this.timeout = timeout;
     }
 
     /**
-     * Register a user
+     * Register a user, using the username, password, and email.
      */
-    public void registerUser() {
+    public AuthData registerUser(UserData userData) throws Exception {
+        String body = new Gson().toJson(userData);
 
+        try {
+            HttpResponse<String> response = buildRequest("/user", "POST", body);
+
+            int statusCode = response.statusCode();
+            if (statusCode >= 200 && statusCode < 300) {        // 200 success code
+                // we got a response with a username and authToken. convert it to an authData and return.
+                return new Gson().fromJson(response.body(), AuthData.class);
+            } else if (statusCode == 400) {
+                // we got a bad request! Pass it up! Throw an exception. toString suggested by intelliJ context.
+                var errorMessage = new Gson().fromJson(response.body(), Map.class);
+                throw new BadRequestException(errorMessage.get("message").toString());
+            } else if (statusCode == 403) {
+                var errorMessage = new Gson().fromJson(response.body(), Map.class);
+                throw new UsernameTakenException(errorMessage.get("message").toString());
+            } else {
+                var errorMessage = new Gson().fromJson(response.body(), Map.class);
+                throw new Exception(errorMessage.get("message").toString());
+            }
+
+        } catch (Exception ex) {    // try something different later.
+            throw new Exception("Unable to register rser. Please try again.");
+        }
     }
 
     /**
