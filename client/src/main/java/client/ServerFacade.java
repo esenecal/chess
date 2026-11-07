@@ -52,28 +52,24 @@ public class ServerFacade {
     public AuthData registerUser(UserData userData) throws Exception {
         String body = new Gson().toJson(userData);
 
-        try {
-            HttpResponse<String> response = buildRequest("/user", "POST", body);
+        HttpResponse<String> response = buildRequest("/user", "POST", body);
 
-            int statusCode = response.statusCode();
-            if (statusCode >= 200 && statusCode < 300) {        // 200 success code
-                // we got a response with a username and authToken. convert it to an authData and return.
-                return new Gson().fromJson(response.body(), AuthData.class);
-            } else if (statusCode == 400) {
-                // we got a bad request! Pass it up! Throw an exception. toString suggested by intelliJ context.
-                var errorMessage = new Gson().fromJson(response.body(), Map.class);
-                throw new BadRequestException(errorMessage.get("message").toString());
-            } else if (statusCode == 403) {
-                var errorMessage = new Gson().fromJson(response.body(), Map.class);
-                throw new UsernameTakenException(errorMessage.get("message").toString());
-            } else {
-                var errorMessage = new Gson().fromJson(response.body(), Map.class);
-                throw new Exception(errorMessage.get("message").toString());
-            }
-
-        } catch (Exception ex) {    // try something different later.
-            throw new Exception("Unable to register user. Please try again.");
+        int statusCode = response.statusCode();
+        if (statusCode >= 200 && statusCode < 300) {        // 200 success code
+            // we got a response with a username and authToken. convert it to an authData and return.
+            return new Gson().fromJson(response.body(), AuthData.class);
+        } else if (statusCode == 400) {
+            // we got a bad request! Pass it up! Throw an exception. toString suggested by intelliJ context.
+            var errorMessage = new Gson().fromJson(response.body(), Map.class);
+            throw new BadRequestException(errorMessage.get("message").toString());
+        } else if (statusCode == 403) {
+            var errorMessage = new Gson().fromJson(response.body(), Map.class);
+            throw new UsernameTakenException(errorMessage.get("message").toString());
+        } else {
+            var errorMessage = new Gson().fromJson(response.body(), Map.class);
+            throw new Exception(errorMessage.get("message").toString());
         }
+
     }
 
     /**

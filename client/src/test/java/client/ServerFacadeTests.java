@@ -54,4 +54,20 @@ public class ServerFacadeTests {
         }
     }
 
+    @Test
+    public void registerUserBadRequestTest() {
+        String username = "jim";
+        String password = "";       // an empty password should be flagged as a bad request.
+        String email = "jim@gmail.com";
+        UserData userData = new UserData(username, password, email);
+
+        try {
+            // register user. should throw a bad request exception with the message "Error: bad request"
+            assertThrows(BadRequestException.class, () -> facade.registerUser(userData));
+
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
 }
