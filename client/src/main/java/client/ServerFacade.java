@@ -65,6 +65,8 @@ public class ServerFacade {
      * Register a user, using the username, password, and email.
      */
     public AuthData registerUser(RegisterData registerData) throws Exception {
+        // use of data objects helps enforce and ensure that we get the right data from the UI. Also
+        // helps with ensuring data conforms to a specific map.
         String body = new Gson().toJson(registerData);
 
         HttpResponse<String> response = buildRequest("/user", "POST", body);
@@ -75,14 +77,11 @@ public class ServerFacade {
             return new Gson().fromJson(response.body(), AuthData.class);
         } else if (statusCode == 400) {
             // we got a bad request! Pass it up! Throw an exception. toString suggested by intelliJ context.
-            var errorMessage = new Gson().fromJson(response.body(), Map.class);
-            throw new BadRequestException(errorMessage.get("message").toString());
+            throw new BadRequestException("The data submitted was nonexistent or otherwise invalid.");
         } else if (statusCode == 403) {
-            var errorMessage = new Gson().fromJson(response.body(), Map.class);
-            throw new UsernameTakenException(errorMessage.get("message").toString());
+            throw new UsernameTakenException("This username is already taken. Please choose a different username.");
         } else {
-            var errorMessage = new Gson().fromJson(response.body(), Map.class);
-            throw new Exception(errorMessage.get("message").toString());
+            throw new Exception("There was an error registering. Please try again.");
         }
 
     }
@@ -93,6 +92,16 @@ public class ServerFacade {
     public AuthData loginUser(LoginData loginData) throws Exception {
         // serialize for body data.
         String body = new Gson().toJson(loginData);
+        HttpResponse<String> response = buildRequest("/session", "POST", body);
+        int statusCode = response.statusCode();
+        if (statusCode >= 200 && statusCode < 300) {        // 200 success code
+            // we got a response with a username and authToken. convert it to an authData and return.
+            return new Gson().fromJson(response.body(), AuthData.class);
+        } else if (statusCode == 400) {
+            throw new BadRequestException("The data submitted was nonexistent or otherwise invalid.");
+        } else if (statusCode == 401) {
+            throw new InvalidLoginException("Login credentials were invalid. Please try again.");
+        }
     }
 
     /**
