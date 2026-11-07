@@ -1,10 +1,13 @@
 package client;
 
+import com.google.gson.Gson;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Locale;
+import java.util.Map;
 
 // Facade's job:
 // open server connection
@@ -102,7 +105,7 @@ public class ServerFacade {
                 .uri(new URI(urlString + path))
                 .method(method, requestBodyPublisher(body))
                 .build();
-        
+
         // Get the response and return it.
         return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
     }
@@ -123,7 +126,8 @@ public class ServerFacade {
     }
 
     /**
-     * Create the body for the request. See MasteryLS Web Client, which basically provided this.
+     * Create the body for the request. See MasteryLS Web Client, which basically provided this. this should take a
+     * JSON string, which will have been converted before use.
      */
     private static HttpRequest.BodyPublisher requestBodyPublisher(String body) {
         // If there is no body, then return no body. If there is, return it as a body publisher.
@@ -135,9 +139,25 @@ public class ServerFacade {
     }
 
     /**
-     * Receive and interpret an HTTP response.
+     * Receive and interpret an HTTP response. See MasteryLS Web Client, which provided reference.
      */
-    private static void receiveResponse() {
+    private static String receiveResponse(HttpResponse<String> response) {
+        // Get status code.
+        int statusCode = response.statusCode();
+        // Get response body.
+        var responseBody = new Gson().fromJson(response.body(), Map.class);
 
+        // depending on the status code, return something different.
+        if (statusCode >= 200 && statusCode < 300) {            // 200 success codes
+            return "";
+        } else if (statusCode >= 300 && statusCode < 400) {     // 300 error codes
+            return "";
+        } else if (statusCode >= 400 && statusCode < 500) {     // 400 error codes
+            return "";
+        } else if (statusCode >= 500 && statusCode < 600) {     // 500 error codes
+            return "";
+        } else {
+            return "";
+        }
     }
 }
