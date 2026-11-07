@@ -93,7 +93,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void loginUserSuccessful() {
+    public void loginUserSuccessfulTest() {
         // If we register a user, we should be able to get a successful log in.
         String username = "jim";
         String password = "1234";
@@ -110,6 +110,26 @@ public class ServerFacadeTests {
             assertEquals(registerAuthData.username(), loginAuthData.username());
             assertNotNull(loginAuthData.authToken());
             assertInstanceOf(String.class, loginAuthData.authToken());
+
+            facade.clearData();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
+    @Test
+    public void loginBadRequestTest() {
+        // If we register a user, we should be able to get a successful log in.
+        String username = "jim";
+        String password = "1234";
+        String email = "jim@gmail.com";
+        RegisterData registerData = new RegisterData(username, password, email);
+
+        try {
+            // register user.
+            AuthData registerAuthData = facade.registerUser(registerData);
+
+            assertThrows(BadRequestException.class, () -> facade.loginUser(new LoginData(username, "")));
 
             facade.clearData();
         } catch (Exception ex) {
