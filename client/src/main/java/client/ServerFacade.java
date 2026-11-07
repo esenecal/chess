@@ -81,7 +81,7 @@ public class ServerFacade {
         } else if (statusCode == 403) {
             throw new UsernameTakenException("This username is already taken. Please choose a different username.");
         } else {
-            throw new Exception("There was an error registering. Please try again.");
+            throw new Exception("There was an issue registering. Please try again or contact the dev team.");
         }
 
     }
@@ -101,6 +101,8 @@ public class ServerFacade {
             throw new BadRequestException("The data submitted was nonexistent or otherwise invalid.");
         } else if (statusCode == 401) {
             throw new InvalidLoginException("Login credentials were invalid. Please try again.");
+        } else {
+            throw new Exception("There was an issue logging in. Please try again or contact the dev team.");
         }
     }
 
