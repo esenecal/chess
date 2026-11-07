@@ -188,8 +188,24 @@ public class ServerFacadeTests {
             // log out user.
             facade.logoutUser(authData.authToken());
 
-            // if no exception was thrown, then we are all good.
+            // if no exception was thrown, then we are all good. We assume everything worked server side,
+            // as that was all tested.
             assertTrue(true);
+
+            facade.clearData();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
+    @Test
+    public void logoutNoAuthTest() {
+        try {
+            // log out nonexistent user.
+            // if no exception was thrown, then we are all good.
+            assertThrows(InvalidAuthException.class, () -> facade.logoutUser("12345"));
+
+            facade.clearData();
         } catch (Exception ex) {
             fail("Exception thrown. " + ex.getMessage());
         }
