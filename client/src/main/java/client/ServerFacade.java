@@ -23,20 +23,8 @@ public class ServerFacade {
     private static final HttpClient httpClient = HttpClient.newHttpClient();
 
     // URL string for making requests.
-    private final String urlString;
+    private static final String urlString = null;
     private final int timeout;
-
-    /**
-     * Initialize a facade with a default timeout value
-     *
-     * @param host host url
-     * @param port port number
-     */
-    public ServerFacade(String host, int port) {
-        // https://stackoverflow.com/questions/997482/does-java-support-default-parameter-values
-        this.urlString = String.format(Locale.getDefault(), "http://%s:%d", host, port);
-        this.timeout = 5000;
-    }
 
     /**
      * Initialize a facade
@@ -47,7 +35,7 @@ public class ServerFacade {
      */
     public ServerFacade(String host, int port, int timeout) {
         // on initialization,
-        this.urlString = String.format(Locale.getDefault(), "http://%s:%d", host, port);
+        urlString = String.format(Locale.getDefault(), "http://%s:%d", host, port);
         this.timeout = timeout;
     }
 
@@ -102,24 +90,49 @@ public class ServerFacade {
 
     /**
      * Build a request. See Pet Shop ServerFacade, which was used as a reference, and MasteryLS "Web Client".
+     * Removes repetition in the calls to the server.
      *
+     * @param path   the path for the endpoint for the request
+     * @param method the HTTP request method to be used.
+     * @param body   the body to be included in the request. Null if not applicable.
      */
-//    private static HttpResponse<String> buildRequest(String path, String method) throws Exception {
-//        // Build an HTTP get request.
-//        HttpRequest request = HttpRequest.newBuilder()
-//                .uri(new URI(urlString + path))
-//                .method(method)
-//
-//        // Get the response and return it.
-//        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-//    }
-//
-//    /**
-//     * Create the body for the request. See MasteryLS Web Client, which provided the template for this.
-//     */
-//    private static HttpRequest.BodyPublisher requestBodyPublisher(String body) {
-//
-//    }
+    private static HttpResponse<String> buildRequest(String path, String method, String body) throws Exception {
+        // Build an HTTP get request.
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(urlString + path))
+                .method(method, requestBodyPublisher(body))
+                .build();
+        
+        // Get the response and return it.
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    // overload of build request, now with a header
+    private static HttpResponse<String> buildRequest(
+            String path, String method, String body, String headerName, String headerValue
+    ) throws Exception {
+        // Build an HTTP get request.
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(new URI(urlString + path))
+                .method(method, requestBodyPublisher(body))
+                .header(headerName, headerValue)
+                .build();
+
+        // Get the response and return it.
+        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    /**
+     * Create the body for the request. See MasteryLS Web Client, which basically provided this.
+     */
+    private static HttpRequest.BodyPublisher requestBodyPublisher(String body) {
+        // If there is no body, then return no body. If there is, return it as a body publisher.
+        if (body == null) {
+            return HttpRequest.BodyPublishers.noBody();
+        } else {
+            return HttpRequest.BodyPublishers.ofString(body);
+        }
+    }
 
     /**
      * Receive and interpret an HTTP response.
