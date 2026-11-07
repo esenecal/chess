@@ -109,8 +109,14 @@ public class ServerFacade {
     /**
      * Logout user
      */
-    public void logoutUser() {
-
+    public void logoutUser(String authToken) throws Exception {
+        HttpResponse<String> response = buildRequest("/session", "DELETE", null, authToken);
+        int statusCode = response.statusCode();
+        if (statusCode == 401) {
+            throw new InvalidAuthException("Your login credentials are invalid. Please try again.");
+        } else if (!(statusCode >= 200 && statusCode < 300)) {  // if it was otherwise not a success
+            throw new Exception("There was an issue logging out. Please try again.");
+        }
     }
 
     /**
@@ -162,13 +168,13 @@ public class ServerFacade {
 
     // overload of build request, now with a header
     private static HttpResponse<String> buildRequest(
-            String path, String method, String body, String headerName, String headerValue
+            String path, String method, String body, String headerValue
     ) throws Exception {
         // Build an HTTP get request.
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI(urlString + path))
                 .method(method, requestBodyPublisher(body))
-                .header(headerName, headerValue)
+                .header("authorization", headerValue)
                 .build();
 
         // Get the response and return it.
