@@ -3,6 +3,8 @@ package client;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
+import records.LoginData;
+import records.RegisterData;
 import server.Server;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -35,11 +37,11 @@ public class ServerFacadeTests {
         String username = "jim";
         String password = "1234";
         String email = "jim@gmail.com";
-        UserData userData = new UserData(username, password, email);
+        RegisterData registerData = new RegisterData(username, password, email);
 
         try {
             // register user.
-            AuthData authData = facade.registerUser(userData);
+            AuthData authData = facade.registerUser(registerData);
             assertEquals(username, authData.username());
             assertNotNull(authData.authToken());
             assertInstanceOf(String.class, authData.authToken());
@@ -61,11 +63,11 @@ public class ServerFacadeTests {
         String username = "jim";
         String password = "";       // an empty password should be flagged as a bad request.
         String email = "jim@gmail.com";
-        UserData userData = new UserData(username, password, email);
+        RegisterData registerData = new RegisterData(username, password, email);
 
         try {
             // register user. should throw a bad request exception with the message "Error: bad request"
-            assertThrows(BadRequestException.class, () -> facade.registerUser(userData));
+            assertThrows(BadRequestException.class, () -> facade.registerUser(registerData));
 
             facade.clearData();
         } catch (Exception ex) {
@@ -75,8 +77,8 @@ public class ServerFacadeTests {
 
     @Test
     public void registerUserUsernameTakenTest() {
-        UserData userData = new UserData("jim", "1234", "jim@gmail.com");
-        UserData userData2 = new UserData("jim", "0", "who@gmail.com");
+        RegisterData userData = new RegisterData("jim", "1234", "jim@gmail.com");
+        RegisterData userData2 = new RegisterData("jim", "0", "who@gmail.com");
 
         try {
             // register jim.
@@ -89,6 +91,33 @@ public class ServerFacadeTests {
             fail("Exception thrown. " + ex.getMessage());
         }
     }
+
+    @Test
+    public void loginUserSuccessful() {
+        // If we register a user, we should be able to get a successful log in.
+        String username = "jim";
+        String password = "1234";
+        String email = "jim@gmail.com";
+        RegisterData registerData = new RegisterData(username, password, email);
+
+        try {
+            // register user.
+            AuthData registerAuthData = facade.registerUser(registerData);
+
+            AuthData loginAuthData = facade.loginUser(new LoginData(username, password));
+
+            assertEquals(username, loginAuthData.username());
+            assertEquals(registerAuthData.username(), loginAuthData.username());
+            assertNotNull(loginAuthData.authToken());
+            assertInstanceOf(String.class, loginAuthData.authToken());
+
+            facade.clearData();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
+    
 
     // write tests for clearing data when you can. For now, we can see that it works according to our needs.
 
