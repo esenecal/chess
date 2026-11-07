@@ -42,8 +42,21 @@ public class ServerFacade {
         System.out.println("Initialized Client ServerFacade at url " + urlString + ", port " + port);
     }
 
-    public void clearData() {
-
+    /**
+     * Function for clearing data. Used only in testing.
+     *
+     * @throws ClearErrorException any sort of exception
+     */
+    public void clearData() throws ClearErrorException {
+        try {
+            HttpResponse<String> response = buildRequest("/db", "DELETE", null);
+            // if the status code is anything other than 200, throw an error.
+            if (response.statusCode() != 200) {
+                throw new Exception();
+            }
+        } catch (Exception ex) {
+            throw new ClearErrorException("Error Clearing Database");
+        }
     }
 
     /**
@@ -161,26 +174,4 @@ public class ServerFacade {
         }
     }
 
-    /**
-     * Receive and interpret an HTTP response. See MasteryLS Web Client, which provided reference.
-     */
-    private static String receiveResponse(HttpResponse<String> response) {
-        // Get status code.
-        int statusCode = response.statusCode();
-        // Get response body.
-        var responseBody = new Gson().fromJson(response.body(), Map.class);
-
-        // depending on the status code, return something different.
-        if (statusCode >= 200 && statusCode < 300) {            // 200 success codes
-            return "";
-        } else if (statusCode >= 300 && statusCode < 400) {     // 300 error codes
-            return "";
-        } else if (statusCode >= 400 && statusCode < 500) {     // 400 error codes
-            return "";
-        } else if (statusCode >= 500 && statusCode < 600) {     // 500 error codes
-            return "";
-        } else {
-            return "";
-        }
-    }
 }

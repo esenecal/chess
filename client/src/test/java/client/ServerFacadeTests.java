@@ -21,6 +21,7 @@ public class ServerFacadeTests {
         System.out.println("Started test HTTP server on " + port);
         // start the facade, communicating with the server over the correct port.
         facade = new ServerFacade("localhost", port);
+        facade.clearData();
     }
 
     @AfterAll
@@ -49,6 +50,7 @@ public class ServerFacadeTests {
             // if we can make a good call to the server, and get the expected result.
             // If we get the right result, then we can assume everything that happened serverside is correct.
 
+            facade.clearData();
         } catch (Exception ex) {
             fail("Exception thrown. " + ex.getMessage());
         }
@@ -65,6 +67,7 @@ public class ServerFacadeTests {
             // register user. should throw a bad request exception with the message "Error: bad request"
             assertThrows(BadRequestException.class, () -> facade.registerUser(userData));
 
+            facade.clearData();
         } catch (Exception ex) {
             fail("Exception thrown. " + ex.getMessage());
         }
@@ -81,9 +84,12 @@ public class ServerFacadeTests {
             // register another user as jim. should throw an exception.
             assertThrows(UsernameTakenException.class, () -> facade.registerUser(userData));
 
+            facade.clearData();
         } catch (Exception ex) {
             fail("Exception thrown. " + ex.getMessage());
         }
     }
+
+    // write tests for clearing data when you can. For now, we can see that it works according to our needs.
 
 }
