@@ -137,7 +137,45 @@ public class ServerFacadeTests {
         }
     }
 
-    
+    @Test
+    public void loginBadUsernameTest() {
+        // If we register a user, we should be able to get a successful log in.
+        String username = "jim";
+        String password = "1234";
+        String email = "jim@gmail.com";
+        RegisterData registerData = new RegisterData(username, password, email);
+
+        try {
+            // register user.
+            AuthData registerAuthData = facade.registerUser(registerData);
+
+            assertThrows(InvalidLoginException.class, () -> facade.loginUser(new LoginData("kim", password)));
+
+            facade.clearData();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
+    @Test
+    public void loginBadPasswordTest() {
+        // If we register a user, we should be able to get a successful log in.
+        String username = "jim";
+        String password = "1234";
+        String email = "jim@gmail.com";
+        RegisterData registerData = new RegisterData(username, password, email);
+
+        try {
+            // register user.
+            AuthData registerAuthData = facade.registerUser(registerData);
+
+            assertThrows(InvalidLoginException.class, () -> facade.loginUser(new LoginData(username, "0")));
+
+            facade.clearData();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
 
     // write tests for clearing data when you can. For now, we can see that it works according to our needs.
 
