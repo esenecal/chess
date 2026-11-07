@@ -5,6 +5,7 @@ import model.AuthData;
 import model.UserData;
 import records.LoginData;
 import records.RegisterData;
+import records.gameID;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -113,7 +114,7 @@ public class ServerFacade {
         HttpResponse<String> response = buildRequest("/session", "DELETE", null, authToken);
         int statusCode = response.statusCode();
         if (statusCode == 401) {
-            throw new InvalidAuthException("Your login credentials are invalid. Please try again.");
+            throw new InvalidAuthException("You are not logged in or otherwise have an invalid authentication");
         } else if (!(statusCode >= 200 && statusCode < 300)) {  // if it was otherwise not a success
             throw new Exception("There was an issue logging out. Please try again.");
         }
@@ -121,9 +122,25 @@ public class ServerFacade {
 
     /**
      * Create a game
+     * <p>
+     * Returns a gameID int.
      */
-    public void createGame() {
+    public int createGame(String gameName, String authToken) throws Exception {
+        String body = new Gson().toJson(Map.of("gameName", gameName));
+        HttpResponse<String> response = buildRequest("/game", "POST", body, authToken);
 
+        int statusCode = response.statusCode();
+
+        if (statusCode >= 200 && statusCode < 300) {        // 200 success code
+            gameID gameID = new Gson().fromJson(response.body(), gameID.class);
+            return gameID.gameID();
+        } else if (statusCode == 400) {
+            throw new BadRequestException("The data submitted was nonexistent or otherwise invalid.");
+        } else if (statusCode == 401) {
+            throw new InvalidAuthException("You are not logged in or otherwise have an invalid authentication");
+        } else {
+            throw new Exception("There was an issue creating a game. Please try again or contact the dev team.");
+        }
     }
 
     /**

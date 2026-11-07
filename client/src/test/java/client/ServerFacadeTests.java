@@ -211,6 +211,22 @@ public class ServerFacadeTests {
         }
     }
 
+    @Test
+    public void createGameSuccessfulTest() {
+        try {
+            AuthData authData = facade.registerUser(
+                    new RegisterData("jim", "1234", "jim@gmail.com")
+            );
+
+            int gameID = facade.createGame("game", authData.authToken());
+            assertEquals(1, gameID);
+
+            facade.clearData();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
     // write tests for clearing data when you can. For now, we can see that it works according to our needs.
 
 }
