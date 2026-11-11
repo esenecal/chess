@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.GameMetaData;
 import model.UserData;
+import records.GameList;
 import records.LoginData;
 import records.RegisterData;
 import records.gameID;
@@ -153,7 +154,9 @@ public class ServerFacade {
 
         int statusCode = response.statusCode();
         if (statusCode >= 200 && statusCode < 300) {        // 200 success code
-            return null;
+            // get response and parse it. Use GameList as the structure.
+            GameList gameList = new Gson().fromJson(response.body(), GameList.class);
+            return gameList.gameList();
         } else if (statusCode == 401) {
             throw new InvalidAuthException("You are not logged in or otherwise have an invalid authentication");
         } else {
