@@ -247,6 +247,22 @@ public class ServerFacadeTests {
         }
     }
 
+    @Test
+    public void createGameInvalidAuthTest() {
+        try {
+            AuthData authData = facade.registerUser(
+                    new RegisterData("fred", "4", "fred@gmail.com")
+            );
+
+            // create game with an invalid name.
+            assertThrows(InvalidAuthException.class, () -> facade.createGame("game1", "1"));
+
+            facade.clearData();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
 
     @Test
     public void listGamesSuccessfulTest() {
