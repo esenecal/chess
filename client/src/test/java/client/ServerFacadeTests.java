@@ -232,6 +232,23 @@ public class ServerFacadeTests {
     }
 
     @Test
+    public void createGameBadRequestTest() {
+        try {
+            AuthData authData = facade.registerUser(
+                    new RegisterData("fred", "4", "fred@gmail.com")
+            );
+
+            // create game with an invalid name.
+            assertThrows(BadRequestException.class, () -> facade.createGame("", authData.authToken()));
+
+            facade.clearData();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
+
+    @Test
     public void listGamesSuccessfulTest() {
         try {
             // Create a user and two games.
