@@ -1,5 +1,7 @@
 package client;
 
+import chess.ChessBoard;
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameMetaData;
@@ -166,10 +168,29 @@ public class ServerFacade {
     }
 
     /**
-     * Get a game's data
+     * Join a game.
      */
-    public void getGame() {
+    public void playGame(ChessGame.TeamColor team, int gameID, String authToken) throws Exception {
+        String body = new Gson().toJson(Map.of(
+                "playerColor", team,
+                "gameID", gameID));
+        HttpResponse<String> response = buildRequest("/game", "PUT", body, authToken);
 
+        int statusCode = response.statusCode();
+        if (statusCode >= 200 && statusCode < 300) {
+            // successful add; don't do anything.
+            return;
+        } else if (statusCode == 400) {
+            throw new BadRequestException("The data submitted was nonexistent or otherwise invalid, or the " +
+                    "requested game does not exist.");
+        } else if (statusCode == 401) {
+            throw new InvalidAuthException("You are not logged in or otherwise have an invalid authentication");
+        } else if (statusCode == 403) {
+            throw new GameTakenException("This game already has a player on this team.");
+        } else {
+            throw new Exception("There was an issue getting the list of games. Please try again " +
+                    "or contact the dev team.");
+        }
     }
 
     /**
