@@ -263,7 +263,6 @@ public class ServerFacadeTests {
         }
     }
 
-
     @Test
     public void listGamesSuccessfulTest() {
         try {
@@ -291,7 +290,7 @@ public class ServerFacadeTests {
     @Test
     public void listGamesInvalidAuthTest() {
         try {
-            // Create a user and two games.
+            // Create a user and a game.
             AuthData authData = facade.registerUser(
                     new RegisterData("Joe", "0000", "joe@gmail.com")
             );
@@ -299,6 +298,49 @@ public class ServerFacadeTests {
 
             // get list of games with wrong authData.
             assertThrows(InvalidAuthException.class, () -> facade.listGames("1234"));
+
+            facade.clearData();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
+    @Test
+    public void playGameSuccessfulTest() {
+        try {
+            // create a user and a game
+            AuthData authData = facade.registerUser(
+                    new RegisterData("jim", "0000", "jim@gmail.com")
+            );
+            int gameOneID = facade.createGame("game1", authData.authToken());
+
+            // now join the game. We assume that it all worked well if no error is thrown, as we know that
+            // the server works well.
+            facade.playGame(ChessGame.TeamColor.WHITE, gameOneID, authData.authToken());
+
+            assertTrue(true);
+
+            facade.clearData();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
+    @Test
+    public void playGameBadRequestTest() {
+        try {
+            // create a user and a game
+            AuthData authData = facade.registerUser(
+                    new RegisterData("jim", "0000", "jim@gmail.com")
+            );
+            int gameOneID = facade.createGame("game1", authData.authToken());
+
+            // now join the game. We assume that it all worked well if no error is thrown, as we know that
+            // the server works well.
+            assertThrows(BadRequestException.class,
+                    () -> facade.playGame(ChessGame.TeamColor.WHITE, null, authData.authToken()));
+
+            assertTrue(true);
 
             facade.clearData();
         } catch (Exception ex) {

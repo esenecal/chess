@@ -6,10 +6,7 @@ import com.google.gson.Gson;
 import model.AuthData;
 import model.GameMetaData;
 import model.UserData;
-import records.GameList;
-import records.LoginData;
-import records.RegisterData;
-import records.gameID;
+import records.*;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -170,10 +167,9 @@ public class ServerFacade {
     /**
      * Join a game.
      */
-    public void playGame(ChessGame.TeamColor team, int gameID, String authToken) throws Exception {
-        String body = new Gson().toJson(Map.of(
-                "playerColor", team,
-                "gameID", gameID));
+    public void playGame(ChessGame.TeamColor team, Integer gameID, String authToken) throws Exception {
+
+        String body = new Gson().toJson(new JoinGameRequest(team, gameID));
         HttpResponse<String> response = buildRequest("/game", "PUT", body, authToken);
 
         int statusCode = response.statusCode();

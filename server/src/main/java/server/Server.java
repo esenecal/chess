@@ -275,7 +275,8 @@ public class Server {
 
         // ensure we have a good request. Taken and modified from loginUser.
         // if playerColor is null, we did not get a valid enum.
-        if (request.authToken() == null || request.playerColor() == null || request.authToken().isEmpty()) {
+        if (request.authToken() == null || request.playerColor() == null || request.authToken().isEmpty()
+                || request.gameID() == null) {
 
             // see Web API on MasterLS.
             context.status(400);

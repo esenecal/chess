@@ -9,5 +9,5 @@ import chess.ChessGame.TeamColor;
  * @param playerColor enum TeamColor
  * @param gameID      int
  */
-public record JoinGameRequest(String authToken, TeamColor playerColor, int gameID) {
+public record JoinGameRequest(String authToken, TeamColor playerColor, Integer gameID) {
 }
