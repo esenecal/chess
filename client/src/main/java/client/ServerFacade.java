@@ -156,7 +156,7 @@ public class ServerFacade {
         if (statusCode >= 200 && statusCode < 300) {        // 200 success code
             // get response and parse it. Use GameList as the structure.
             GameList gameList = new Gson().fromJson(response.body(), GameList.class);
-            return gameList.gameList();
+            return gameList.games();
         } else if (statusCode == 401) {
             throw new InvalidAuthException("You are not logged in or otherwise have an invalid authentication");
         } else {

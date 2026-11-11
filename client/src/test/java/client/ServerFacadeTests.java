@@ -1,11 +1,15 @@
 package client;
 
+import chess.ChessGame;
 import model.AuthData;
+import model.GameMetaData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import records.LoginData;
 import records.RegisterData;
 import server.Server;
+
+import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -220,6 +224,30 @@ public class ServerFacadeTests {
 
             int gameID = facade.createGame("game", authData.authToken());
             assertEquals(1, gameID);
+
+            facade.clearData();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
+    @Test
+    public void listGamesSuccessfulTest() {
+        try {
+            // Create a user and two games.
+            AuthData authData = facade.registerUser(
+                    new RegisterData("jim", "1234", "jim@gmail.com")
+            );
+            int gameOneID = facade.createGame("game1", authData.authToken());
+            int gameTwoID = facade.createGame("game2", authData.authToken());
+
+            // get list of games.
+            Collection<GameMetaData> gameList = facade.listGames(authData.authToken());
+
+            assertTrue(gameList.contains(
+                    new GameMetaData(gameOneID, null, null, "game1")));
+            assertTrue(gameList.contains(
+                    new GameMetaData(gameTwoID, null, null, "game2")));
 
             facade.clearData();
         } catch (Exception ex) {
