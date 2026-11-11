@@ -44,6 +44,8 @@ public class ServerFacadeTests {
         RegisterData registerData = new RegisterData(username, password, email);
 
         try {
+            facade.clearData();
+
             // register user.
             AuthData authData = facade.registerUser(registerData);
             assertEquals(username, authData.username());
@@ -70,6 +72,8 @@ public class ServerFacadeTests {
         RegisterData registerData = new RegisterData(username, password, email);
 
         try {
+            facade.clearData();
+
             // register user. should throw a bad request exception with the message "Error: bad request"
             assertThrows(BadRequestException.class, () -> facade.registerUser(registerData));
 
@@ -85,6 +89,8 @@ public class ServerFacadeTests {
         RegisterData userData2 = new RegisterData("jim", "0", "who@gmail.com");
 
         try {
+            facade.clearData();
+
             // register jim.
             facade.registerUser(userData);
             // register another user as jim. should throw an exception.
@@ -105,6 +111,8 @@ public class ServerFacadeTests {
         RegisterData registerData = new RegisterData(username, password, email);
 
         try {
+            facade.clearData();
+
             // register user.
             AuthData registerAuthData = facade.registerUser(registerData);
 
@@ -130,6 +138,8 @@ public class ServerFacadeTests {
         RegisterData registerData = new RegisterData(username, password, email);
 
         try {
+            facade.clearData();
+
             // register user.
             AuthData registerAuthData = facade.registerUser(registerData);
 
@@ -150,6 +160,8 @@ public class ServerFacadeTests {
         RegisterData registerData = new RegisterData(username, password, email);
 
         try {
+            facade.clearData();
+
             // register user.
             AuthData registerAuthData = facade.registerUser(registerData);
 
@@ -170,6 +182,8 @@ public class ServerFacadeTests {
         RegisterData registerData = new RegisterData(username, password, email);
 
         try {
+            facade.clearData();
+
             // register user.
             AuthData registerAuthData = facade.registerUser(registerData);
 
@@ -184,6 +198,8 @@ public class ServerFacadeTests {
     @Test
     public void logoutSuccessTest() {
         try {
+            facade.clearData();
+
             // register user
             AuthData authData = facade.registerUser(
                     new RegisterData("jim", "1234", "jim@gmail.com")
@@ -205,6 +221,8 @@ public class ServerFacadeTests {
     @Test
     public void logoutNoAuthTest() {
         try {
+            facade.clearData();
+
             // log out nonexistent user.
             // if no exception was thrown, then we are all good.
             assertThrows(InvalidAuthException.class, () -> facade.logoutUser("12345"));
@@ -218,6 +236,8 @@ public class ServerFacadeTests {
     @Test
     public void createGameSuccessfulTest() {
         try {
+            facade.clearData();
+
             AuthData authData = facade.registerUser(
                     new RegisterData("jim", "1234", "jim@gmail.com")
             );
@@ -234,6 +254,8 @@ public class ServerFacadeTests {
     @Test
     public void createGameBadRequestTest() {
         try {
+            facade.clearData();
+
             AuthData authData = facade.registerUser(
                     new RegisterData("fred", "4", "fred@gmail.com")
             );
@@ -250,6 +272,8 @@ public class ServerFacadeTests {
     @Test
     public void createGameInvalidAuthTest() {
         try {
+            facade.clearData();
+
             AuthData authData = facade.registerUser(
                     new RegisterData("fred", "4", "fred@gmail.com")
             );
@@ -266,6 +290,8 @@ public class ServerFacadeTests {
     @Test
     public void listGamesSuccessfulTest() {
         try {
+            facade.clearData();
+
             // Create a user and two games.
             AuthData authData = facade.registerUser(
                     new RegisterData("jim", "1234", "jim@gmail.com")
@@ -290,6 +316,8 @@ public class ServerFacadeTests {
     @Test
     public void listGamesInvalidAuthTest() {
         try {
+            facade.clearData();
+
             // Create a user and a game.
             AuthData authData = facade.registerUser(
                     new RegisterData("Joe", "0000", "joe@gmail.com")
@@ -308,6 +336,8 @@ public class ServerFacadeTests {
     @Test
     public void playGameSuccessfulTest() {
         try {
+            facade.clearData();
+
             // create a user and a game
             AuthData authData = facade.registerUser(
                     new RegisterData("jim", "0000", "jim@gmail.com")
@@ -329,6 +359,8 @@ public class ServerFacadeTests {
     @Test
     public void playGameBadRequestTest() {
         try {
+            facade.clearData();
+
             // create a user and a game
             AuthData authData = facade.registerUser(
                     new RegisterData("jim", "0000", "jim@gmail.com")
@@ -340,7 +372,59 @@ public class ServerFacadeTests {
             assertThrows(BadRequestException.class,
                     () -> facade.playGame(ChessGame.TeamColor.WHITE, null, authData.authToken()));
 
-            assertTrue(true);
+            facade.clearData();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
+    @Test
+    public void playGameInvalidAuthTest() {
+        try {
+            facade.clearData();
+
+            // create a user and a game
+            AuthData authData = facade.registerUser(
+                    new RegisterData("jim", "1234", "jim@gmail.com")
+            );
+            int gameOneID = facade.createGame("game1", authData.authToken());
+
+            // now join the game. We assume that it all worked well if no error is thrown, as we know that
+            // the server works well.
+            assertThrows(BadRequestException.class,
+                    () -> facade.playGame(ChessGame.TeamColor.WHITE, gameOneID, "1"));
+
+            facade.clearData();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
+    @Test
+    public void playGameTakenTest() {
+        try {
+            facade.clearData();
+
+            AuthData jimAuthData = facade.registerUser(
+                    new RegisterData("jim", "1234", "jim@gmail.com")
+            );
+            AuthData fredAuthData = facade.registerUser(
+                    new RegisterData("fred", "0000", "fred@gmail.com")
+            );
+            int gameOneID = facade.createGame("game1", jimAuthData.authToken());
+            // fred and jim both join the game, jim as white and fred as black.
+            facade.playGame(ChessGame.TeamColor.WHITE, gameOneID, jimAuthData.authToken());
+            facade.playGame(ChessGame.TeamColor.BLACK, gameOneID, fredAuthData.authToken());
+
+            // here comes Kyle, who tries to join the game as white and as black.
+            AuthData kyleAuthData = facade.registerUser(
+                    new RegisterData("kyle", "1", "kyle@gmail.com")
+            );
+
+            assertThrows(GameTakenException.class,
+                    () -> facade.playGame(ChessGame.TeamColor.WHITE, gameOneID, kyleAuthData.authToken()));
+            assertThrows(GameTakenException.class,
+                    () -> facade.playGame(ChessGame.TeamColor.BLACK, gameOneID, kyleAuthData.authToken()));
 
             facade.clearData();
         } catch (Exception ex) {
