@@ -255,6 +255,24 @@ public class ServerFacadeTests {
         }
     }
 
+    @Test
+    public void listGamesInvalidAuthTest() {
+        try {
+            // Create a user and two games.
+            AuthData authData = facade.registerUser(
+                    new RegisterData("Joe", "0000", "joe@gmail.com")
+            );
+            int gameOneID = facade.createGame("game1", authData.authToken());
+
+            // get list of games with wrong authData.
+            assertThrows(InvalidAuthException.class, () -> facade.listGames("1234"));
+
+            facade.clearData();
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
+
     // write tests for clearing data when you can. For now, we can see that it works according to our needs.
 
 }
