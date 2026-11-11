@@ -2,6 +2,7 @@ package client;
 
 import com.google.gson.Gson;
 import model.AuthData;
+import model.GameMetaData;
 import model.UserData;
 import records.LoginData;
 import records.RegisterData;
@@ -11,6 +12,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 
@@ -146,8 +148,18 @@ public class ServerFacade {
     /**
      * Get list of games.
      */
-    public void listGames() {
+    public Collection<GameMetaData> listGames(String authToken) throws Exception {
+        HttpResponse<String> response = buildRequest("/game", "GET", null, authToken);
 
+        int statusCode = response.statusCode();
+        if (statusCode >= 200 && statusCode < 300) {        // 200 success code
+            return null;
+        } else if (statusCode == 401) {
+            throw new InvalidAuthException("You are not logged in or otherwise have an invalid authentication");
+        } else {
+            throw new Exception("There was an issue getting the list of games. Please try again " +
+                    "or contact the dev team.");
+        }
     }
 
     /**

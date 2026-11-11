@@ -1,4 +1,4 @@
-package requestresult;
+package model;
 
 /**
  * GameData, but lacking the ChessGame object. Used when game meta data is needed.

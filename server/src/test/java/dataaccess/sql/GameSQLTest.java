@@ -9,7 +9,7 @@ import dataaccess.DatabaseManager;
 import dataaccess.GameDAO;
 import model.GameData;
 import org.junit.jupiter.api.Test;
-import requestresult.GameMetaData;
+import model.GameMetaData;
 
 import java.sql.Connection;
 import java.sql.SQLException;

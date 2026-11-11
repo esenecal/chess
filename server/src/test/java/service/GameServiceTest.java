@@ -5,6 +5,7 @@ import dataaccess.*;
 import dataaccess.sql.SqlAuthDAO;
 import dataaccess.sql.SqlGameDAO;
 import model.AuthData;
+import model.GameMetaData;
 import requestresult.*;
 import model.GameData;
 import org.junit.jupiter.api.Test;

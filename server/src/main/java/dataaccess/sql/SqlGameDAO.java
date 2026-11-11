@@ -4,7 +4,7 @@ import dataaccess.DataAccessException;
 import dataaccess.DatabaseManager;
 import dataaccess.GameDAO;
 import model.GameData;
-import requestresult.GameMetaData;
+import model.GameMetaData;
 import chess.ChessGame;
 
 import java.sql.SQLException;

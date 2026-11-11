@@ -1,14 +1,11 @@
 package dataaccess;
 
-import model.AuthData;
 import model.GameData;
-import model.UserData;
-import requestresult.GameMetaData;
+import model.GameMetaData;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Set;
 
 public class MemoryGameDAO implements GameDAO {
 
