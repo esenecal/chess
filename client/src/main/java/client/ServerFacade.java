@@ -1,12 +1,9 @@
 package client;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.AuthData;
-import model.GameData;
 import model.GameMetaData;
-import model.UserData;
 import records.*;
 
 import java.net.URI;

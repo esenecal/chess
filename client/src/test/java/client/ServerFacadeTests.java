@@ -3,7 +3,6 @@ package client;
 import chess.ChessGame;
 import model.AuthData;
 import model.GameMetaData;
-import model.UserData;
 import org.junit.jupiter.api.*;
 import records.LoginData;
 import records.RegisterData;
@@ -13,6 +12,19 @@ import java.util.Collection;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/*
+ Note these do not test specific, returned items from the server.
+ The purpose of these tests is if the facade correctly connects to and returns expected values from the server.
+ We do not need to check if the correct data was added to the server because we can be assured that,
+ if the server received everything correctly, it handled everything correctly.
+ If it did not, it would throw something.
+
+ Thus, if these make the connection and do not throw any errors, then we can be assured that everything was
+ executed as needed.
+
+ We do not have a way to query the server directly to get everyting we need; for example, no get User data endpoint
+ exists. So, we need to be confident that the server does everything correctly, because its internals are encapsulated.
+ */
 
 public class ServerFacadeTests {
 
