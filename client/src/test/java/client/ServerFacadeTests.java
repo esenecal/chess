@@ -389,9 +389,7 @@ public class ServerFacadeTests {
             );
             int gameOneID = facade.createGame("game1", authData.authToken());
 
-            // now join the game. We assume that it all worked well if no error is thrown, as we know that
-            // the server works well.
-            assertThrows(BadRequestException.class,
+            assertThrows(InvalidAuthException.class,
                     () -> facade.playGame(ChessGame.TeamColor.WHITE, gameOneID, "1"));
 
             facade.clearData();
@@ -433,5 +431,22 @@ public class ServerFacadeTests {
     }
 
     // write tests for clearing data when you can. For now, we can see that it works according to our needs.
+    @Test
+    public void clearDataSuccessfulTest() {
+        // if it does not throw an exception, we assume it worked.
+        try {
+            // create a user.
+            AuthData authData = facade.registerUser(
+                    new RegisterData("jim", "1234", "jim@gmail.com")
+            );
+            // create a game
+            int gameID = facade.createGame("game", authData.authToken());
+            facade.clearData();
+            assertTrue(true);
+
+        } catch (Exception ex) {
+            fail("Exception thrown. " + ex.getMessage());
+        }
+    }
 
 }

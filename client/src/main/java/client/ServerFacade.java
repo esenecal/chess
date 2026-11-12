@@ -4,6 +4,7 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.AuthData;
+import model.GameData;
 import model.GameMetaData;
 import model.UserData;
 import records.*;
@@ -187,13 +188,6 @@ public class ServerFacade {
             throw new Exception("There was an issue getting the list of games. Please try again " +
                     "or contact the dev team.");
         }
-    }
-
-    /**
-     * Update a game
-     */
-    public void updateGame() {
-
     }
 
     /**
