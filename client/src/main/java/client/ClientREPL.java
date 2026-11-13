@@ -166,8 +166,7 @@ public class ClientREPL {
                 }
             case "join":
                 displayText("Game ID: ", false);
-                int gameID = scan.nextInt();
-                scan.nextLine();
+                int gameID = scanIntInput(scan);
                 displayText("Team (type WHITE or BLACK): ", false);
                 String team = scanInput(scan);
                 if (!team.equals("WHITE") && !team.equals("BLACK")) {
@@ -206,6 +205,12 @@ public class ClientREPL {
      */
     private String scanInput(Scanner scan) {
         return scan.nextLine();
+    }
+
+    private int scanIntInput(Scanner scan) {
+        int num = scan.nextInt();
+        scan.nextLine();    // advance for the next line of input
+        return num;
     }
 
 }
