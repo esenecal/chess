@@ -14,14 +14,16 @@ public class ClientREPL {
     // provides functions for reading, evaluating, and printing.
     // calls functions in client logic that actually handle logging in, out, etc.
 
-
     private ClientState state;
+    private ClientLogic clientLogic;
+    private String authToken;
 
     /**
      * Called by ClientMain to run the CLI. Considering placing this elsewhere.
      */
     // See MasteryLS Phase 5
     public void run() {
+        clientLogic = new ClientLogic();
         state = LOGGED_OUT;     // start logged out.
         // clear screen.
         System.out.print(ERASE_SCREEN);
@@ -89,7 +91,12 @@ public class ClientREPL {
                 email = scanInput(scan);
                 System.out.println();
 
-                ClientLogic.register(username, password, email);
+                try {
+                    authToken = clientLogic.register(username, password, email);
+
+                } catch (Exception ex) {
+                    ClientView.displayError(ex.getMessage());
+                }
             default:
                 System.out.println("What was that?");
                 break;
