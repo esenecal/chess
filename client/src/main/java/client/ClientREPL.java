@@ -1,7 +1,9 @@
 package client;
 
+import model.GameMetaData;
 import ui.ClientView;
 
+import java.util.Collection;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -163,9 +165,10 @@ public class ClientREPL {
                     break;
                 }
             case "join":
-                displayText("Game ID: ", true);
+                displayText("Game ID: ", false);
                 int gameID = scan.nextInt();
-                displayText("Team (type WHITE or BLACK): ", true);
+                scan.nextLine();
+                displayText("Team (type WHITE or BLACK): ", false);
                 String team = scanInput(scan);
                 if (!team.equals("WHITE") && !team.equals("BLACK")) {
                     displayError("Please enter WHITE or BLACK.");
@@ -173,10 +176,22 @@ public class ClientREPL {
                 }
                 try {
                     clientLogic.joinGame(gameID, team);
-
+                    displayText("Joined game " + gameID + " as the " + team + " team.", true);
                     break;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
+                    break;
+                }
+            case "list":
+                try {
+                    Collection<GameMetaData> gameList = clientLogic.listGames();
+                    displayText("[gameID] - game name | <WHITE TEAM> | <BLACKTEAM>", true);
+                    for (GameMetaData game : gameList) {
+                        displayText(formatGameMetaData(game), true);
+                    }
+                } catch (Exception ex) {
+                    displayError(ex.getMessage());
+                    break;
                 }
             default:
                 break;

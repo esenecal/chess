@@ -1,6 +1,7 @@
 package ui;
 
 import client.ClientState;
+import model.GameMetaData;
 
 /**
  * Functions for actually displaying various things.
@@ -46,5 +47,10 @@ public class ClientView {
                             """,
                     true);
         }
+    }
+
+    public static String formatGameMetaData(GameMetaData game) {
+        return "[" + game.gameID() + "] - " + game.gameName() +
+                " | " + game.whiteUsername() + " | " + game.blackUsername();
     }
 }

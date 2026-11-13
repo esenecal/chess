@@ -2,8 +2,13 @@ package client;
 
 import chess.ChessGame;
 import model.AuthData;
+import model.GameMetaData;
 import records.LoginData;
 import records.RegisterData;
+
+import java.util.Collection;
+
+import static ui.ClientView.*;
 
 public class ClientLogic {
 
@@ -71,6 +76,12 @@ public class ClientLogic {
         }
         ServerFacade facade = new ServerFacade(host, port);
         facade.playGame(teamColor, gameID, authData.authToken());
+    }
+
+    public Collection<GameMetaData> listGames() throws Exception {
+        checkAuthNotNull();
+        ServerFacade facade = new ServerFacade(host, port);
+        return facade.listGames(authData.authToken());
     }
 
     // for checking.
