@@ -17,6 +17,8 @@ public class ClientREPL {
 
     private ClientState state;
     private ClientLogic clientLogic;
+    private final String usernameRegex = "^([[:alnum:]]|-|_)+$";
+    private final String passwordRegex = "^(\\S)+$";
 
     /**
      * Called by ClientMain to run the CLI. Considering placing this elsewhere.
@@ -68,10 +70,25 @@ public class ClientREPL {
 
                 displayText("Enter Username: ", false);
                 String username = scanInput(scan);
+                if (!username.matches(usernameRegex)) {
+                    displayError("""
+                            Error: Usernames cannot have whitespace and must consist of letters, numbers, or - or _.
+                            """);
+                }
                 displayText("Enter Password: ", false);
                 String password = scanInput(scan);
+                if (!password.matches(passwordRegex)) {
+                    displayError("""
+                            Error: passwords cannot have whitespace.""");
+                }
                 displayText("Enter Email: ", false);
                 String email = scanInput(scan);
+                if (email == null || email.isEmpty()) {
+                    displayError("""
+                            Error: Please enter valid text. Email cannot be left blank.
+                            """);
+                    break;
+                }
 
                 try {
                     clientLogic.register(username, password, email);
@@ -85,8 +102,17 @@ public class ClientREPL {
             case "login":
                 displayText("Enter Username: ", false);
                 String loginUsername = scanInput(scan);
+                if (!loginUsername.matches(usernameRegex)) {
+                    displayError("""
+                            Error: Usernames cannot have whitespace and must consist of letters, numbers, or - or _.
+                            """);
+                }
                 displayText("Enter Password: ", false);
                 String loginPassword = scanInput(scan);
+                if (!loginPassword.matches(passwordRegex)) {
+                    displayError("""
+                            Error: passwords cannot have whitespace.""");
+                }
 
                 try {
                     clientLogic.login(loginUsername, loginPassword);
@@ -99,6 +125,7 @@ public class ClientREPL {
             default:
                 break;
         }
+
     }
 
     private void loggedInEval(String input, Scanner scan) {
