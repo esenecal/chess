@@ -42,7 +42,7 @@ public class ServerFacade {
     public ServerFacade(String host, int port) {
         // on initialization,
         urlString = String.format(Locale.getDefault(), "http://%s:%d", host, port);
-        System.out.println("Initialized Client ServerFacade at url " + urlString + ", port " + port);
+//        System.out.println("Initialized Client ServerFacade at url " + urlString + ", port " + port);
     }
 
     /**

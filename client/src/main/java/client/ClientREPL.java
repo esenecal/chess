@@ -5,6 +5,7 @@ import ui.ClientView;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
+import static ui.ClientView.*;
 import static client.ClientState.*;
 
 /**
@@ -27,8 +28,8 @@ public class ClientREPL {
         // clear screen.
         System.out.print(ERASE_SCREEN);
         System.out.flush();
-        System.out.println("Welcome to the CS 240 Chess Program!");
-        System.out.println("Type help for commands.");
+        displayText("Welcome to the CS 240 Chess Program!", true);
+        displayText("Type help for commands.", true);
 
         Scanner scan = new Scanner(System.in);
         // See console ui MasteryLS
@@ -56,11 +57,11 @@ public class ClientREPL {
         switch (input.toLowerCase()) {
             case "quit":
                 // exit
-                System.out.println("Thanks for playing!");
+                displayText("Thanks for playing!", true);
                 state = QUIT;
                 break;
             case "help":
-                System.out.print(
+                displayText(
                         // bless intelliJ for teaching me that this could be a text block.
                         """
                                 Commands:
@@ -70,31 +71,26 @@ public class ClientREPL {
                                 quit - stop the application.
                                 
                                 Written in 2026 for BYU CS 240. Go Cougs!
-                                """
+                                """,
+                        true
                 );
                 break;
             case "register":
-                String username;
-                String password;
-                String email;
 
-                System.out.print("Enter Username: ");
-                username = scanInput(scan);
-                System.out.println();
-
-                System.out.print("Enter Username: ");
-                password = scanInput(scan);
-                System.out.println();
-
-                System.out.print("Enter Username: ");
-                email = scanInput(scan);
-                System.out.println();
+                displayText("Enter Username: ", false);
+                String username = scanInput(scan);
+                displayText("Enter Password: ", false);
+                String password = scanInput(scan);
+                displayText("Enter Email: ", false);
+                String email = scanInput(scan);
 
                 try {
                     state = clientLogic.register(username, password, email);
+                    displayText("Registered and logged in!", true);
                 } catch (Exception ex) {
-                    ClientView.displayError(ex.getMessage());
+                    displayError(ex.getMessage());
                 }
+                break;
             default:
                 System.out.println("What was that?");
                 break;
