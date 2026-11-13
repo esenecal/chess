@@ -91,7 +91,7 @@ public class ClientREPL {
                 try {
                     clientLogic.login(loginUsername, loginPassword);
                     state = LOGGED_IN;
-                    displayText("Logged in!", true);
+                    displayText("Logged in.", true);
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
                 }
@@ -109,6 +109,7 @@ public class ClientREPL {
             case "logout":
                 try {
                     clientLogic.logout();
+                    displayText("Logged out.", true);
                     state = LOGGED_OUT;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
