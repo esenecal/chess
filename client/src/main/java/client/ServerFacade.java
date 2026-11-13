@@ -189,6 +189,10 @@ public class ServerFacade {
 
     // implement observe game.
 
+    public void getGame() {
+        
+    }
+
     /**
      * Build a request. See Pet Shop ServerFacade, which was used as a reference, and MasteryLS "Web Client".
      * Removes repetition in the calls to the server.

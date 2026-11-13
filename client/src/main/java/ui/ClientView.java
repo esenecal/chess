@@ -50,7 +50,20 @@ public class ClientView {
     }
 
     public static String formatGameMetaData(GameMetaData game) {
+        String whiteUsername;
+        String blackUsername;
+        if (game.whiteUsername() == null) {
+            whiteUsername = "NO PLAYER";
+        } else {
+            whiteUsername = game.whiteUsername();
+        }
+
+        if (game.blackUsername() == null) {
+            blackUsername = "NO PLAYER";
+        } else {
+            blackUsername = game.blackUsername();
+        }
         return "[" + game.gameID() + "] - " + game.gameName() +
-                " | " + game.whiteUsername() + " | " + game.blackUsername();
+                " | " + whiteUsername + " | " + blackUsername;
     }
 }
