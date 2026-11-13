@@ -37,12 +37,12 @@ public class ClientView {
         } else {
             displayText("""
                             Commands:
-                            create [game name] - create a game with name [game name].
+                            create - create a game with name.
                             list - list all games that are in the server.
-                            play [game number] [WHITE/BLACK] - join a game as white or black.
-                            observe [game number] - watch a game without playing. 
+                            play - join a game as white or black.
+                            observe - watch a game without playing.
                             help - display valid commands. Call this at any point.
-                            logout - log out and return to home screen
+                            logout - log out and return to home screen.
                             """,
                     true);
         }

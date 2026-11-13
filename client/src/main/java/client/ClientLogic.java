@@ -17,6 +17,8 @@ public class ClientLogic {
     public ClientLogic() {
         this.host = "localhost";
         this.port = 8080;
+        // initialize with null so that we can't use it until defined.
+        this.authData = null;
     }
 
     /**
@@ -46,5 +48,11 @@ public class ClientLogic {
     public void logout() throws Exception {
         ServerFacade facade = new ServerFacade(host, port);
         facade.logoutUser(authData.authToken());
+        // clear authData
+        authData = null;
+    }
+
+    public int createGame(String gameName) throws Exception {
+        return new ServerFacade(host, port).createGame(gameName, authData.authToken());
     }
 }

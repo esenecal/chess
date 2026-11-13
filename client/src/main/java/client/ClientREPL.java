@@ -17,7 +17,7 @@ public class ClientREPL {
 
     private ClientState state;
     private ClientLogic clientLogic;
-    private final String usernameRegex = "^([[:alnum:]]|-|_)+$";
+    private final String usernameRegex = "^(\\d|[a-zA-z]|-|_|)+$";
     private final String passwordRegex = "^(\\S)+$";
 
     /**
@@ -74,12 +74,14 @@ public class ClientREPL {
                     displayError("""
                             Error: Usernames cannot have whitespace and must consist of letters, numbers, or - or _.
                             """);
+                    break;
                 }
                 displayText("Enter Password: ", false);
                 String password = scanInput(scan);
                 if (!password.matches(passwordRegex)) {
                     displayError("""
                             Error: passwords cannot have whitespace.""");
+                    break;
                 }
                 displayText("Enter Email: ", false);
                 String email = scanInput(scan);
@@ -95,10 +97,11 @@ public class ClientREPL {
                     displayText("Registered and logged in!", true);
                     // due to the error being thrown, this will not change if the register fails.
                     state = LOGGED_IN;
+                    break;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
+                    break;
                 }
-                break;
             case "login":
                 displayText("Enter Username: ", false);
                 String loginUsername = scanInput(scan);
@@ -106,20 +109,24 @@ public class ClientREPL {
                     displayError("""
                             Error: Usernames cannot have whitespace and must consist of letters, numbers, or - or _.
                             """);
+                    break;
                 }
                 displayText("Enter Password: ", false);
                 String loginPassword = scanInput(scan);
                 if (!loginPassword.matches(passwordRegex)) {
                     displayError("""
                             Error: passwords cannot have whitespace.""");
+                    break;
                 }
 
                 try {
                     clientLogic.login(loginUsername, loginPassword);
                     state = LOGGED_IN;
                     displayText("Logged in.", true);
+                    break;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
+                    break;
                 }
 
             default:
@@ -138,8 +145,22 @@ public class ClientREPL {
                     clientLogic.logout();
                     displayText("Logged out.", true);
                     state = LOGGED_OUT;
+                    break;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
+                    break;
+                }
+
+            case "create":
+                try {
+                    displayText("Game Name: ", false);
+                    String gameName = scanInput(scan);
+                    int gameID = clientLogic.createGame(gameName);
+                    displayText("Game created with ID of " + gameID + ".", true);
+                    break;
+                } catch (Exception ex) {
+                    displayError(ex.getMessage());
+                    break;
                 }
             default:
                 break;
