@@ -44,7 +44,7 @@ public class ClientREPL {
             if (state.equals(LOGGED_OUT)) {
                 loggedOutEval(input, scan);
             } else {
-                loggedInEval(input);
+                loggedInEval(input, scan);
             }
         }
         // just to be nice.
@@ -62,19 +62,7 @@ public class ClientREPL {
                 state = QUIT;
                 break;
             case "help":
-                displayText(
-                        // bless intelliJ for teaching me that this could be a text block.
-                        """
-                                Commands:
-                                register - register account with username, password, and email.
-                                login - login with username and password, and start playing chess!
-                                help - display valid commands. Call this at any point.
-                                quit - stop the application.
-                                
-                                Written in 2026 for BYU CS 240. Go Cougs!
-                                """,
-                        true
-                );
+                displayHelp(LOGGED_OUT);
                 break;
             case "register":
 
@@ -113,8 +101,22 @@ public class ClientREPL {
         }
     }
 
-    private void loggedInEval(String input) {
-        System.out.println("logged in");
+    private void loggedInEval(String input, Scanner scan) {
+        switch (input.toLowerCase()) {
+            case "help":
+                displayHelp(LOGGED_IN);
+                break;
+            case "logout":
+                try {
+                    clientLogic.logout();
+                    state = LOGGED_OUT
+                } catch (Exception ex) {
+                    displayError(ex.getMessage());
+                }
+            default:
+                break;
+        }
+
     }
 
     /**

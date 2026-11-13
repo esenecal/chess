@@ -42,4 +42,9 @@ public class ClientLogic {
         LoginData loginData = new LoginData(username, password);
         authData = new ServerFacade(host, port).loginUser(loginData);
     }
+
+    public void logout() throws Exception {
+        ServerFacade facade = new ServerFacade(host, port);
+        facade.logoutUser(authData.authToken());
+    }
 }
