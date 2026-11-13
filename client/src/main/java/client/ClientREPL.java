@@ -162,6 +162,22 @@ public class ClientREPL {
                     displayError(ex.getMessage());
                     break;
                 }
+            case "join":
+                displayText("Game ID: ", true);
+                int gameID = scan.nextInt();
+                displayText("Team (type WHITE or BLACK): ", true);
+                String team = scanInput(scan);
+                if (!team.equals("WHITE") && !team.equals("BLACK")) {
+                    displayError("Please enter WHITE or BLACK.");
+                    break;
+                }
+                try {
+                    clientLogic.joinGame(gameID, team);
+
+                    break;
+                } catch (Exception ex) {
+                    displayError(ex.getMessage());
+                }
             default:
                 break;
         }
