@@ -1,4 +1,4 @@
-package client;
+package ui;
 
 /**
  * The current state the client is in.
