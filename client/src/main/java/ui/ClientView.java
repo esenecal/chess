@@ -1,10 +1,16 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import client.ClientState;
+import model.GameData;
 import model.GameMetaData;
 
 /**
- * Functions for actually displaying various things.
+ * Functions for actually displaying various things. Set text to null and newline to true to just
+ * display a newline.
  */
 public class ClientView {
     public static void displayText(String text, boolean newline) {
@@ -65,5 +71,103 @@ public class ClientView {
         }
         return "[" + game.gameID() + "] - " + game.gameName() +
                 " | " + whiteUsername + " | " + blackUsername;
+    }
+
+    public static void renderBoard(GameData game, String username) {
+        if (username.equals(game.whiteUsername())) {
+            renderWhiteBoard(game.game());
+        }
+    }
+
+    public static void main(String[] args) {
+        ChessGame game = new ChessGame();
+        renderWhiteBoard(game);
+    }
+
+    private static void renderWhiteBoard(ChessGame game) {
+        // iterate through the board.
+        ChessBoard board = game.getBoard();
+        displayText(EscapeSequences.RESET_TEXT_COLOR, false);
+        displayText(EscapeSequences.RESET_BG_COLOR, false);
+        // start at top.
+        for (int y = 8; y > 0; y--) {
+            for (int x = 1; x < 9; x++) {
+                ChessPiece piece = board.getPiece(new ChessPosition(y, x));
+                String pieceIcon = getPieceIcon(piece);
+                // odd y and odd x are white squares. Actually, this is wrong.
+                if (y % 2 == 1 && x % 2 == 1) {
+                    pieceIcon = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + pieceIcon;
+                } else {
+                    pieceIcon = EscapeSequences.SET_BG_COLOR_DARK_GREY + pieceIcon;
+                }
+                displayText(pieceIcon, false);
+                // clear color.
+                displayText(EscapeSequences.RESET_TEXT_COLOR, false);
+                displayText(EscapeSequences.RESET_BG_COLOR, false);
+            }
+            displayText(null, true);
+        }
+    }
+
+    private static String getPieceIcon(ChessPiece piece) {
+        String pieceIcon;
+        String pieceColor;
+        if (piece == null) {
+            // no piece. set to empty.
+            pieceIcon = EscapeSequences.EMPTY;
+            return pieceIcon;
+        } else if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
+            pieceColor = EscapeSequences.SET_TEXT_COLOR_GREEN;
+            switch (piece.getPieceType()) {
+                case KING:
+                    pieceIcon = EscapeSequences.WHITE_KING;
+                    break;
+                case QUEEN:
+                    pieceIcon = EscapeSequences.WHITE_QUEEN;
+                    break;
+                case BISHOP:
+                    pieceIcon = EscapeSequences.WHITE_BISHOP;
+                    break;
+                case KNIGHT:
+                    pieceIcon = EscapeSequences.WHITE_KNIGHT;
+                    break;
+                case ROOK:
+                    pieceIcon = EscapeSequences.WHITE_ROOK;
+                    break;
+                case PAWN:
+                    pieceIcon = EscapeSequences.WHITE_PAWN;
+                    break;
+                default:
+                    pieceIcon = EscapeSequences.EMPTY;
+                    break;
+            }
+        } else {
+            pieceColor = EscapeSequences.SET_TEXT_COLOR_RED;
+            switch (piece.getPieceType()) {
+                case KING:
+                    pieceIcon = EscapeSequences.BLACK_KING;
+                    break;
+                case QUEEN:
+                    pieceIcon = EscapeSequences.BLACK_QUEEN;
+                    break;
+                case BISHOP:
+                    pieceIcon = EscapeSequences.BLACK_BISHOP;
+                    break;
+                case KNIGHT:
+                    pieceIcon = EscapeSequences.BLACK_KNIGHT;
+                    break;
+                case ROOK:
+                    pieceIcon = EscapeSequences.BLACK_ROOK;
+                    break;
+                case PAWN:
+                    pieceIcon = EscapeSequences.BLACK_PAWN;
+                    break;
+                default:
+                    pieceIcon = EscapeSequences.EMPTY;
+                    break;
+            }
+        }
+
+        return pieceColor + pieceIcon;
     }
 }

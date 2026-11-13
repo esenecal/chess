@@ -40,7 +40,7 @@ public class ChessPiece {
     }
 
     /**
-     * @return which type of chess piece this piece is
+     * @return which type of chess piece this piece is. null if no piece.
      */
     public PieceType getPieceType() {
         return type;            // Return the PieceType value associated with this object.
@@ -59,7 +59,7 @@ public class ChessPiece {
         ChessPiece piece = board.getPiece(myPosition);
 
         //noinspection EnhancedSwitchMigration
-        switch(piece.getPieceType()) {      // https://www.w3schools.com/java/java_switch.asp
+        switch (piece.getPieceType()) {      // https://www.w3schools.com/java/java_switch.asp
             case PieceType.BISHOP:
                 return bishopMoves(board, myPosition, piece.getTeamColor());
             case PieceType.KING:
@@ -109,8 +109,8 @@ public class ChessPiece {
         // Check upper right. These for loops continue if they are within the board, and have not encountered another piece.
         // https://stackoverflow.com/questions/14752536/java-for-loop-multiple-variables
         // we repeat while y < 9, x < 9
-        int y = myPosition.getRow()+1;
-        int x = myPosition.getColumn()+1;
+        int y = myPosition.getRow() + 1;
+        int x = myPosition.getColumn() + 1;
 
         while (y < 9 && x < 9) {
             currentPosition = new ChessPosition(y, x);
@@ -130,8 +130,8 @@ public class ChessPiece {
         }
 
         // lower right
-        y = myPosition.getRow()-1;
-        x = myPosition.getColumn()+1;
+        y = myPosition.getRow() - 1;
+        x = myPosition.getColumn() + 1;
         while (y > 0 && x < 9) {
             currentPosition = new ChessPosition(y, x);
             ChessMove move = checkIfValidMove(board, myPosition, currentPosition, pieceColor);
@@ -149,8 +149,8 @@ public class ChessPiece {
         }
 
         // lower left
-        y = myPosition.getRow()-1;
-        x = myPosition.getColumn()-1;
+        y = myPosition.getRow() - 1;
+        x = myPosition.getColumn() - 1;
         while (y > 0 && x > 0) {
             currentPosition = new ChessPosition(y, x);
             ChessMove move = checkIfValidMove(board, myPosition, currentPosition, pieceColor);
@@ -168,8 +168,8 @@ public class ChessPiece {
         }
 
         // upper left
-        y = myPosition.getRow()+1;
-        x = myPosition.getColumn()-1;
+        y = myPosition.getRow() + 1;
+        x = myPosition.getColumn() - 1;
         while (y < 9 && x > 0) {
             currentPosition = new ChessPosition(y, x);
             ChessMove move = checkIfValidMove(board, myPosition, currentPosition, pieceColor);
@@ -190,23 +190,23 @@ public class ChessPiece {
     }
 
     private static Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition, ChessGame.TeamColor pieceColor) {
-        ArrayList<ChessMove>  validMoves = new ArrayList<>();
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
 
         int myPositionY = myPosition.getRow();
         int myPositionX = myPosition.getColumn();
 
         ChessPosition[] possiblePositions = new ChessPosition[8];       // 8 possible moves. any direction, by 1.
 
-        possiblePositions[0] = new ChessPosition(myPositionY+1, myPositionX);            // up
-        possiblePositions[1] = new ChessPosition(myPositionY+1, myPositionX+1);     // up right
-        possiblePositions[2] = new ChessPosition(myPositionY, myPositionX+1);            // right
-        possiblePositions[3] = new ChessPosition(myPositionY-1, myPositionX+1);     // down right
-        possiblePositions[4] = new ChessPosition(myPositionY-1, myPositionX);           // down
-        possiblePositions[5] = new ChessPosition(myPositionY-1, myPositionX-1);     // down left
-        possiblePositions[6] = new ChessPosition(myPositionY, myPositionX-1);            // left
-        possiblePositions[7] = new ChessPosition(myPositionY+1, myPositionX-1);     // up left
+        possiblePositions[0] = new ChessPosition(myPositionY + 1, myPositionX);            // up
+        possiblePositions[1] = new ChessPosition(myPositionY + 1, myPositionX + 1);     // up right
+        possiblePositions[2] = new ChessPosition(myPositionY, myPositionX + 1);            // right
+        possiblePositions[3] = new ChessPosition(myPositionY - 1, myPositionX + 1);     // down right
+        possiblePositions[4] = new ChessPosition(myPositionY - 1, myPositionX);           // down
+        possiblePositions[5] = new ChessPosition(myPositionY - 1, myPositionX - 1);     // down left
+        possiblePositions[6] = new ChessPosition(myPositionY, myPositionX - 1);            // left
+        possiblePositions[7] = new ChessPosition(myPositionY + 1, myPositionX - 1);     // up left
 
-        for (ChessPosition position: possiblePositions) {
+        for (ChessPosition position : possiblePositions) {
 
             // Check if out of bounds. if it is, move on.
             if (position.getColumn() < 9 && position.getColumn() > 0 && position.getRow() < 9 && position.getRow() > 0) {
@@ -228,14 +228,14 @@ public class ChessPiece {
 
         // create an array of possible finial positions. A knight has 8 possible moves
         ChessPosition[] possibleMoves = new ChessPosition[8];
-        possibleMoves[0] = new ChessPosition(y+2, x-1);  // up2 left1
-        possibleMoves[1] = new ChessPosition(y+2, x+1);  // up2 right1
-        possibleMoves[2] = new ChessPosition(y+1, x+2);  // up1 right2
-        possibleMoves[3] = new ChessPosition(y-1, x+2);  // down1 right2
-        possibleMoves[4] = new ChessPosition(y-2, x-1);  // down2 left1
-        possibleMoves[5] = new ChessPosition(y-2, x+1);  // down2 right1
-        possibleMoves[6] = new ChessPosition(y+1, x-2);  // up1 left2
-        possibleMoves[7] = new ChessPosition(y-1, x-2);  // down1 left2
+        possibleMoves[0] = new ChessPosition(y + 2, x - 1);  // up2 left1
+        possibleMoves[1] = new ChessPosition(y + 2, x + 1);  // up2 right1
+        possibleMoves[2] = new ChessPosition(y + 1, x + 2);  // up1 right2
+        possibleMoves[3] = new ChessPosition(y - 1, x + 2);  // down1 right2
+        possibleMoves[4] = new ChessPosition(y - 2, x - 1);  // down2 left1
+        possibleMoves[5] = new ChessPosition(y - 2, x + 1);  // down2 right1
+        possibleMoves[6] = new ChessPosition(y + 1, x - 2);  // up1 left2
+        possibleMoves[7] = new ChessPosition(y - 1, x - 2);  // down1 left2
 
         // iterate through valid list to ensure that they meet criteria (within bounds, pieces there, etc.)
         for (ChessPosition position : possibleMoves) {
@@ -287,18 +287,18 @@ public class ChessPiece {
         // depending on piece color, set the direction we will be moving in, the home row, etc.
         if (pieceColor == ChessGame.TeamColor.WHITE) {
             forwardPosition = new ChessPosition(y + 1, x);       // up 1
-            jumpForwardPosition = new ChessPosition(y+2, x);    // up 2
+            jumpForwardPosition = new ChessPosition(y + 2, x);    // up 2
             // Positions for if a pawn captures.
-            capturePositions[0] = new ChessPosition(y+1,x+1);   // up 1 right 1
-            capturePositions[1] = new ChessPosition(y+1,x-1);   // up 1 left 1
+            capturePositions[0] = new ChessPosition(y + 1, x + 1);   // up 1 right 1
+            capturePositions[1] = new ChessPosition(y + 1, x - 1);   // up 1 left 1
 
             homeRow = 2;
             promotionRow = 8;
         } else {
-            forwardPosition = new ChessPosition(y-1, x);       // down 1
-            jumpForwardPosition = new ChessPosition(y-2, x);    // down 2
-            capturePositions[0] = new ChessPosition(y-1,x+1);   // down 1 right 1
-            capturePositions[1] = new ChessPosition(y-1,x-1);   // down 1 left 1
+            forwardPosition = new ChessPosition(y - 1, x);       // down 1
+            jumpForwardPosition = new ChessPosition(y - 2, x);    // down 2
+            capturePositions[0] = new ChessPosition(y - 1, x + 1);   // down 1 right 1
+            capturePositions[1] = new ChessPosition(y - 1, x - 1);   // down 1 left 1
 
             homeRow = 7;
             promotionRow = 1;
@@ -366,7 +366,7 @@ public class ChessPiece {
         ArrayList<ChessMove> validMoves = new ArrayList<>();    // empty ArrayList for all valid moves.
 
         // Check up. These for loops continue if they are within the board, and have not encountered another piece.
-        int y = myPosition.getRow()+1;
+        int y = myPosition.getRow() + 1;
         int x = myPosition.getColumn();
         while (y < 9) {
             currentPosition = new ChessPosition(y, x);
@@ -384,7 +384,7 @@ public class ChessPiece {
 
         // right
         y = myPosition.getRow();
-        x = myPosition.getColumn()+1;
+        x = myPosition.getColumn() + 1;
         while (x < 9) {
             currentPosition = new ChessPosition(y, x);
             ChessMove move = checkIfValidMove(board, myPosition, currentPosition, pieceColor);
@@ -400,7 +400,7 @@ public class ChessPiece {
         }
 
         // down
-        y = myPosition.getRow()-1;
+        y = myPosition.getRow() - 1;
         x = myPosition.getColumn();
         while (y > 0) {
             currentPosition = new ChessPosition(y, x);
@@ -418,7 +418,7 @@ public class ChessPiece {
 
         // left
         y = myPosition.getRow();
-        x = myPosition.getColumn()-1;
+        x = myPosition.getColumn() - 1;
         while (x > 0) {
             currentPosition = new ChessPosition(y, x);
             ChessMove move = checkIfValidMove(board, myPosition, currentPosition, pieceColor);

@@ -176,6 +176,7 @@ public class ClientREPL {
                 try {
                     clientLogic.joinGame(gameID, team);
                     displayText("Joined game " + gameID + " as the " + team + " team.", true);
+                    // render board.
                     break;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
