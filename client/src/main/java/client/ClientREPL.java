@@ -109,7 +109,7 @@ public class ClientREPL {
             case "logout":
                 try {
                     clientLogic.logout();
-                    state = LOGGED_OUT
+                    state = LOGGED_OUT;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
                 }
