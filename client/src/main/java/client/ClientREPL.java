@@ -36,6 +36,7 @@ public class ClientREPL {
         // See Phase 5 REPL loop example in Phase 5 Architectural Patterns, MasteryLS
         while (!state.equals(QUIT)) {
             // READ
+            System.out.print("> ");
             String input = scanInput(scan);
 
             // EVAL
@@ -85,16 +86,30 @@ public class ClientREPL {
                 String email = scanInput(scan);
 
                 try {
-                    state = clientLogic.register(username, password, email);
+                    clientLogic.register(username, password, email);
                     displayText("Registered and logged in!", true);
+                    // due to the error being thrown, this will not change if the register fails.
+                    state = LOGGED_IN;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
                 }
                 break;
-            default:
-                System.out.println("What was that?");
-                break;
+            case "login":
+                displayText("Enter Username: ", false);
+                String loginUsername = scanInput(scan);
+                displayText("Enter Password: ", false);
+                String loginPassword = scanInput(scan);
 
+                try {
+                    clientLogic.login(loginUsername, loginPassword);
+                    state = LOGGED_IN;
+                    displayText("Logged in!", true);
+                } catch (Exception ex) {
+                    displayError(ex.getMessage());
+                }
+
+            default:
+                break;
         }
     }
 
@@ -108,7 +123,6 @@ public class ClientREPL {
      * @return String read from scanner in.
      */
     private String scanInput(Scanner scan) {
-        System.out.print("> ");
         return scan.nextLine();
     }
 

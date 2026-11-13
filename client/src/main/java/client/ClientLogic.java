@@ -1,6 +1,7 @@
 package client;
 
 import model.AuthData;
+import records.LoginData;
 import records.RegisterData;
 
 public class ClientLogic {
@@ -21,14 +22,24 @@ public class ClientLogic {
     /**
      * Register user.
      *
-     * @param username
-     * @param password
-     * @param email
+     * @param username Username String
+     * @param password Password String
+     * @param email    Email String
      * @return String containing message
      */
-    public ClientState register(String username, String password, String email) throws Exception {
+    public void register(String username, String password, String email) throws Exception {
         RegisterData data = new RegisterData(username, password, email);
         authData = new ServerFacade(host, port).registerUser(data);
-        return ClientState.LOGGED_IN;
+    }
+
+    /**
+     * Log in the user
+     *
+     * @param username username string
+     * @param password password string
+     */
+    public void login(String username, String password) throws Exception {
+        LoginData loginData = new LoginData(username, password);
+        authData = new ServerFacade(host, port).loginUser(loginData);
     }
 }
