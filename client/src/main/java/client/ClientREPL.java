@@ -1,11 +1,11 @@
-package ui;
+package client;
 
-import client.ClientLogic;
+import ui.ClientView;
 
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
-import static ui.ClientState.*;
+import static client.ClientState.*;
 
 /**
  * CLI read-eval-print loop.
@@ -16,7 +16,6 @@ public class ClientREPL {
 
     private ClientState state;
     private ClientLogic clientLogic;
-    private String authToken;
 
     /**
      * Called by ClientMain to run the CLI. Considering placing this elsewhere.
@@ -92,8 +91,7 @@ public class ClientREPL {
                 System.out.println();
 
                 try {
-                    authToken = clientLogic.register(username, password, email);
-
+                    state = clientLogic.register(username, password, email);
                 } catch (Exception ex) {
                     ClientView.displayError(ex.getMessage());
                 }
@@ -105,7 +103,7 @@ public class ClientREPL {
     }
 
     private void loggedInEval(String input) {
-
+        System.out.println("logged in");
     }
 
     /**
