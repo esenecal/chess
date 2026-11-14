@@ -225,7 +225,8 @@ public class ServerFacade {
 
     /**
      * Create the body for the request. See MasteryLS Web Client, which basically provided this. this should take a
-     * JSON string, which will have been converted before use.
+     * JSON string, which will have been converted before use. This was so simple, I felt that this was the most
+     * graceful way to do it after seeing it.
      */
     private static HttpRequest.BodyPublisher requestBodyPublisher(String body) {
         // If there is no body, then return no body. If there is, return it as a body publisher.
