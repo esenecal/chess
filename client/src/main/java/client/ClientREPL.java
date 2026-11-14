@@ -237,7 +237,7 @@ public class ClientREPL {
     }
 
     private void createCommand(Scanner scan) throws Exception {
-        displayText("Game Name ('quit' to return to menu]): ", false);
+        displayText("Game Name ('quit' to return to menu): ", false);
         String gameName = scanInput(scan);
         if (gameName.equalsIgnoreCase("quit")) {
             displayText("Returning to menu", true);
@@ -249,7 +249,7 @@ public class ClientREPL {
 
     private void observeCommand(Scanner scan) throws Exception {
         // will be fully implemented in phase 6.
-        displayText("Enter Game ID: ", true);
+        displayText("Enter Game ID: ", false);
         int gameID = scanIntInput(scan);
         GameData gameData = getGame(gameID);
         String observeUsername = clientLogic.observeGame(gameID);

@@ -49,7 +49,7 @@ public class ClientView {
                             Commands:
                             create - create a game with name.
                             list - list all games that are in the server.
-                            play - join a game as white or black.
+                            join - join a game as white or black.
                             observe - watch a game without playing.
                             help - display valid commands. Call this at any point.
                             logout - log out and return to home screen.

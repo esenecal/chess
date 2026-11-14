@@ -180,7 +180,8 @@ public class ServerFacade {
         } else if (statusCode == 401) {
             throw new InvalidAuthException("You are not logged in or otherwise have an invalid authentication");
         } else if (statusCode == 403) {
-            throw new GameTakenException("This game already has a player on this team.");
+            throw new GameTakenException("There is already a player on this team, or you are already playing in " +
+                    "this game.");
         } else {
             throw new Exception("There was an issue getting the list of games. Please try again " +
                     "or contact the dev team.");
