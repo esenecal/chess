@@ -1,5 +1,8 @@
 package client;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import model.GameData;
 import model.GameMetaData;
 import ui.ClientView;
 
@@ -130,7 +133,32 @@ public class ClientREPL {
                     displayError(ex.getMessage());
                     break;
                 }
-
+            case "observe":
+                // will be fully implemented in phase 6.
+                displayText("Enter Game ID: ", true);
+                int gameID = scanIntInput(scan);
+                GameMetaData game = null;
+                try {
+                    // for now, get the metadata for the game asked for.
+                    Collection<GameMetaData> gameMetaData = clientLogic.listGames();
+                    for (GameMetaData g : gameMetaData) {
+                        if (g.gameID() == gameID) {
+                            game = g;
+                        }
+                    }
+                    if (game == null) {
+                        displayError("Please enter an existing game ID.");
+                        break;
+                    }
+                    GameData gameData = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(),
+                            game.gameName(), new ChessGame());
+                    String observeUsername = clientLogic.observeGame(gameID);
+                    ClientView.renderBoard(gameData, observeUsername);
+                    break;
+                } catch (Exception ex) {
+                    displayError(ex.getMessage());
+                    break;
+                }
             default:
                 break;
         }

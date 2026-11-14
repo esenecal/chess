@@ -90,7 +90,7 @@ public class ClientLogic {
      * @return username.
      * @throws Exception
      */
-    public String observeGame() throws Exception {
+    public String observeGame(int gameID) throws Exception {
         checkAuthNotNull();
         return authData.username();
     }
