@@ -237,8 +237,12 @@ public class ClientREPL {
     }
 
     private void createCommand(Scanner scan) throws Exception {
-        displayText("Game Name: ", false);
+        displayText("Game Name ('quit' to return to menu]): ", false);
         String gameName = scanInput(scan);
+        if (gameName.equalsIgnoreCase("quit")) {
+            displayText("Returning to menu", true);
+            return;
+        }
         int gameID = clientLogic.createGame(gameName);
         displayText("Game created with ID of " + gameID + ".", true);
     }
