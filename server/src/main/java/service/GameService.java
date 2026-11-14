@@ -80,10 +80,13 @@ public class GameService {
 
         GameData updatedGame;
 
-        // construct updated game state
-        // note: this current implementation does allow a player to be added in both white and black teams.
-        // Is this an issue? Only if we do not want people to play against themselves.
-        // I am okay with that, so we'll keep this implementation for now.
+        // if the player is already playing, do not let them join.
+        // we know this will work because authData cannot be null, so we will always be checking something with
+        // something that may or may not be null.
+        if (authData.username().equals(game.whiteUsername()) || authData.username().equals(game.blackUsername())) {
+            throw new GameTakenException("Error: cannot join a game twice");
+        }
+
         if (request.playerColor() == ChessGame.TeamColor.WHITE) {
             // if the white team is already taken
             if (game.whiteUsername() != null) {

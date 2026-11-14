@@ -153,9 +153,9 @@ public class ClientView {
         String pieceIcon = getPieceIcon(piece);
         // odd y and odd x, and even y and even x are white squares. Actually, this is wrong.
         if ((y % 2 == 1 && x % 2 == 1) || (y % 2 == 0 && x % 2 == 0)) {
-            pieceIcon = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + pieceIcon;
-        } else {
             pieceIcon = EscapeSequences.SET_BG_COLOR_DARK_GREY + pieceIcon;
+        } else {
+            pieceIcon = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + pieceIcon;
         }
         displayText(pieceIcon, false);
         // clear color.
