@@ -80,52 +80,8 @@ public class ClientREPL {
                     break;
                 }
             case "login":
-                displayText("Enter Username: ", false);
-                String loginUsername = scanInput(scan);
-                if (!loginUsername.matches(usernameRegex)) {
-                    displayError("""
-                            Error: Usernames cannot have whitespace and must consist of letters, numbers, or - or _.
-                            """);
-                    break;
-                }
-                displayText("Enter Password: ", false);
-                String loginPassword = scanInput(scan);
-                if (!loginPassword.matches(passwordRegex)) {
-                    displayError("""
-                            Error: passwords cannot have whitespace.""");
-                    break;
-                }
-
                 try {
-                    clientLogic.login(loginUsername, loginPassword);
-                    state = LOGGED_IN;
-                    displayText("Logged in.", true);
-                    break;
-                } catch (Exception ex) {
-                    displayError(ex.getMessage());
-                    break;
-                }
-            case "observe":
-                // will be fully implemented in phase 6.
-                displayText("Enter Game ID: ", true);
-                int gameID = scanIntInput(scan);
-                GameMetaData game = null;
-                try {
-                    // for now, get the metadata for the game asked for.
-                    Collection<GameMetaData> gameMetaData = clientLogic.listGames();
-                    for (GameMetaData g : gameMetaData) {
-                        if (g.gameID() == gameID) {
-                            game = g;
-                        }
-                    }
-                    if (game == null) {
-                        displayError("Please enter an existing game ID.");
-                        break;
-                    }
-                    GameData gameData = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(),
-                            game.gameName(), new ChessGame());
-                    String observeUsername = clientLogic.observeGame(gameID);
-                    ClientView.renderBoard(gameData, observeUsername);
+                    loginCommand(scan);
                     break;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
@@ -175,6 +131,30 @@ public class ClientREPL {
         displayText("Registered and logged in!", true);
         // due to the error being thrown, this will not change if the register fails.
         state = LOGGED_IN;
+    }
+
+    private void loginCommand(Scanner scan) throws Exception {
+        displayText("Enter Username: ", false);
+        String loginUsername = scanInput(scan);
+        if (!loginUsername.matches(usernameRegex)) {
+            displayError("""
+                    Error: Usernames cannot have whitespace and must consist of letters, numbers, or - or _.
+                    Exiting to menu.
+                    """);
+            return;
+        }
+        displayText("Enter Password: ", false);
+        String loginPassword = scanInput(scan);
+        if (!loginPassword.matches(passwordRegex)) {
+            displayError("""
+                    Error: passwords cannot have whitespace.
+                    Exiting to menu.
+                    """);
+            return;
+        }
+        clientLogic.login(loginUsername, loginPassword);
+        state = LOGGED_IN;
+        displayText("Logged in.", true);
     }
 
     private void loggedInEval(String input, Scanner scan) {
@@ -238,6 +218,32 @@ public class ClientREPL {
                     for (GameMetaData game : gameList) {
                         displayText(formatGameMetaData(game), true);
                     }
+                } catch (Exception ex) {
+                    displayError(ex.getMessage());
+                    break;
+                }
+            case "observe":
+                // will be fully implemented in phase 6.
+                displayText("Enter Game ID: ", true);
+                int gameID = scanIntInput(scan);
+                GameMetaData game = null;
+                try {
+                    // for now, get the metadata for the game asked for.
+                    Collection<GameMetaData> gameMetaData = clientLogic.listGames();
+                    for (GameMetaData g : gameMetaData) {
+                        if (g.gameID() == gameID) {
+                            game = g;
+                        }
+                    }
+                    if (game == null) {
+                        displayError("Please enter an existing game ID.");
+                        break;
+                    }
+                    GameData gameData = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(),
+                            game.gameName(), new ChessGame());
+                    String observeUsername = clientLogic.observeGame(gameID);
+                    ClientView.renderBoard(gameData, observeUsername);
+                    break;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
                     break;
