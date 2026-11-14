@@ -77,10 +77,11 @@ public class ClientView {
     }
 
     public static void renderBoard(GameData game, String username) {
-        if (username.equals(game.whiteUsername())) {
-            renderWhiteBoard(game.game());
-        } else {
+        if (username.equals(game.blackUsername())) {
             renderBlackBoard(game.game());
+        } else {
+            // if we are observing, we see the white team view of the board.
+            renderWhiteBoard(game.game());
         }
     }
 
