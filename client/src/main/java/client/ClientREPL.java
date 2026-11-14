@@ -7,6 +7,8 @@ import model.GameMetaData;
 import ui.ClientView;
 
 import java.util.Collection;
+import java.util.InputMismatchException;
+import java.util.Locale;
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
@@ -43,7 +45,7 @@ public class ClientREPL {
         // See Phase 5 REPL loop example in Phase 5 Architectural Patterns, MasteryLS
         while (!state.equals(QUIT)) {
             // READ
-            System.out.print("> ");
+            displayText(state + " > ", false);
             String input = scanInput(scan);
 
             // EVAL
@@ -64,44 +66,14 @@ public class ClientREPL {
         // https://docs.oracle.com/javase/tutorial/java/nutsandbolts/switch.html
         switch (input.toLowerCase()) {
             case "quit":
-                // exit
-                displayText("Thanks for playing!", true);
-                state = QUIT;
+                quitCommand();
                 break;
             case "help":
                 displayHelp(LOGGED_OUT);
                 break;
             case "register":
-
-                displayText("Enter Username: ", false);
-                String username = scanInput(scan);
-                if (!username.matches(usernameRegex)) {
-                    displayError("""
-                            Error: Usernames cannot have whitespace and must consist of letters, numbers, or - or _.
-                            """);
-                    break;
-                }
-                displayText("Enter Password: ", false);
-                String password = scanInput(scan);
-                if (!password.matches(passwordRegex)) {
-                    displayError("""
-                            Error: passwords cannot have whitespace.""");
-                    break;
-                }
-                displayText("Enter Email: ", false);
-                String email = scanInput(scan);
-                if (email == null || email.isEmpty()) {
-                    displayError("""
-                            Error: Please enter valid text. Email cannot be left blank.
-                            """);
-                    break;
-                }
-
                 try {
-                    clientLogic.register(username, password, email);
-                    displayText("Registered and logged in!", true);
-                    // due to the error being thrown, this will not change if the register fails.
-                    state = LOGGED_IN;
+                    registerCommand(scan);
                     break;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
@@ -165,6 +137,46 @@ public class ClientREPL {
 
     }
 
+    private void quitCommand() {
+        displayText("Thanks for playing!", true);
+        // log out user.
+        state = QUIT;
+    }
+
+    private void registerCommand(Scanner scan) throws Exception {
+        displayText("Enter Username: ", false);
+        String username = scanInput(scan);
+        if (!username.matches(usernameRegex)) {
+            displayError("""
+                    Error: Usernames cannot have whitespace and must consist of letters, numbers, or - or _.
+                    Exiting to menu.
+                    """);
+            return;
+        }
+        displayText("Enter Password: ", false);
+        String password = scanInput(scan);
+        if (!password.matches(passwordRegex)) {
+            displayError("""
+                    Error: passwords cannot have whitespace.
+                    Exiting to menu.
+                    """);
+            return;
+        }
+        displayText("Enter Email: ", false);
+        String email = scanInput(scan);
+        if (email == null || email.isEmpty()) {
+            displayError("""
+                    Error: Please enter valid text. Email cannot be left blank.
+                    Exiting to menu.
+                    """);
+            return;
+        }
+        clientLogic.register(username, password, email);
+        displayText("Registered and logged in!", true);
+        // due to the error being thrown, this will not change if the register fails.
+        state = LOGGED_IN;
+    }
+
     private void loggedInEval(String input, Scanner scan) {
         switch (input.toLowerCase()) {
             case "help":
@@ -193,15 +205,24 @@ public class ClientREPL {
                     break;
                 }
             case "join":
-                displayText("Game ID: ", false);
-                int gameID = scanIntInput(scan);
-                displayText("Team (type WHITE or BLACK): ", false);
-                String team = scanInput(scan);
-                if (!team.equals("WHITE") && !team.equals("BLACK")) {
-                    displayError("Please enter WHITE or BLACK.");
-                    break;
-                }
                 try {
+                    // get ID and team. Quit if keywords are stated.
+                    displayText("Game ID (enter 0 to quit to menu): ", false);
+                    int gameID = scanIntInput(scan);
+                    if (gameID == 0) {
+                        displayText("Returning to menu.", true);
+                        break;
+                    }
+                    displayText("Team (type WHITE or BLACK, quit to got to menu): ", false);
+                    String team = scanInput(scan);
+                    if (team.equalsIgnoreCase("quit")) {
+                        displayText("Returning to menu.", true);
+                        break;
+                    }
+                    if (!team.equals("WHITE") && !team.equals("BLACK")) {
+                        displayError("Please enter WHITE or BLACK.");
+                        break;
+                    }
                     clientLogic.joinGame(gameID, team);
                     displayText("Joined game " + gameID + " as the " + team + " team.", true);
                     // render board.
@@ -236,10 +257,15 @@ public class ClientREPL {
         return scan.nextLine();
     }
 
-    private int scanIntInput(Scanner scan) {
-        int num = scan.nextInt();
-        scan.nextLine();    // advance for the next line of input
-        return num;
+    private int scanIntInput(Scanner scan) throws InputMismatchException {
+        try {
+            int num = scan.nextInt();
+            scan.nextLine();    // advance for the next line of input
+            return num;
+        } catch (InputMismatchException ex) {
+            scan.nextLine();    // advance just in case.
+            throw new InputMismatchException("Error: a number must be entered. Exiting to menu.");
+        }
     }
 
 }
