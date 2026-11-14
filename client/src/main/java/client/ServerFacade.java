@@ -28,7 +28,7 @@ public class ServerFacade {
     // See MasteryLS "Web Client". Used as template.
 
     // HttpClient for making requests. Opens the connection.
-    private static final HttpClient httpClient = HttpClient.newHttpClient();
+    private static final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
 
     // URL string for making requests.
     private static String urlString;
@@ -132,7 +132,7 @@ public class ServerFacade {
         int statusCode = response.statusCode();
 
         if (statusCode >= 200 && statusCode < 300) {        // 200 success code
-            gameID gameID = new Gson().fromJson(response.body(), gameID.class);
+            GameID gameID = new Gson().fromJson(response.body(), GameID.class);
             return gameID.gameID();
         } else if (statusCode == 400) {
             throw new BadRequestException("The data submitted was nonexistent or otherwise invalid.");
@@ -205,7 +205,7 @@ public class ServerFacade {
                 .build();
 
         // Get the response and return it.
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     // overload of build request, now with a header
@@ -220,7 +220,7 @@ public class ServerFacade {
                 .build();
 
         // Get the response and return it.
-        return httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        return HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
     }
 
     /**

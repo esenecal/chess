@@ -14,7 +14,7 @@ import model.GameMetaData;
  */
 public class ClientView {
 
-    private static final char[] columnLabel = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+    private static final char[] COLUMN_LABEL = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 
     public static void displayText(String text, boolean newline) {
         if (!(text == null)) {
@@ -94,7 +94,7 @@ public class ClientView {
         displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
         for (int x = 0; x < 8; x++) {
             displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " +
-                    columnLabel[x] + EscapeSequences.ALMOST_EMPTY, false);
+                    COLUMN_LABEL[x] + EscapeSequences.ALMOST_EMPTY, false);
         }
         displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
         displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, true);
@@ -110,7 +110,7 @@ public class ClientView {
         displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
         for (int x = 0; x < 8; x++) {
             displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " +
-                    columnLabel[x] + EscapeSequences.ALMOST_EMPTY, false);
+                    COLUMN_LABEL[x] + EscapeSequences.ALMOST_EMPTY, false);
         }
         displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
         displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, true);
@@ -126,7 +126,7 @@ public class ClientView {
         displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
         for (int x = 7; x > -1; x--) {
             displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " +
-                    columnLabel[x] + EscapeSequences.ALMOST_EMPTY, false);
+                    COLUMN_LABEL[x] + EscapeSequences.ALMOST_EMPTY, false);
         }
         displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
         displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, true);
@@ -142,7 +142,7 @@ public class ClientView {
         displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
         for (int x = 7; x > -1; x--) {
             displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " +
-                    columnLabel[x] + EscapeSequences.ALMOST_EMPTY, false);
+                    COLUMN_LABEL[x] + EscapeSequences.ALMOST_EMPTY, false);
         }
         displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
         displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, true);
