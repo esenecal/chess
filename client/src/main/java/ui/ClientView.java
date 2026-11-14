@@ -13,6 +13,9 @@ import model.GameMetaData;
  * display a newline.
  */
 public class ClientView {
+
+    private static final char[] columnLabel = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+
     public static void displayText(String text, boolean newline) {
         if (!(text == null)) {
             System.out.print(text);
@@ -91,8 +94,9 @@ public class ClientView {
         displayText(EscapeSequences.RESET_BG_COLOR, false);
         // start at top.
         displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
-        for (int x = 1; x < 9; x++) {
-            displayText(EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.EMPTY, false);
+        for (int x = 0; x < 8; x++) {
+            displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " +
+                    columnLabel[x] + EscapeSequences.ALMOST_EMPTY, false);
         }
         displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
         displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, true);
@@ -114,7 +118,15 @@ public class ClientView {
             displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " + y + " ", false);
             displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, true);
         }
+        displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
+        for (int x = 0; x < 8; x++) {
+            displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " +
+                    columnLabel[x] + EscapeSequences.ALMOST_EMPTY, false);
+        }
+        displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
+        displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, true);
     }
+
 
     private static String getPieceIcon(ChessPiece piece) {
         String pieceIcon;
