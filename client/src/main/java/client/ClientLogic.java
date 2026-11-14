@@ -64,7 +64,7 @@ public class ClientLogic {
         return new ServerFacade(host, port).createGame(gameName, authData.authToken());
     }
 
-    public void joinGame(int gameID, String team) throws Exception {
+    public String joinGame(int gameID, String team) throws Exception {
         checkAuthNotNull();
         // convert to team color. team is
         // Guaranteed to be white or black due to checking the input at the repl.
@@ -76,6 +76,7 @@ public class ClientLogic {
         }
         ServerFacade facade = new ServerFacade(host, port);
         facade.playGame(teamColor, gameID, authData.authToken());
+        return authData.username();
     }
 
     public Collection<GameMetaData> listGames() throws Exception {

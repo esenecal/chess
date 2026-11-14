@@ -164,21 +164,15 @@ public class ClientREPL {
                 break;
             case "logout":
                 try {
-                    clientLogic.logout();
-                    displayText("Logged out.", true);
-                    state = LOGGED_OUT;
+                    logoutCommand();
                     break;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
                     break;
                 }
-
             case "create":
                 try {
-                    displayText("Game Name: ", false);
-                    String gameName = scanInput(scan);
-                    int gameID = clientLogic.createGame(gameName);
-                    displayText("Game created with ID of " + gameID + ".", true);
+                    createCommand(scan);
                     break;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
@@ -186,26 +180,7 @@ public class ClientREPL {
                 }
             case "join":
                 try {
-                    // get ID and team. Quit if keywords are stated.
-                    displayText("Game ID (enter 0 to quit to menu): ", false);
-                    int gameID = scanIntInput(scan);
-                    if (gameID == 0) {
-                        displayText("Returning to menu.", true);
-                        break;
-                    }
-                    displayText("Team (type WHITE or BLACK, quit to got to menu): ", false);
-                    String team = scanInput(scan);
-                    if (team.equalsIgnoreCase("quit")) {
-                        displayText("Returning to menu.", true);
-                        break;
-                    }
-                    if (!team.equals("WHITE") && !team.equals("BLACK")) {
-                        displayError("Please enter WHITE or BLACK.");
-                        break;
-                    }
-                    clientLogic.joinGame(gameID, team);
-                    displayText("Joined game " + gameID + " as the " + team + " team.", true);
-                    // render board.
+                    joinCommand(scan);
                     break;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
@@ -213,36 +188,15 @@ public class ClientREPL {
                 }
             case "list":
                 try {
-                    Collection<GameMetaData> gameList = clientLogic.listGames();
-                    displayText("[gameID] - game name | <WHITE TEAM> | <BLACKTEAM>", true);
-                    for (GameMetaData game : gameList) {
-                        displayText(formatGameMetaData(game), true);
-                    }
+                    listCommand();
+                    break;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
                     break;
                 }
             case "observe":
-                // will be fully implemented in phase 6.
-                displayText("Enter Game ID: ", true);
-                int gameID = scanIntInput(scan);
-                GameMetaData game = null;
                 try {
-                    // for now, get the metadata for the game asked for.
-                    Collection<GameMetaData> gameMetaData = clientLogic.listGames();
-                    for (GameMetaData g : gameMetaData) {
-                        if (g.gameID() == gameID) {
-                            game = g;
-                        }
-                    }
-                    if (game == null) {
-                        displayError("Please enter an existing game ID.");
-                        break;
-                    }
-                    GameData gameData = new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(),
-                            game.gameName(), new ChessGame());
-                    String observeUsername = clientLogic.observeGame(gameID);
-                    ClientView.renderBoard(gameData, observeUsername);
+                    observeCommand(scan);
                     break;
                 } catch (Exception ex) {
                     displayError(ex.getMessage());
@@ -252,6 +206,79 @@ public class ClientREPL {
                 break;
         }
 
+    }
+
+    private void logoutCommand() throws Exception {
+        clientLogic.logout();
+        displayText("Logged out.", true);
+        state = LOGGED_OUT;
+    }
+
+    private void createCommand(Scanner scan) throws Exception {
+        displayText("Game Name: ", false);
+        String gameName = scanInput(scan);
+        int gameID = clientLogic.createGame(gameName);
+        displayText("Game created with ID of " + gameID + ".", true);
+    }
+
+    private void observeCommand(Scanner scan) throws Exception {
+        // will be fully implemented in phase 6.
+        displayText("Enter Game ID: ", true);
+        int gameID = scanIntInput(scan);
+        GameData gameData = getGame(gameID);
+        String observeUsername = clientLogic.observeGame(gameID);
+        ClientView.renderBoard(gameData, observeUsername);
+    }
+
+    private void joinCommand(Scanner scan) throws Exception {
+        // get ID and team. Quit if keywords are stated.
+        displayText("Game ID (enter 0 to quit to menu): ", false);
+        int gameID = scanIntInput(scan);
+        if (gameID == 0) {
+            displayText("Returning to menu.", true);
+            return;
+        }
+        displayText("Team (type WHITE or BLACK, quit to got to menu): ", false);
+        String team = scanInput(scan);
+        if (team.equalsIgnoreCase("quit")) {
+            displayText("Returning to menu.", true);
+            return;
+        }
+        if (!team.equals("WHITE") && !team.equals("BLACK")) {
+            displayError("Please enter WHITE or BLACK. Exiting to menu.");
+            return;
+        }
+        String joinUsername = clientLogic.joinGame(gameID, team);
+        displayText("Joined game " + gameID + " as the " + team + " team.", true);
+        // render board. For now, this just renders a blank board.
+        GameData game = getGame(gameID);
+        renderBoard(game, joinUsername);
+    }
+
+    private void listCommand() throws Exception {
+        Collection<GameMetaData> gameList = clientLogic.listGames();
+        displayText("[gameID] - game name | <WHITE TEAM> | <BLACKTEAM>", true);
+        for (GameMetaData game : gameList) {
+            displayText(formatGameMetaData(game), true);
+        }
+    }
+
+    /**
+     * An inefficient stand in for getting a specific game.
+     */
+    private GameData getGame(int gameID) throws Exception {
+        GameMetaData game = null;
+        Collection<GameMetaData> gameMetaData = clientLogic.listGames();
+        for (GameMetaData g : gameMetaData) {
+            if (g.gameID() == gameID) {
+                game = g;
+            }
+        }
+        if (game == null) {
+            throw new BadRequestException("Please enter an existing game ID. Exiting to menu.");
+        }
+        return new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(),
+                game.gameName(), new ChessGame());
     }
 
     /**
