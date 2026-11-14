@@ -90,22 +90,29 @@ public class ClientView {
         displayText(EscapeSequences.RESET_TEXT_COLOR, false);
         displayText(EscapeSequences.RESET_BG_COLOR, false);
         // start at top.
+        displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
+        for (int x = 1; x < 9; x++) {
+            displayText(EscapeSequences.SET_BG_COLOR_BLACK + EscapeSequences.EMPTY, false);
+        }
+        displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
+        displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, true);
         for (int y = 8; y > 0; y--) {
+            displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " + y + " ", false);
             for (int x = 1; x < 9; x++) {
                 ChessPiece piece = board.getPiece(new ChessPosition(y, x));
                 String pieceIcon = getPieceIcon(piece);
-                // odd y and odd x are white squares. Actually, this is wrong.
-                if (y % 2 == 1 && x % 2 == 1) {
+                // odd y and odd x, and even y and even x are white squares. Actually, this is wrong.
+                if ((y % 2 == 1 && x % 2 == 1) || (y % 2 == 0 && x % 2 == 0)) {
                     pieceIcon = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + pieceIcon;
                 } else {
                     pieceIcon = EscapeSequences.SET_BG_COLOR_DARK_GREY + pieceIcon;
                 }
                 displayText(pieceIcon, false);
                 // clear color.
-                displayText(EscapeSequences.RESET_TEXT_COLOR, false);
-                displayText(EscapeSequences.RESET_BG_COLOR, false);
             }
-            displayText(null, true);
+            displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, false);
+            displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " + y + " ", false);
+            displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, true);
         }
     }
 
@@ -117,7 +124,7 @@ public class ClientView {
             pieceIcon = EscapeSequences.EMPTY;
             return pieceIcon;
         } else if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-            pieceColor = EscapeSequences.SET_TEXT_COLOR_GREEN;
+            pieceColor = EscapeSequences.SET_TEXT_COLOR_RED;
             switch (piece.getPieceType()) {
                 case KING:
                     pieceIcon = EscapeSequences.WHITE_KING;
@@ -142,7 +149,7 @@ public class ClientView {
                     break;
             }
         } else {
-            pieceColor = EscapeSequences.SET_TEXT_COLOR_RED;
+            pieceColor = EscapeSequences.SET_TEXT_COLOR_BLUE;
             switch (piece.getPieceType()) {
                 case KING:
                     pieceIcon = EscapeSequences.BLACK_KING;
