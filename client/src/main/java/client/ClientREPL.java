@@ -100,6 +100,7 @@ public class ClientREPL {
     }
 
     private void registerCommand(Scanner scan) throws Exception {
+        displayText("Type 'quit' at anytime to return to menu.", true);
         displayText("Enter Username: ", false);
         String username = scanInput(scan);
         if (!username.matches(usernameRegex)) {
@@ -107,6 +108,10 @@ public class ClientREPL {
                     Error: Usernames cannot have whitespace and must consist of letters, numbers, or - or _.
                     Exiting to menu.
                     """);
+            return;
+        }
+        if (username.equalsIgnoreCase("quit")) {
+            displayText("Returning to menu", true);
             return;
         }
         displayText("Enter Password: ", false);
@@ -118,6 +123,10 @@ public class ClientREPL {
                     """);
             return;
         }
+        if (password.equalsIgnoreCase("quit")) {
+            displayText("Returning to menu", true);
+            return;
+        }
         displayText("Enter Email: ", false);
         String email = scanInput(scan);
         if (email == null || email.isEmpty()) {
@@ -127,6 +136,10 @@ public class ClientREPL {
                     """);
             return;
         }
+        if (email.equalsIgnoreCase("quit")) {
+            displayText("Returning to menu", true);
+            return;
+        }
         clientLogic.register(username, password, email);
         displayText("Registered and logged in!", true);
         // due to the error being thrown, this will not change if the register fails.
@@ -134,6 +147,7 @@ public class ClientREPL {
     }
 
     private void loginCommand(Scanner scan) throws Exception {
+        displayText("Type 'quit' to return to the menu at any time.", true);
         displayText("Enter Username: ", false);
         String loginUsername = scanInput(scan);
         if (!loginUsername.matches(usernameRegex)) {
@@ -143,6 +157,10 @@ public class ClientREPL {
                     """);
             return;
         }
+        if (loginUsername.equalsIgnoreCase("quit")) {
+            displayText("Returning to menu", true);
+            return;
+        }
         displayText("Enter Password: ", false);
         String loginPassword = scanInput(scan);
         if (!loginPassword.matches(passwordRegex)) {
@@ -150,6 +168,10 @@ public class ClientREPL {
                     Error: passwords cannot have whitespace.
                     Exiting to menu.
                     """);
+            return;
+        }
+        if (loginPassword.equalsIgnoreCase("quit")) {
+            displayText("Returning to menu", true);
             return;
         }
         clientLogic.login(loginUsername, loginPassword);
