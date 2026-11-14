@@ -79,12 +79,9 @@ public class ClientView {
     public static void renderBoard(GameData game, String username) {
         if (username.equals(game.whiteUsername())) {
             renderWhiteBoard(game.game());
+        } else {
+            renderBlackBoard(game.game());
         }
-    }
-
-    public static void main(String[] args) {
-        ChessGame game = new ChessGame();
-        renderWhiteBoard(game);
     }
 
     private static void renderWhiteBoard(ChessGame game) {
@@ -103,16 +100,7 @@ public class ClientView {
         for (int y = 8; y > 0; y--) {
             displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " + y + " ", false);
             for (int x = 1; x < 9; x++) {
-                ChessPiece piece = board.getPiece(new ChessPosition(y, x));
-                String pieceIcon = getPieceIcon(piece);
-                // odd y and odd x, and even y and even x are white squares. Actually, this is wrong.
-                if ((y % 2 == 1 && x % 2 == 1) || (y % 2 == 0 && x % 2 == 0)) {
-                    pieceIcon = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + pieceIcon;
-                } else {
-                    pieceIcon = EscapeSequences.SET_BG_COLOR_DARK_GREY + pieceIcon;
-                }
-                displayText(pieceIcon, false);
-                // clear color.
+                printSquare(board, y, x);
             }
             displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, false);
             displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " + y + " ", false);
@@ -127,6 +115,50 @@ public class ClientView {
         displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, true);
     }
 
+    private static void renderBlackBoard(ChessGame game) {
+        // iterate through the board.
+        ChessBoard board = game.getBoard();
+        displayText(EscapeSequences.RESET_TEXT_COLOR, false);
+        displayText(EscapeSequences.RESET_BG_COLOR, false);
+
+        // start at top.
+        displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
+        for (int x = 7; x > -1; x--) {
+            displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " +
+                    columnLabel[x] + EscapeSequences.ALMOST_EMPTY, false);
+        }
+        displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
+        displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, true);
+        for (int y = 1; y < 9; y++) {
+            displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " + y + " ", false);
+            for (int x = 8; x > 0; x--) {
+                printSquare(board, y, x);
+            }
+            displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, false);
+            displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " + y + " ", false);
+            displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, true);
+        }
+        displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
+        for (int x = 7; x > -1; x--) {
+            displayText(EscapeSequences.SET_BG_COLOR_BLACK + " " +
+                    columnLabel[x] + EscapeSequences.ALMOST_EMPTY, false);
+        }
+        displayText(EscapeSequences.SET_BG_COLOR_BLACK + "   ", false);
+        displayText(EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR, true);
+    }
+
+    private static void printSquare(ChessBoard board, int y, int x) {
+        ChessPiece piece = board.getPiece(new ChessPosition(y, x));
+        String pieceIcon = getPieceIcon(piece);
+        // odd y and odd x, and even y and even x are white squares. Actually, this is wrong.
+        if ((y % 2 == 1 && x % 2 == 1) || (y % 2 == 0 && x % 2 == 0)) {
+            pieceIcon = EscapeSequences.SET_BG_COLOR_LIGHT_GREY + pieceIcon;
+        } else {
+            pieceIcon = EscapeSequences.SET_BG_COLOR_DARK_GREY + pieceIcon;
+        }
+        displayText(pieceIcon, false);
+        // clear color.
+    }
 
     private static String getPieceIcon(ChessPiece piece) {
         String pieceIcon;

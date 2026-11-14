@@ -84,6 +84,17 @@ public class ClientLogic {
         return facade.listGames(authData.authToken());
     }
 
+    /**
+     * Will be implemented in phase 6.
+     *
+     * @return username.
+     * @throws Exception
+     */
+    public String observeGame() throws Exception {
+        checkAuthNotNull();
+        return authData.username();
+    }
+
     // for checking.
     private void checkAuthNotNull() throws Exception {
         if (authData == null) {
