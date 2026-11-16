@@ -169,7 +169,7 @@ public class ClientView {
             pieceIcon = EscapeSequences.EMPTY;
             return pieceIcon;
         } else if (piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-            pieceColor = EscapeSequences.SET_TEXT_COLOR_RED;
+            pieceColor = EscapeSequences.SET_TEXT_COLOR_YELLOW;
             switch (piece.getPieceType()) {
                 case KING:
                     pieceIcon = EscapeSequences.WHITE_KING;
@@ -194,7 +194,7 @@ public class ClientView {
                     break;
             }
         } else {
-            pieceColor = EscapeSequences.SET_TEXT_COLOR_BLUE;
+            pieceColor = EscapeSequences.SET_TEXT_COLOR_RED;
             switch (piece.getPieceType()) {
                 case KING:
                     pieceIcon = EscapeSequences.BLACK_KING;

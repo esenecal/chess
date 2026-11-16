@@ -24,7 +24,7 @@ public class ClientREPL {
 
     private ClientState state;
     private ClientLogic clientLogic;
-    private final String usernameRegex = "^(\\d|[a-zA-z]|-|_|)+$";
+    private final String usernameRegex = "^(\\d|[a-zA-z]|-|_)+$";
     private final String passwordRegex = "^(\\S)+$";
 
     /**
