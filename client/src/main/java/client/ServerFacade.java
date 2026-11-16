@@ -6,6 +6,7 @@ import model.AuthData;
 import model.GameMetaData;
 import records.*;
 
+import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -205,7 +206,11 @@ public class ServerFacade {
                 .build();
 
         // Get the response and return it.
-        return HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        try {
+            return HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (ConnectException ex) {
+            throw new ConnectException("There was an issue connecting to the database. Please contact the dev team.");
+        }
     }
 
     // overload of build request, now with a header
