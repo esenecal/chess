@@ -29,6 +29,7 @@ public class ClientView {
         System.err.println(message);
     }
 
+    // display help messages.
     public static void displayHelp(ClientState state) {
         if (state == ClientState.LOGGED_OUT) {
             displayText(
